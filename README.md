@@ -20,4 +20,4 @@ Supabase CLI는 이 폴더에서 `npm ci` 후 `npx supabase`로 실행합니다.
 
 `git add . && git commit -m "Update MVP" && git push origin main`
 
-Vercel GitHub 연동 승인 후 main 브랜치 푸시를 Vercel이 감지해 자동 배포하도록 연결합니다.
+GitHub의 main 브랜치 푸시를 Vercel이 감지해 자동 배포합니다.
