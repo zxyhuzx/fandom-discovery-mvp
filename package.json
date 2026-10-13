@@ -1,0 +1,9 @@
+{
+  "name": "fandom-discovery-mvp",
+  "version": "1.0.0",
+  "private": true,
+  "description": "팬덤 굿즈 탐색 MVP의 로컬 CLI 도구",
+  "devDependencies": {
+    "supabase": "2.120.0"
+  }
+}
