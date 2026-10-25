@@ -29,3 +29,24 @@ export function canonicalSource(value) {
 }
 export const SALE_LABELS={planned:'판매 예정',open:'판매 중',survey_planned:'수요조사 예정',survey_open:'수요조사 중',closed:'마감'};
 export const QUEUE_LABELS={pending:'모의 발송 대기',mocked:'모의 발송 완료 · 실제 발송 없음',cancelled:'구독 해제 또는 게시 취소로 취소'};
+
+// Characters are scoped to a work. Unknown names can still be entered for niche fandoms.
+export const CHARACTERS={
+ '하이큐!!':['히나타 쇼요','카게야마 토비오','츠키시마 케이','코즈메 켄마','쿠로오 테츠로','오이카와 토오루'],
+ '주술회전':['이타도리 유지','후시구로 메구미','고죠 사토루','게토 스구루'],
+ '귀멸의 칼날':['카마도 탄지로','카마도 네즈코','아가츠마 젠이츠','토미오카 기유'],
+ '원신':['벤티','종려','타르탈리아','알하이탐','느비예트'],
+ '전지적 독자 시점':['김독자','유중혁','한수영'],
+ '블루 록':['이사기 요이치','나기 세이시로','미카게 레오','이토시 린'],
+ '쿠로코의 농구':['쿠로코 테츠야','키세 료타','아카시 세이주로'],
+ '체인소 맨':['덴지','파워','하야카와 아키'],
+ '붕괴: 스타레일':['단항','카프카','삼포','경원'],
+ '젠레스 존 제로':['호시미 미야비','엘렌 조','아사바 하루마사'],
+ '나 혼자만 레벨업':['성진우','차해인'], '내가 키운 S급들':['한유진','한유현','성현제']
+};
+export function filterGoods(posts,{query='',work='',character='',status=''}={}){
+ const term=normalizeKeyword(query),ch=normalizeKeyword(character);
+ return posts.filter(p=>p.is_published&&(!work||normalizeWork(p.work_name)===normalizeWork(work))&&(!status||p.sale_status===status)&&(!ch||p.character_names.some(c=>normalizeKeyword(c).includes(ch)))&&(!term||normalizeKeyword([p.title,p.work_name,...p.character_names,p.seller_name||'',p.platform_name||''].join(' ')).includes(term)))
+ .sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
+}
+export const needsOnboarding=(user,interests,preferences)=>!!user&&!interests.length&&!preferences?.onboarding_completed;

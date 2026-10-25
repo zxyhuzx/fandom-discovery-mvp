@@ -41,3 +41,5 @@ npm run test:db
 기존 GitHub main → Vercel 자동 배포: `npm ci` → `npm run build`, 출력 `public/`. Vercel CLI 직접 배포는 사용하지 않습니다.
 
 수정 후: `git add . && git commit -m "Update MVP" && git push origin main`
+
+로그인 후 서비스 확장과 비로그인 탐색, 온보딩, 테마, 검증 방법은 [서비스 흐름](docs/SERVICE_FLOWS.md)을 참고하세요.

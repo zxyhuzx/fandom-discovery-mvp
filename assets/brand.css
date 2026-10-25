@@ -14,3 +14,14 @@ body{min-height:100vh;background:var(--paper)}
 input::placeholder,textarea::placeholder{color:#8495aa}
 .card,.form-card,.input-box{box-shadow:0 8px 28px #00000012}
 @media(max-width:700px){.brand{gap:7px}.brand img{width:40px;height:40px;border-radius:12px}.welcome-icon{width:96px;height:96px}.small{max-width:120px;text-align:right}}
+/* Light mode reuses the existing light ink and dark navy tokens; dark values stay unchanged. */
+:root[data-theme="light"]{color-scheme:light;--paper:#e5eaf1;--surface:#f4f6f9;--tint:#c9d2de;--line:#94a3b6;--ink:#101e2f;--muted:#3d5877;--accent:#294b73;--button:#294b73;--starlight:#795f34}
+:root[data-theme="light"] .visual{background:var(--tint)}
+:root[data-theme="light"] .primary{color:#e5eaf1}
+:root[data-theme="light"] input::placeholder,:root[data-theme="light"] textarea::placeholder{color:var(--muted)}
+:root[data-theme="light"] .shelf-card:hover{background:var(--tint)}
+.service-header{max-width:1280px;gap:22px;flex-wrap:wrap}.service-header #nav-search{display:flex;flex:1;min-width:200px;gap:8px}.service-header .account{margin-left:auto}
+.tabs a{white-space:nowrap;background:var(--surface);border:1px solid var(--line);color:var(--muted);border-radius:24px;padding:10px 16px;text-decoration:none}.tabs a.active{background:var(--tint);border-color:var(--accent);color:var(--accent)}
+.filter-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:18px}.filter-grid label{display:block;font-size:13px;margin-bottom:6px}.choice-list{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}.choice-list button{font-size:12px;padding:6px 10px}.save-bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:24px 0}.section-title{margin-top:30px}.detail-card{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:32px;margin-top:30px}.detail-card .goods-art{aspect-ratio:1}.detail-card p{white-space:pre-wrap;overflow-wrap:anywhere}.notification-link{color:var(--ink);text-decoration:none;flex:1}.sr-only{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}.card h3{font-size:18px;line-height:1.5}.card .badge{align-self:flex-start}.card .text-link{margin-top:auto;padding-top:12px}
+@media(max-width:700px){.service-header{gap:12px}.service-header #nav-search{order:3;flex-basis:100%}.service-header .account{gap:6px}.service-header .secondary{padding:8px 10px;font-size:12px}.filter-grid,.detail-card{grid-template-columns:1fr}.detail-card{gap:12px}.choice-list{max-height:180px;overflow:auto}.tabs{gap:7px}.tabs a{padding:9px 13px;font-size:13px}}
+.goods-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:var(--muted)}.goods-placeholder span{color:var(--starlight);font-size:38px}.goods-placeholder small{font-size:12px}

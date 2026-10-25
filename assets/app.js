@@ -1,89 +1,64 @@
 import {createClient} from '@supabase/supabase-js';
 import {config} from './config.js';
 import {dispatchMockBatch} from '../lib/messaging/mock-dispatch.mjs';
-import {WORKS,canonicalWork,canonicalSource,matchesInterest,normalizeKeyword,SALE_LABELS,QUEUE_LABELS} from './domain.js';
-
+import {WORKS,CHARACTERS,canonicalWork,canonicalSource,matchesInterest,normalizeKeyword,filterGoods,needsOnboarding,SALE_LABELS,QUEUE_LABELS} from './domain.js';
 const $=id=>document.getElementById(id);
 const db=createClient(config.supabaseUrl,config.publishableKey,{auth:{flowType:'pkce',detectSessionInUrl:false,persistSession:true,autoRefreshToken:true}});
-let user=null,admin=false,epoch=0,loading=false;
-let interests=[],posts=[],notifications=[],queue=[],attempts=[];
+let user=null,admin=false,interests=[],draft=[],posts=[],notifications=[],queue=[],attempts=[],preferences=null,dirty=false,loading=false,epoch=0,showDemo=false;
+const columns='id,title,source_url,work_name,character_names,sale_status,sale_info,sale_start,sale_end,thumbnail_url,is_published,created_at,seller_name,platform_name,is_test';
+const demos=[['하이큐!!','히나타 쇼요','통판 굿즈 예시','open'],['주술회전','고죠 사토루','수요조사 예시','survey_open'],['원신','종려','판매 예정 예시','planned']].map(([work,character,title,status],i)=>({id:'demo-'+i,title,work_name:work,character_names:[character],sale_status:status,sale_info:'화면 체험용 정보입니다. 실제로 판매하거나 모집하는 게시물이 아닙니다.',seller_name:'예시 창작자',platform_name:'예시 플랫폼',thumbnail_url:'/assets/byeoljup-icon.png',is_published:true,is_test:true,created_at:new Date(2026,9,25-i).toISOString()}));
+function el(tag,text,className){const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(className)n.className=className;return n}
 function notice(text='',error=false){$('notice').textContent=text;$('notice').dataset.error=String(error)}
-function friendly(error){
- if(error?.code==='23505')return '이미 등록된 관심사 또는 게시물 주소예요.';
- if(error?.code==='42501')return '이 작업을 할 권한이 없어요. 로그인과 관리자 권한을 확인해 주세요.';
- if(error?.code==='23514'||error?.code==='22007')return '입력 길이, 주소 또는 날짜를 확인해 주세요.';
- if(error?.message==='Failed to fetch')return '인터넷 연결을 확인하고 다시 시도해 주세요.';
- return '처리하지 못했어요. 잠시 후 다시 시도해 주세요. 설정이 필요하면 운영 가이드를 확인해 주세요.';
-}
-function el(tag,text,className){const node=document.createElement(tag);if(text!==undefined)node.textContent=text;if(className)node.className=className;return node}
 function empty(target,text){target.replaceChildren(el('p',text,'empty-state'))}
-function time(value){return new Intl.DateTimeFormat('ko-KR',{dateStyle:'short',timeStyle:'short'}).format(new Date(value))}
-function link(url,text){try{const href=canonicalSource(url);const a=el('a',text);a.href=href;a.target='_blank';a.rel='noopener noreferrer';return a}catch{return el('span','원문 주소를 확인할 수 없어요.','muted')}}
-function button(text,action){const b=el('button',text,'secondary');b.type='button';b.addEventListener('click',()=>run(b,action));return b}
-async function run(control,action){if(control.disabled)return;control.disabled=true;notice();try{await action()}catch(error){notice(friendly(error),true)}finally{control.disabled=false}}
-function result(response){if(response.error)throw response.error;return response.data}
-function tab(name){if(name==='admin'&&!admin)return;for(const n of ['feed','interests','notifications','admin'])$('panel-'+n).hidden=n!==name;document.querySelectorAll('[data-tab]').forEach(b=>{b.classList.toggle('active',b.dataset.tab===name);b.setAttribute('aria-pressed',String(b.dataset.tab===name))})}
-function render(){
- $('account-name').textContent=user?(user.user_metadata?.name||user.user_metadata?.nickname||user.user_metadata?.user_name||'내 계정'):'';
- $('auth-gate').hidden=!!user;$('service').hidden=!user;$('logout').hidden=!user;$('admin-tab').hidden=!admin;
- $('unread-count').textContent=String(notifications.filter(n=>!n.read_at).length);
- renderInterests();renderFeed();renderNotifications();renderQueue();if(admin)renderAdmin();
+function time(v){return new Intl.DateTimeFormat('ko-KR',{dateStyle:'short',timeStyle:'short'}).format(new Date(v))}
+function result(r){if(r.error)throw r.error;return r.data}
+function friendly(e){if(e?.code==='23505')return '이미 등록된 항목이에요.';if(e?.code==='42501')return '로그인 또는 관리자 권한을 확인해 주세요.';if(['23514','22007','22023'].includes(e?.code))return '입력한 이름, 주소 또는 날짜를 확인해 주세요.';return '불러오지 못했어요. 인터넷 연결을 확인하고 새로고침해 주세요.'}
+async function run(b,fn){if(b.disabled)return;b.disabled=true;notice();try{await fn()}catch(e){notice(friendly(e),true)}finally{b.disabled=false}}
+function button(text,fn){const b=el('button',text,'secondary');b.type='button';b.onclick=()=>run(b,fn);return b}
+function link(url,text){try{const a=el('a',text);a.href=canonicalSource(url);a.target='_blank';a.rel='noopener noreferrer';return a}catch{return el('span','원문 주소를 확인해 주세요.')}}
+function route(){return location.hash.slice(1)||'home'}
+function go(name){if(route()===name)renderRoute();else location.hash=name}
+function needLogin(target){sessionStorage.setItem('byeoljup-next',target);go('login')}
+function onboarding(){return needsOnboarding(user,interests,preferences)}
+function renderRoute(){
+ let name=route();if(name==='home'&&onboarding())name='onboarding';
+ const protectedPage=['interests','notifications','profile','onboarding','admin'].includes(name);
+ if(protectedPage&&!user){sessionStorage.setItem('byeoljup-next',name);name='login'}
+ if(name==='admin'&&!admin)name='home';
+ const panel=name.startsWith('goods/')?'detail':name==='onboarding'?'interests':name;
+ const valid=['home','explore','interests','notifications','profile','detail','login','admin'];
+ document.querySelectorAll('main>section').forEach(n=>n.hidden=n.id!=='panel-'+(valid.includes(panel)?panel:'home'));
+ document.querySelectorAll('[data-route]').forEach(n=>{const selected=n.dataset.route===panel;n.classList.toggle('active',selected);if(selected)n.setAttribute('aria-current','page');else n.removeAttribute('aria-current')});
+ $('onboarding-label').hidden=name!=='onboarding';$('skip-interests').hidden=name!=='onboarding';$('interests-title').textContent=name==='onboarding'?'어떤 작품을 좋아하세요?':'내 관심사 관리';
+ if(panel==='detail')renderDetail(name.slice(6));
 }
-function renderInterests(){
- $('interest-list').replaceChildren();if(!interests.length){empty($('interest-list'),'관심 작품을 등록하면 그다음 새 게시물부터 알림을 받아요.');return}
- interests.forEach(i=>{const row=el('li',undefined,'list-row');const text=el('div');text.append(el('h4',i.work_name),el('p',i.character_name||'작품 전체'));row.append(text,button('관심 해제',async()=>{result(await db.from('user_interests').delete().eq('id',i.id));await refresh();notice('관심을 해제했어요. 이미 받은 웹 알림은 남아 있어요.')}));$('interest-list').append(row)})
+window.addEventListener('hashchange',()=>{notice();renderRoute()});
+function imageFor(p){
+ const placeholder=()=>{const box=el('div',undefined,'goods-art goods-placeholder');box.append(el('span','✦'),el('small',p.is_test?'예시 이미지 영역':'이미지 준비 중'));return box};
+ if(!p.thumbnail_url||p.id.startsWith('demo-'))return placeholder();
+ const image=el('img');image.alt=p.title+' 이미지';image.className='goods-art';image.loading='lazy';image.referrerPolicy='no-referrer';try{image.src=canonicalSource(p.thumbnail_url)}catch{return placeholder()}image.onerror=()=>image.replaceWith(placeholder());return image;
 }
-function renderFeed(){
- const term=normalizeKeyword($('feed-search').value);const only=$('only-matches').checked;
- const items=posts.filter(p=>p.is_published&&(!term||normalizeKeyword([p.title,p.work_name,...p.character_names].join(' ')).includes(term))&&(!only||interests.some(i=>matchesInterest(i,p))));
- $('goods-feed').replaceChildren();if(!items.length){empty($('goods-feed'),'해당하는 소식이 아직 없어요. 관심 작품을 등록하고 다음 소식을 기다려 주세요.');return}
- items.forEach(p=>{const card=el('article',undefined,'card');if(p.thumbnail_url){const image=el('img');try{image.src=canonicalSource(p.thumbnail_url);image.alt=p.title+' 썸네일';image.className='goods-art';image.loading='lazy';image.referrerPolicy='no-referrer';image.addEventListener('error',()=>image.remove(),{once:true});card.append(image)}catch{}}
- card.append(el('span',SALE_LABELS[p.sale_status],'sale-tag'),el('h3',p.title),el('p',p.work_name+(p.character_names.length?' · '+p.character_names.join(', '):'')),el('p',p.sale_info||'자세한 내용은 원문을 확인해 주세요.'));
- if(p.sale_start)card.append(el('p','시작 '+time(p.sale_start),'note'));if(p.sale_end)card.append(el('p','마감 '+time(p.sale_end),'note'));card.append(link(p.source_url,'원문·판매처 열기 ↗'));$('goods-feed').append(card)})
-}
-function renderNotifications(){
- $('notifications').replaceChildren();if(!notifications.length){empty($('notifications'),'새로 도착한 알림이 없어요. 관심사에 맞는 새 게시물이 등록되면 여기에 표시돼요.');return}
- notifications.forEach(n=>{const row=el('article',undefined,'list-row'+(!n.read_at?' unread':''));const content=el('div');content.append(el('h4',n.title),el('p',n.body),el('time',time(n.created_at)));const actions=el('div',undefined,'list-actions');actions.append(link(n.source_url,'원문 보기 ↗'));if(!n.read_at)actions.append(button('읽음',async()=>{result(await db.from('notifications').update({read_at:new Date().toISOString()}).eq('id',n.id));await refresh()}));row.append(content,actions);$('notifications').append(row)})
-}
+function card(p){const n=el('article',undefined,'card');n.append(imageFor(p));if(p.is_test)n.append(el('span','테스트·예시 데이터','badge'));n.append(el('span',SALE_LABELS[p.sale_status],'sale-tag'),el('h3',p.title),el('p',p.work_name+' · '+(p.character_names.join(', ')||'작품 전체')),el('p',(p.seller_name||'창작자 미등록')+' · '+(p.platform_name||platform(p.source_url))),el('p',p.sale_end?'마감 '+time(p.sale_end):p.sale_start?'시작 '+time(p.sale_start):'일정은 원문을 확인해 주세요.','note'));const a=el('a','상세 보기 →','text-link');a.href='#goods/'+p.id;n.append(a);if(!p.is_test)n.append(link(p.source_url,'원본 판매처 ↗'));return n}
+function platform(url){try{return new URL(url).hostname.replace(/^www\./,'')}catch{return '판매 플랫폼 미등록'}}
+function fillCards(id,items,message){const target=$(id);target.replaceChildren();if(!items.length)empty(target,message);else items.forEach(p=>target.append(card(p)))}
+function renderFeed(){const items=filterGoods(showDemo?demos:posts,{query:$('feed-search').value,work:$('filter-work').value,character:$('filter-character').value,status:$('filter-status').value}).filter(p=>!$('only-matches').checked||interests.some(i=>matchesInterest(i,p)));$('result-count').textContent=items.length+'개 소식';$('demo-note').hidden=!showDemo;$('toggle-demo').textContent=showDemo?'실제 게시물 보기':'예시 데이터 보기';fillCards('goods-feed',items,'조건에 맞는 소식이 아직 없어요. 검색 조건을 바꾸거나 예시 데이터를 둘러보세요.')}
+function renderHome(){const real=posts.filter(p=>p.is_published&&!p.is_test);const matched=real.filter(p=>interests.some(i=>matchesInterest(i,p)));$('home-title').textContent=user?'내 장르, 오늘의 소식.':'지금 발견한 굿즈 소식';$('home-description').textContent=user?'관심 작품의 새 통판과 수요조사를 한곳에서 확인하세요.':'로그인 없이 둘러보세요. 관심 작품 저장과 내 알림은 카카오 로그인 후 이용할 수 있어요.';$('interest-prompt').hidden=!!interests.length;$('personal-title').textContent=interests.length?'내 관심사에 맞는 새 발견':'취향을 담으면 여기에 모아 드려요';fillCards('personal-feed',matched.slice(0,6),interests.length?'아직 관심사와 일치하는 새 소식이 없어요.':'관심 작품·캐릭터를 등록해 주세요.');fillCards('recent-feed',real.filter(p=>p.sale_status!=='closed').slice(0,6),'아직 공개된 소식이 없어요. 탐색에서 예시 화면을 볼 수 있어요.')}
+async function renderDetail(id){let p=[...posts,...demos].find(p=>p.id===id&&p.is_published);const target=$('goods-detail');target.replaceChildren();if(!p&&/^[a-f0-9-]{36}$/i.test(id)){empty(target,'상세 소식을 불러오는 중이에요…');try{p=result(await db.from('goods_posts').select(columns).eq('id',id).eq('is_published',true).maybeSingle());if(p)posts.push(p)}catch(e){notice(friendly(e),true)}if(route()!=='goods/'+id)return}if(!p){empty(target,'게시물이 없거나 공개가 종료됐어요.');return}target.replaceChildren();const box=el('article',undefined,'detail-card');box.append(imageFor(p));const info=el('div');if(p.is_test)info.append(el('p','테스트·예시 데이터 · 실제 판매 정보 아님','badge'));info.append(el('span',SALE_LABELS[p.sale_status],'sale-tag'),el('h1',p.title),el('p',p.work_name+' · '+(p.character_names.join(', ')||'작품 전체')),el('p','창작자·판매자: '+(p.seller_name||'미등록')),el('p','판매 플랫폼: '+(p.platform_name||platform(p.source_url))),el('p',p.sale_info||'판매 안내는 원문을 확인해 주세요.'));if(p.sale_start)info.append(el('p','시작: '+time(p.sale_start)));if(p.sale_end)info.append(el('p','마감: '+time(p.sale_end)));if(!p.is_test)info.append(link(p.source_url,'원본 판매 페이지로 이동 ↗'));else info.append(el('p','예시 데이터에는 실제 판매 링크를 제공하지 않아요.','note'));info.append(button('이 작품 관심사에 담기',async()=>{if(!user){needLogin('goods/'+id);return}addDraft(p.work_name,'');go('interests')}));box.append(info);target.append(box)}
+function addDraft(work,character){work=canonicalWork(work);character=character.trim();if(!normalizeKeyword(work))return;const item={work_name:work,character_name:character};if(draft.some(i=>canonicalWork(i.work_name)===work&&normalizeKeyword(i.character_name)===normalizeKeyword(character)))return;draft.push(item);dirty=true;renderInterests()}
+function renderInterests(){$('interest-list').replaceChildren();$('interest-count').textContent=draft.length;$('unsaved-label').textContent=dirty?'아직 저장하지 않은 변경사항이 있어요.':'저장된 관심사예요.';if(!draft.length)empty($('interest-list'),'아직 담은 관심사가 없어요. 작품을 먼저 골라 보세요.');draft.forEach((i,index)=>{const row=el('li',undefined,'list-row');const text=el('div');text.append(el('h4',i.work_name),el('p',i.character_name||'작품 전체'));row.append(text,button('목록에서 삭제',async()=>{draft.splice(index,1);dirty=true;renderInterests()}));$('interest-list').append(row)})}
+function choices(){const term=normalizeKeyword($('interest-work').value);$('work-suggestions').replaceChildren();WORKS.filter(a=>!term||a.some(x=>normalizeKeyword(x).includes(term))).slice(0,8).forEach(([name])=>{$('work-suggestions').append(button(name,async()=>{$('interest-work').value=name;$('interest-character').value='';choices()}))});const work=canonicalWork($('interest-work').value);const chars=CHARACTERS[work]||[];$('interest-character').disabled=!term;$('interest-character').placeholder=term?'비워 두면 작품 전체':'작품을 먼저 선택해 주세요';$('character-options').replaceChildren();chars.forEach(c=>{const n=el('option');n.value=c;$('character-options').append(n)});const q=normalizeKeyword($('interest-character').value);$('character-suggestions').replaceChildren();chars.filter(c=>!q||normalizeKeyword(c).includes(q)).forEach(c=>$('character-suggestions').append(button(c,async()=>{addDraft(work,c)})))}
+function renderNotifications(){$('notifications').replaceChildren();if(!notifications.length)empty($('notifications'),'새 알림이 없어요. 관심사에 맞는 새 게시물이 등록되면 알려 드릴게요.');notifications.forEach(n=>{const row=el('article',undefined,'list-row'+(!n.read_at?' unread':''));const a=el('a',undefined,'notification-link');a.href='#goods/'+n.goods_post_id;a.append(el('h4',n.title),el('p',n.body),el('time',time(n.created_at)));a.onclick=()=>{if(!n.read_at)db.from('notifications').update({read_at:new Date().toISOString()}).eq('id',n.id).then(r=>{if(r.error)notice(friendly(r.error),true);else{n.read_at=new Date().toISOString();renderNotifications();updateCount()}})};row.append(a);if(!n.read_at)row.append(button('읽음',async()=>{result(await db.from('notifications').update({read_at:new Date().toISOString()}).eq('id',n.id));await refresh()}));$('notifications').append(row)})}
+function updateCount(){$('unread-count').textContent=notifications.filter(n=>!n.read_at).length}
+function render(){$('header-login').hidden=!!user;$('profile-link').hidden=!user;$('profile-link').textContent=user?.user_metadata?.name||user?.user_metadata?.nickname||'내 계정';$('account-name').textContent=$('profile-link').textContent;$('admin-tab').hidden=!admin;$('web-notifications').checked=preferences?.web_notifications!==false;updateCount();renderFeed();renderHome();renderInterests();renderNotifications();if(admin)renderAdmin();renderRoute()}
+async function refresh(){const current=++epoch;loading=true;$('loading').hidden=false;try{const data=result(await db.from('goods_posts').select(columns).order('created_at',{ascending:false}).limit(100));let role=false,personal=[[],[],[],[],null];if(user){role=result(await db.rpc('is_app_admin'));const r=await Promise.all([db.from('user_interests').select('id,work_name,character_name').order('created_at'),db.from('notifications').select('id,title,body,source_url,created_at,read_at,goods_post_id').order('created_at',{ascending:false}).limit(50),role?db.from('delivery_queue').select('id,notification_id,status').order('created_at',{ascending:false}).limit(50):Promise.resolve({data:[]}),role?db.from('delivery_attempts').select('id,queue_id,created_at').order('created_at',{ascending:false}).limit(50):Promise.resolve({data:[]}),db.from('user_preferences').select('onboarding_completed,web_notifications').maybeSingle()]);personal=r.map(result)}if(current!==epoch)return;posts=data;admin=role;[interests,notifications,queue,attempts,preferences]=personal;if(!dirty)draft=interests.map(i=>({...i}));render()}finally{if(current===epoch){loading=false;$('loading').hidden=true}}}
+async function setSession(session){epoch++;user=session?.user??null;admin=false;dirty=false;interests=[];draft=[];notifications=[];queue=[];attempts=[];preferences=null;await refresh()}
 function queueRow(q){const row=el('div',undefined,'list-row');const n=notifications.find(n=>n.id===q.notification_id);row.append(el('span',n?.title||'알림 '+q.notification_id.slice(0,8)),el('span',QUEUE_LABELS[q.status]||q.status));return row}
-function renderQueue(){const ownIds=new Set(notifications.map(n=>n.id));const own=queue.filter(q=>ownIds.has(q.notification_id));$('my-queue').replaceChildren();if(!own.length)empty($('my-queue'),'대기 중인 항목이 없어요.');else own.forEach(q=>$('my-queue').append(queueRow(q)))}
 function renderAdmin(){
  $('admin-posts').replaceChildren();if(!posts.length)empty($('admin-posts'),'아직 등록한 게시물이 없어요.');
  posts.forEach(p=>{const row=el('article',undefined,'list-row');const info=el('div');info.append(el('h4',p.title),el('p',p.work_name+' · '+(p.is_published?'공개':'비공개')));row.append(info,button(p.is_published?'공개 취소':'공개하기',async()=>{result(await db.from('goods_posts').update({is_published:!p.is_published}).eq('id',p.id));await refresh();notice('공개 상태를 바꿨어요. 같은 게시물의 알림은 중복 생성되지 않아요.')}));$('admin-posts').append(row)});
  $('admin-queue').replaceChildren();if(!queue.length)empty($('admin-queue'),'대기열이 비어 있어요.');else queue.forEach(q=>$('admin-queue').append(queueRow(q)));
  $('admin-attempts').replaceChildren();if(!attempts.length)empty($('admin-attempts'),'모의 발송 기록이 없어요.');else attempts.forEach(a=>{const row=el('div',undefined,'list-row');row.append(el('span','모의 발송 완료 · '+a.queue_id.slice(0,8)),el('time',time(a.created_at)));$('admin-attempts').append(row)})
 }
-async function refresh(){
- if(!user)return;const requestEpoch=++epoch;const currentUser=user.id;loading=true;$('refresh').disabled=true;
- try{
- const role=result(await db.rpc('is_app_admin'));
- const responses=await Promise.all([
- db.from('user_interests').select('id,work_name,character_name').order('created_at'),
- db.from('goods_posts').select('id,title,source_url,work_name,character_names,sale_status,sale_info,sale_start,sale_end,thumbnail_url,is_published,created_at').order('created_at',{ascending:false}).limit(100),
- db.from('notifications').select('id,title,body,source_url,created_at,read_at,goods_post_id').order('created_at',{ascending:false}).limit(50),
- db.from('delivery_queue').select('id,notification_id,status,attempts,created_at,processed_at').order('created_at',{ascending:false}).limit(50),
- role?db.from('delivery_attempts').select('id,queue_id,created_at').order('created_at',{ascending:false}).limit(50):Promise.resolve({data:[]})
- ]);
- const data=responses.map(result);if(epoch!==requestEpoch||user?.id!==currentUser)return;
- admin=role;[interests,posts,notifications,queue,attempts]=data;render();
- }finally{if(requestEpoch===epoch){loading=false;$('refresh').disabled=false}}
-}
-async function setSession(session){
- epoch++;user=session?.user??null;admin=false;interests=[];posts=[];notifications=[];queue=[];attempts=[];loading=false;$('refresh').disabled=false;render();tab('feed');
- if(user){try{await refresh()}catch(error){notice('로그인은 됐지만 데이터를 불러오지 못했어요. DB 설정을 확인하거나 새로고침해 주세요.',true)}}
-}
-$('kakao-login').onclick=()=>run($('kakao-login'),async()=>{
- const response=await fetch(config.supabaseUrl+'/auth/v1/settings',{headers:{apikey:config.publishableKey},signal:AbortSignal.timeout(15000)});
- if(!response.ok)throw new Error('Auth configuration unavailable');
- const settings=await response.json();if(!settings.external?.kakao){notice('카카오 로그인 연결을 준비 중이에요. 운영자가 카카오 앱과 Supabase 인증 설정을 완료해야 해요.',true);return}
- const {error}=await db.auth.signInWithOAuth({provider:'kakao',options:{redirectTo:location.origin+'/app.html',scopes:'profile_nickname profile_image'}});if(error)throw error;
-});
-$('logout').onclick=()=>run($('logout'),async()=>{const {error}=await db.auth.signOut();if(error)throw error;await setSession(null);notice('로그아웃했어요.')});
-$('refresh').onclick=()=>run($('refresh'),refresh);
-$('feed-search').oninput=renderFeed;$('only-matches').onchange=renderFeed;
-document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>tab(b.dataset.tab));
-$('interest-form').onsubmit=e=>{e.preventDefault();const b=e.currentTarget.querySelector('button');run(b,async()=>{const work_name=canonicalWork($('interest-work').value),character_name=$('interest-character').value.trim();if(!normalizeKeyword(work_name)||character_name&&!normalizeKeyword(character_name)){notice('작품명과 캐릭터명을 확인해 주세요.',true);return}result(await db.from('user_interests').insert({work_name,character_name}));$('interest-form').reset();await refresh();notice('관심에 추가했어요. 이후 공개되는 새 소식부터 알려 드릴게요.')})};
-$('read-all').onclick=()=>run($('read-all'),async()=>{const ids=notifications.filter(n=>!n.read_at).map(n=>n.id);if(ids.length)result(await db.from('notifications').update({read_at:new Date().toISOString()}).in('id',ids));await refresh()});
 $('goods-form').onsubmit=e=>{e.preventDefault();const b=e.currentTarget.querySelector('button');run(b,async()=>{
  if(!admin)throw {code:'42501'};
  const source_url=canonicalSource($('goods-url').value);const rawThumbnail=$('goods-thumbnail').value.trim();const thumbnail_url=rawThumbnail?canonicalSource(rawThumbnail):null;
@@ -91,18 +66,34 @@ $('goods-form').onsubmit=e=>{e.preventDefault();const b=e.currentTarget.querySel
  if(sale_start&&sale_end&&sale_end<sale_start){notice('마감 시각은 시작 시각보다 뒤여야 해요.',true);return}
  const character_names=[...new Set($('goods-characters').value.split(/[,\n]/).map(c=>c.trim()).filter(Boolean))];
  if(character_names.length>30||character_names.some(c=>c.length>80||!normalizeKeyword(c))){notice('캐릭터는 각각 80자 이내, 최대 30명까지 적어 주세요.',true);return}
- result(await db.from('goods_posts').insert({title:$('goods-title').value.trim(),source_url,work_name:canonicalWork($('goods-work').value),character_names,sale_status:$('goods-status').value,sale_info:$('goods-info').value.trim(),sale_start,sale_end,thumbnail_url,is_published:$('goods-publish').checked}));
- $('goods-form').reset();await refresh();notice('등록했어요. 공개 게시물이라면 매칭된 사용자에게 웹 알림과 모의 발송 대기열이 생성됐어요.');
+ result(await db.from('goods_posts').insert({title:$('goods-title').value.trim(),source_url,work_name:canonicalWork($('goods-work').value),character_names,sale_status:$('goods-status').value,sale_info:$('goods-info').value.trim(),sale_start,sale_end,thumbnail_url,seller_name:$('goods-seller').value.trim(),platform_name:$('goods-platform').value.trim(),is_test:$('goods-test').checked,is_published:$('goods-publish').checked}));
+ $('goods-form').reset();await refresh();notice('등록했어요. 테스트가 아닌 공개 소식은 관심사와 알림 설정에 따라 웹 알림을 만들어요.');
  })};
 $('run-mock').onclick=()=>run($('run-mock'),async()=>{if(!admin)throw {code:'42501'};const {processed}=await dispatchMockBatch(db);await refresh();notice(processed+'건 처리했어요. 실제 카카오톡 메시지는 발송하지 않았어요.')});
-WORKS.forEach(([name])=>{const option=el('option');option.value=name;$('work-options').append(option)});
-// PKCE code exchange is performed only once; no provider tokens are used for messaging.
-async function init(){
- const params=new URLSearchParams(location.search);
- if(params.has('error')){history.replaceState({},'',location.pathname);notice('카카오 로그인이 취소됐거나 연결 설정을 확인해야 해요.',true)}
- if(params.has('code')){const {error}=await db.auth.exchangeCodeForSession(params.get('code'));history.replaceState({},'',location.pathname);if(error)notice('로그인 연결 시간이 만료됐어요. 같은 브라우저에서 다시 로그인해 주세요.',true)}
- const {data,error}=await db.auth.getSession();if(error)notice('로그인 상태를 확인하지 못했어요.',true);await setSession(data?.session);
- db.auth.onAuthStateChange((event,session)=>{if(event==='SIGNED_OUT'||session?.user?.id!==user?.id)queueMicrotask(()=>setSession(session))});
+$('header-login').onclick=()=>needLogin(route());$('profile-link').onclick=()=>go('profile');
+$('kakao-login').onclick=()=>run($('kakao-login'),async()=>{const {error}=await db.auth.signInWithOAuth({provider:'kakao',options:{redirectTo:location.origin+'/app.html',scopes:'profile_nickname profile_image'}});if(error)throw error});
+$('logout').onclick=()=>run($('logout'),async()=>{const {error}=await db.auth.signOut({scope:'local'});if(error)throw error;await setSession(null);go('explore');notice('로그아웃했어요.')});
+$('refresh').onclick=()=>run($('refresh'),refresh);
+$('nav-search').onsubmit=e=>{e.preventDefault();$('feed-search').value=$('global-search').value;go('explore');renderFeed()};
+['feed-search','filter-character'].forEach(id=>$(id).oninput=renderFeed);
+$('filter-status').onchange=renderFeed;
+$('filter-work').onchange=()=>{$('filter-character').value='';$('filter-character-options').replaceChildren();(CHARACTERS[$('filter-work').value]||[]).forEach(c=>{const n=el('option');n.value=c;$('filter-character-options').append(n)});renderFeed()};
+$('only-matches').onchange=()=>{if(!user){$('only-matches').checked=false;needLogin('explore');return}renderFeed()};
+$('toggle-demo').onclick=()=>{showDemo=!showDemo;renderFeed()};
+$('interest-work').oninput=()=>{$('interest-character').value='';choices()};$('interest-character').oninput=choices;
+$('interest-form').onsubmit=e=>{e.preventDefault();if(!user){needLogin('interests');return}if(draft.length>=100){notice('관심사는 최대 100개까지 담을 수 있어요.',true);return}addDraft($('interest-work').value,$('interest-character').value);$('interest-character').value='';choices()};
+$('save-interests').onclick=()=>run($('save-interests'),async()=>{if(!user){needLogin('interests');return}result(await db.rpc('save_my_interests',{items:draft.map(({work_name,character_name})=>({work_name,character_name}))}));dirty=false;await refresh();go('home');notice('관심사를 저장했어요. 새 소식을 취향에 맞춰 모아 드릴게요.')});
+$('skip-interests').onclick=()=>run($('skip-interests'),async()=>{result(await db.rpc('save_my_interests',{items:[]}));dirty=false;await refresh();go('home');notice('전체 소식을 먼저 보여 드려요. 관심사는 언제든 추가할 수 있어요.')});
+$('read-all').onclick=()=>run($('read-all'),async()=>{const ids=notifications.filter(n=>!n.read_at).map(n=>n.id);if(ids.length)result(await db.from('notifications').update({read_at:new Date().toISOString()}).in('id',ids));await refresh()});
+$('save-preferences').onclick=()=>run($('save-preferences'),async()=>{const value={web_notifications:$('web-notifications').checked};result(await(preferences?db.from('user_preferences').update(value).eq('user_id',user.id):db.from('user_preferences').insert(value)));await refresh();notice('알림 설정을 저장했어요.')});
+WORKS.forEach(([name])=>{const n=el('option');n.value=name;$('work-options').append(n);const o=el('option',name);o.value=name;$('filter-work').append(o)});Object.entries(SALE_LABELS).forEach(([value,label])=>{const n=el('option',label);n.value=value;$('filter-status').append(n)});choices();
+window.addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue=''}});
+async function init(){const params=new URLSearchParams(location.search);let authError=false;
+ if(params.has('error')){authError=true;history.replaceState({},'',location.pathname+location.hash)}
+ if(params.has('code')){const {error}=await db.auth.exchangeCodeForSession(params.get('code'));history.replaceState({},'',location.pathname+location.hash);authError=!!error}
+ const {data,error}=await db.auth.getSession();if(error)throw error;await setSession(data?.session);
+ if(user){const next=sessionStorage.getItem('byeoljup-next');sessionStorage.removeItem('byeoljup-next');if(onboarding())go('onboarding');else if(next&&next!=='login')go(next);else if(route()==='login')go('home')}
+ if(authError)notice('로그인 연결 시간이 만료됐어요. 다시 카카오로 시작해 주세요.',true);
+ db.auth.onAuthStateChange((event,session)=>{if(event==='SIGNED_OUT'||session?.user?.id!==user?.id)queueMicrotask(()=>setSession(session).catch(e=>notice(friendly(e),true)))});
 }
-init().catch(()=>notice('서비스를 시작하지 못했어요. 네트워크와 서비스 설정을 확인해 주세요.',true));
-setInterval(()=>{if(user&&!loading&&document.visibilityState==='visible')refresh().catch(()=>{})},30000);
+init().catch(e=>{notice(friendly(e),true);renderRoute()});setInterval(()=>{if(!loading&&!dirty&&document.visibilityState==='visible')refresh().catch(()=>{})},30000);
