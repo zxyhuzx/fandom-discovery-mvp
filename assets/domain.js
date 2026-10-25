@@ -1,5 +1,5 @@
 export const WORKS = [
- ['하이큐!!','haikyu','haikyuu','하이큐'], ['주술회전','jujutsu','jjk','주술'],
+ ['나루토','naruto'], ['하이큐!!','haikyu','haikyuu','하이큐'], ['주술회전','jujutsu','jjk','주술'],
  ['귀멸의 칼날','demonslayer','귀칼','귀멸'], ['원신','genshin','genshinimpact'],
  ['전지적 독자 시점','orv','전독시'], ['블루 록','bluelock','블루록'],
  ['쿠로코의 농구','kuroko','쿠농'], ['체인소 맨','chainsaw','chainsawman'],
@@ -32,6 +32,7 @@ export const QUEUE_LABELS={pending:'모의 발송 대기',mocked:'모의 발송 
 
 // Characters are scoped to a work. Unknown names can still be entered for niche fandoms.
 export const CHARACTERS={
+ '나루토':['우즈마키 나루토','휴우가 히나타','우치하 사스케','하루노 사쿠라'],
  '하이큐!!':['히나타 쇼요','카게야마 토비오','츠키시마 케이','코즈메 켄마','쿠로오 테츠로','오이카와 토오루'],
  '주술회전':['이타도리 유지','후시구로 메구미','고죠 사토루','게토 스구루'],
  '귀멸의 칼날':['카마도 탄지로','카마도 네즈코','아가츠마 젠이츠','토미오카 기유'],
@@ -46,7 +47,7 @@ export const CHARACTERS={
 };
 export function workGenre(work){
  const key=normalizeWork(work);
- if(['haikyu','jujutsu','demonslayer','bluelock','kuroko','chainsaw'].includes(key))return '애니·만화';
+ if(['naruto','haikyu','jujutsu','demonslayer','bluelock','kuroko','chainsaw'].includes(key))return '애니·만화';
  if(['orv','sololeveling','sclass'].includes(key))return '웹소설·웹툰';
  if(['genshin','starrail','zzz'].includes(key))return '게임';
  return '기타';
@@ -63,3 +64,22 @@ export function filterGoods(posts,{query='',work='',character='',status='',scope
  }).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
 }
 export const needsOnboarding=(user,interests,preferences)=>!!user&&!interests.length&&!preferences?.onboarding_completed;
+
+export function sortGoods(items,order='latest',interests=[]){
+ const popularity=p=>Number(p.popularity_count||0);
+ const relevance=p=>interests.reduce((score,i)=>matchesInterest(i,p)?Math.max(score,i.character_name?2:1):score,0);
+ return [...items].sort((a,b)=>(order==='recommended'?relevance(b)-relevance(a):0)||(order!=='latest'?popularity(b)-popularity(a):0)||new Date(b.created_at)-new Date(a.created_at));
+}
+export function searchSuggestions(query,posts=[]){
+ const term=normalizeKeyword(query);if(!term)return [];
+ const catalog=new Map(Object.entries(CHARACTERS).map(([w,c])=>[w,new Set(c)]));
+ posts.filter(p=>p.is_published).forEach(p=>{if(!catalog.has(p.work_name))catalog.set(p.work_name,new Set());p.character_names.forEach(c=>catalog.get(p.work_name).add(c))});
+ const choices=[];
+ for(const [work,chars] of catalog){
+  const aliases=WORKS.find(a=>normalizeWork(a[0])===normalizeWork(work))||[work];const workMatches=aliases.some(a=>normalizeKeyword(a).includes(term));
+  if(workMatches)choices.push({label:work,query:work,kind:'작품'});
+  for(const character of chars)if(workMatches||normalizeKeyword(character).includes(term))choices.push({label:work+' · '+character,query:work+' '+character,kind:'캐릭터'});
+ }
+ posts.filter(p=>p.is_published&&p.seller_name&&normalizeKeyword(p.seller_name).includes(term)).forEach(p=>choices.push({label:p.seller_name,query:p.seller_name,kind:'창작자·판매자'}));
+ return [...new Map(choices.map(c=>[c.label,c])).values()].slice(0,12);
+}

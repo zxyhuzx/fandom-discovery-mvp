@@ -33,3 +33,16 @@ test('genre, sale status and platform combine and explicit genre overrides catal
  assert.equal(filterGoods(data,{genre:'애니·만화',status:'open',platform:'윗치폼'}).length,1);
  assert.equal(filterGoods(data,{genre:'게임',status:'planned',platform:'포스타입'}).length,1);
 });
+
+test('sort order uses actual popularity, interest relevance and recency',async()=>{
+ const {sortGoods}=await import('../assets/domain.js');const data=[{...base,id:1,popularity_count:3},{...base,id:2,popularity_count:20,work_name:'원신',character_names:['종려'],created_at:'2026-10-24'}];
+ assert.equal(sortGoods(data,'latest')[0].id,1);assert.equal(sortGoods(data,'popular')[0].id,2);
+ assert.equal(sortGoods(data,'recommended',[{work_name:'하이큐',character_name:''}])[0].id,1);
+ assert.equal(sortGoods(data,'recommended',[])[0].id,2);
+});
+test('autocomplete relates works to characters and disambiguates same character names',async()=>{
+ const {searchSuggestions}=await import('../assets/domain.js');
+ const byWork=searchSuggestions('하이큐');assert.ok(byWork.some(c=>c.label.includes('하이큐')&&c.label.includes('히나타')));
+ const byName=searchSuggestions('히나타');assert.ok(byName.some(c=>c.label.includes('하이큐')));assert.ok(byName.some(c=>c.label.includes('나루토')));
+ assert.ok(searchSuggestions('작업실',[base]).some(c=>c.kind==='창작자·판매자'));
+});
