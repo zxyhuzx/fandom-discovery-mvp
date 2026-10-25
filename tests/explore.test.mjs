@@ -47,3 +47,17 @@ test('autocomplete relates works to characters and disambiguates same character 
  const byName=searchSuggestions('히나타');assert.ok(byName.some(c=>c.label.includes('하이큐')));assert.ok(byName.some(c=>c.label.includes('나루토')));
  assert.ok(searchSuggestions('작업실',[base]).some(c=>c.kind==='창작자·판매자'));
 });
+
+test('VTubers and multilingual names share Korean display, search and interest matching',async()=>{
+ const {searchSuggestions,canonicalWork,canonicalCharacter,matchesInterest,goodsGenre}=await import('../assets/domain.js');
+ for(const query of ['Suisei','星街すいせい','hololive suisei'])assert.ok(searchSuggestions(query).some(c=>c.label==='홀로라이브 · 호시마치 스이세이'));
+ assert.ok(searchSuggestions('葛葉').some(c=>c.label==='니지산지 · 쿠즈하'));
+ assert.ok(searchSuggestions('純角ユニ').some(c=>c.label==='스텔라이브 · 아야츠노 유니'));
+ assert.ok(searchSuggestions('Hinata').some(c=>c.label==='하이큐!! · 히나타 쇼요'));
+ assert.equal(canonicalWork('ハイキュー!!'),'하이큐!!');
+ assert.equal(canonicalCharacter('hololive','Hoshimachi Suisei'),'호시마치 스이세이');
+ const post={...base,work_name:'ホロライブ',character_names:['星街すいせい']};
+ assert.equal(goodsGenre(post),'버튜버');
+ assert.equal(filterGoods([post],{query:'Suisei'}).length,1);
+ assert.equal(matchesInterest({work_name:'홀로라이브',character_name:'호시마치 스이세이'},post),true);
+});

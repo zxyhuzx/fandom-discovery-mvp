@@ -48,8 +48,8 @@ update public.goods_posts set is_published=true where source_url='https://exampl
 update public.goods_posts set is_published=false where source_url='https://example.invalid/integration/one';
 update public.goods_posts set is_published=true where source_url='https://example.invalid/integration/one';
 insert into public.goods_posts(title,source_url,work_name,sale_status,is_published)
- values('integration genshin','https://example.invalid/integration/two','原神','open',true);
--- Unknown spelling must NOT accidentally match 원신. No fuzzy matching.
+ values('integration genshin','https://example.invalid/integration/two','未登録の別作品','open',true);
+-- An unregistered title must NOT accidentally match 원신. 原神 is now an explicit supported alias.
 insert into public.goods_posts(title,source_url,work_name,sale_status,is_published)
  values('integration genshin matching','https://example.invalid/integration/three','genshin','open',true);
 insert into public.goods_posts(title,source_url,work_name,sale_status,is_published)
