@@ -19,3 +19,17 @@ test('onboarding appears once: new account only, saved interests and skip both b
  assert.equal(needsOnboarding({id:'existing'},[{work_name:'하이큐!!'}],null),false);
  assert.equal(needsOnboarding({id:'skipped'},[],{onboarding_completed:true}),false);
 });
+
+test('unified search accepts work aliases and combines work plus character words',()=>{
+ const data=[base,{...base,work_name:'원신',character_names:['종려']}];
+ assert.equal(filterGoods(data,{query:'haikyuu'}).length,1);
+ assert.equal(filterGoods(data,{query:'하이큐 히나타'}).length,1);
+ assert.equal(filterGoods(data,{query:'종려',scope:'character'}).length,1);
+ assert.equal(filterGoods(data,{query:'히나타',scope:'work'}).length,0);
+ assert.equal(filterGoods(data,{query:'작업실',scope:'creator'}).length,2);
+});
+test('genre, sale status and platform combine and explicit genre overrides catalog',()=>{
+ const data=[{...base,platform_name:'윗치폼'},{...base,work_name:'원신',platform_name:'윗치폼'},{...base,genre_name:'게임',sale_status:'planned',platform_name:'포스타입'}];
+ assert.equal(filterGoods(data,{genre:'애니·만화',status:'open',platform:'윗치폼'}).length,1);
+ assert.equal(filterGoods(data,{genre:'게임',status:'planned',platform:'포스타입'}).length,1);
+});

@@ -44,9 +44,22 @@ export const CHARACTERS={
  '젠레스 존 제로':['호시미 미야비','엘렌 조','아사바 하루마사'],
  '나 혼자만 레벨업':['성진우','차해인'], '내가 키운 S급들':['한유진','한유현','성현제']
 };
-export function filterGoods(posts,{query='',work='',character='',status=''}={}){
- const term=normalizeKeyword(query),ch=normalizeKeyword(character);
- return posts.filter(p=>p.is_published&&(!work||normalizeWork(p.work_name)===normalizeWork(work))&&(!status||p.sale_status===status)&&(!ch||p.character_names.some(c=>normalizeKeyword(c).includes(ch)))&&(!term||normalizeKeyword([p.title,p.work_name,...p.character_names,p.seller_name||'',p.platform_name||''].join(' ')).includes(term)))
- .sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
+export function workGenre(work){
+ const key=normalizeWork(work);
+ if(['haikyu','jujutsu','demonslayer','bluelock','kuroko','chainsaw'].includes(key))return '애니·만화';
+ if(['orv','sololeveling','sclass'].includes(key))return '웹소설·웹툰';
+ if(['genshin','starrail','zzz'].includes(key))return '게임';
+ return '기타';
+}
+export const goodsGenre=p=>p.genre_name||workGenre(p.work_name);
+export function filterGoods(posts,{query='',work='',character='',status='',scope='all',genre='',platform=''}={}){
+ const terms=String(query).trim().split(/\s+/).map(normalizeKeyword).filter(Boolean),ch=normalizeKeyword(character);
+ return posts.filter(p=>{
+  if(!p.is_published||work&&normalizeWork(p.work_name)!==normalizeWork(work)||status&&p.sale_status!==status||ch&&!p.character_names.some(c=>normalizeKeyword(c).includes(ch))||genre&&goodsGenre(p)!==genre||platform&&p.platform_name!==platform)return false;
+  const aliases=WORKS.find(a=>normalizeWork(a[0])===normalizeWork(p.work_name))||[p.work_name];
+  const fields={work:[p.work_name,...aliases],character:p.character_names,creator:[p.seller_name||'']};
+  const haystack=normalizeKeyword((scope==='all'?[p.title,...fields.work,...fields.character,...fields.creator,p.platform_name||'']:fields[scope]||[]).join(' '));
+  return terms.every(term=>haystack.includes(term));
+ }).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
 }
 export const needsOnboarding=(user,interests,preferences)=>!!user&&!interests.length&&!preferences?.onboarding_completed;
