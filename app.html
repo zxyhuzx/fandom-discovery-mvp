@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="referrer" content="strict-origin-when-cross-origin"><title>내 알림 · 별줍</title><link rel="stylesheet" href="/assets/service.css"><script type="module" src="/assets/app.js"></script></head>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="referrer" content="strict-origin-when-cross-origin"><title>내 알림 · 별줍</title><link rel="stylesheet" href="/assets/service.css"><script type="module" src="/assets/app.js"></script><link rel="stylesheet" href="/assets/brand.css"><link rel="icon" type="image/png" href="/assets/byeoljup-icon.png"><meta name="theme-color" content="#09121e"></head>
 <body>
-<header><a class="brand" href="/">별줍 <span>✦</span></a><div class="account"><span id="account-name"></span><button id="logout" class="secondary" hidden>로그아웃</button></div></header>
+<header><a class="brand" href="/"><img src="/assets/byeoljup-icon.png" alt="" width="48" height="48">별줍 <span>✦</span></a><div class="account"><span id="account-name"></span><button id="logout" class="secondary" hidden>로그아웃</button></div></header>
 <main>
 <div id="notice" role="status" aria-live="polite"></div>
-<section id="auth-gate" class="auth-gate"><div class="eyebrow">MY FANDOM, MY DISCOVERY</div><h1>좋아하는 작품의 소식만,<br>내 알림으로.</h1><p class="subtitle">카카오로 로그인하고 관심 작품과 캐릭터를 등록해 주세요.<br>새 굿즈가 등록되면 웹사이트에서 알려 드릴게요.</p><button id="kakao-login" class="kakao">카카오로 시작하기</button><p class="note">카카오 로그인은 계정 연결용이에요. 지금은 카카오톡 메시지를 보내지 않아요.</p><a class="text-link" href="/#demo">로그인 없는 예시 화면 둘러보기 →</a></section>
+<section id="auth-gate" class="auth-gate"><img class="welcome-icon" src="/assets/byeoljup-icon.png" width="112" height="112" alt="별을 바라보는 별줍 고양이"><div class="eyebrow">MY FANDOM, MY DISCOVERY</div><h1>좋아하는 작품의 소식만,<br>내 알림으로.</h1><p class="subtitle">카카오로 로그인하고 관심 작품과 캐릭터를 등록해 주세요.<br>새 굿즈가 등록되면 웹사이트에서 알려 드릴게요.</p><button id="kakao-login" class="kakao">카카오로 시작하기</button><p class="note">카카오 로그인은 계정 연결용이에요. 지금은 카카오톡 메시지를 보내지 않아요.</p><a class="text-link" href="/#demo">로그인 없는 예시 화면 둘러보기 →</a></section>
 <section id="service" hidden>
 <div class="service-title"><div><div class="eyebrow">YOUR FANDOM SPACE</div><h1>내 장르, 오늘의 소식.</h1></div><button id="refresh" class="secondary">새로고침</button></div>
 <nav class="tabs" aria-label="서비스 메뉴"><button class="active" data-tab="feed" aria-pressed="true">굿즈 탐색</button><button data-tab="interests" aria-pressed="false">관심 작품·캐릭터</button><button data-tab="notifications" aria-pressed="false">내 알림 <span id="unread-count">0</span></button><button id="admin-tab" data-tab="admin" aria-pressed="false" hidden>관리자</button></nav>
