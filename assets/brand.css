@@ -15,7 +15,7 @@ input::placeholder,textarea::placeholder{color:#8495aa}
 .card,.form-card,.input-box{box-shadow:0 8px 28px #00000012}
 @media(max-width:700px){.brand{gap:7px}.brand img{width:40px;height:40px;border-radius:12px}.welcome-icon{width:96px;height:96px}.small{max-width:120px;text-align:right}}
 /* Light mode reuses the existing light ink and dark navy tokens; dark values stay unchanged. */
-:root[data-theme="light"]{color-scheme:light;--paper:#e5eaf1;--surface:#f4f6f9;--tint:#c9d2de;--line:#94a3b6;--ink:#101e2f;--muted:#3d5877;--accent:#294b73;--button:#294b73;--starlight:#795f34}
+:root[data-theme="light"]{color-scheme:light;--paper:#adb8c6;--surface:#bac5d2;--tint:#a2afbf;--line:#7e8fa3;--ink:#142339;--muted:#344b64;--accent:#294b73;--button:#294b73;--starlight:#795f34}
 :root[data-theme="light"] .visual{background:var(--tint)}
 :root[data-theme="light"] .primary{color:#e5eaf1}
 :root[data-theme="light"] input::placeholder,:root[data-theme="light"] textarea::placeholder{color:var(--muted)}
@@ -28,3 +28,6 @@ input::placeholder,textarea::placeholder{color:#8495aa}
 .account-menu{position:fixed;inset:0 0 0 auto;margin:0;width:min(360px,90vw);max-width:none;height:100dvh;max-height:100dvh;box-sizing:border-box;padding:28px 24px;background:var(--surface);color:var(--ink);border:0;border-left:1px solid var(--line);box-shadow:-16px 0 48px #00000030;overflow-y:auto}
 .account-menu::backdrop{background:#00000088}.menu-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:22px}.menu-heading h2{margin:0}.account-menu .subtitle{font-size:14px;overflow-wrap:anywhere}.drawer-links{display:flex;flex-direction:column;gap:10px}.drawer-links a{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px;border:1px solid var(--line);border-radius:12px;color:var(--ink);text-decoration:none;background:var(--paper)}.drawer-links a:hover,.drawer-links a.active{background:var(--tint);border-color:var(--accent);color:var(--accent)}.drawer-links #unread-count{color:var(--accent);font-size:13px}
 @media(prefers-reduced-motion:no-preference){.account-menu[open]{animation:menu-in .2s ease-out}@keyframes menu-in{from{transform:translateX(100%)}to{transform:translateX(0)}}}
+
+.service-home-link{color:var(--muted);text-decoration:none;padding:8px 3px;white-space:nowrap;font-size:14px}.service-home-link.active{color:var(--accent);font-weight:700}.service-home-link:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+@media(max-width:700px){.service-header{column-gap:12px}.service-home-link{font-size:13px}.service-header .brand{font-size:19px}}
