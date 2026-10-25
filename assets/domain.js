@@ -71,14 +71,14 @@ export function sortGoods(items,order='latest',interests=[]){
  return [...items].sort((a,b)=>(order==='recommended'?relevance(b)-relevance(a):0)||(order!=='latest'?popularity(b)-popularity(a):0)||new Date(b.created_at)-new Date(a.created_at));
 }
 export function searchSuggestions(query,posts=[]){
- const term=normalizeKeyword(query);if(!term)return [];
+ const term=normalizeKeyword(query);if(!term)return [];const terms=String(query).trim().split(/\s+/).map(normalizeKeyword).filter(Boolean);
  const catalog=new Map(Object.entries(CHARACTERS).map(([w,c])=>[w,new Set(c)]));
  posts.filter(p=>p.is_published).forEach(p=>{if(!catalog.has(p.work_name))catalog.set(p.work_name,new Set());p.character_names.forEach(c=>catalog.get(p.work_name).add(c))});
  const choices=[];
  for(const [work,chars] of catalog){
   const aliases=WORKS.find(a=>normalizeWork(a[0])===normalizeWork(work))||[work];const workMatches=aliases.some(a=>normalizeKeyword(a).includes(term));
-  if(workMatches)choices.push({label:work,query:work,kind:'작품'});
-  for(const character of chars)if(workMatches||normalizeKeyword(character).includes(term))choices.push({label:work+' · '+character,query:work+' '+character,kind:'캐릭터'});
+  if(workMatches)choices.push({label:work,query:work,kind:'작품',work_name:work,character_name:''});
+  for(const character of chars)if(workMatches||terms.every(t=>normalizeKeyword([...aliases,character].join(' ')).includes(t)))choices.push({label:work+' · '+character,query:work+' '+character,kind:'캐릭터',work_name:work,character_name:character});
  }
  posts.filter(p=>p.is_published&&p.seller_name&&normalizeKeyword(p.seller_name).includes(term)).forEach(p=>choices.push({label:p.seller_name,query:p.seller_name,kind:'창작자·판매자'}));
  return [...new Map(choices.map(c=>[c.label,c])).values()].slice(0,12);

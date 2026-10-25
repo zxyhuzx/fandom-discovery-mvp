@@ -43,6 +43,7 @@ test('sort order uses actual popularity, interest relevance and recency',async()
 test('autocomplete relates works to characters and disambiguates same character names',async()=>{
  const {searchSuggestions}=await import('../assets/domain.js');
  const byWork=searchSuggestions('하이큐');assert.ok(byWork.some(c=>c.label.includes('하이큐')&&c.label.includes('히나타')));
+ const combined=searchSuggestions('하이큐 히나타');assert.ok(combined.some(c=>c.work_name==='하이큐!!'&&c.character_name==='히나타 쇼요'));
  const byName=searchSuggestions('히나타');assert.ok(byName.some(c=>c.label.includes('하이큐')));assert.ok(byName.some(c=>c.label.includes('나루토')));
  assert.ok(searchSuggestions('작업실',[base]).some(c=>c.kind==='창작자·판매자'));
 });
