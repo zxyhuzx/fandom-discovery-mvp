@@ -10,20 +10,22 @@
 - [x] Supabase Auth > Kakao에 REST API key와 활성화된 Client Secret을 직접 등록.
 - [x] Allow users without an email 활성화 (이 설정만으로 기본 account_email 요청은 제거되지 않음).
 - [ ] 앱의 테스트 계정 범위/일반 사용자 사용 자격/필요 심사를 확인.
-- [ ] 실제 카카오 계정으로 로그인 → app.html 복귀 → 관심사 저장 → 로그아웃을 확인.
+- [x] 실제 카카오 로그인 → app.html 복귀 → 하이큐!! 관심사 저장 → 새로고침 후 유지 확인.
+- [ ] 실제 계정 로그아웃·재로그인 추가 확인.
 
 Supabase Site URL과 실제 프런트 복귀 URL은 이번 작업에서 설정했다. 2026-10-25 카카오 앱 별줍(ID 1621935)의 로그인과 선택 동의항목, 콜백, Supabase provider 연결을 설정했다. 인증 키는 Supabase 비공개 설정에만 등록했다.
 
-실제 OAuth 시험에서 KOE205(account_email) 확인. Supabase Kakao provider가 이메일 scope를 기본으로 추가하므로, 카카오 비즈 앱 전환과 account_email 동의 권한 설정이 추가로 필요하다.
+최초 OAuth 시험에서 KOE205(account_email)를 확인했다. 개인 개발자 비즈 앱 전환과 account_email 선택 동의 설정 후 해결했다. 이메일·닉네임·사진 미제공 상태에서도 실제 로그인에 성공했다.
 
-- [ ] 비즈 앱 전환: 운영자 본인확인/해당 약관 동의 등 카카오 요구 절차 완료.
-- [ ] account_email 동의항목 권한 확인 및 설정. 개인정보 안내도 실제 수집 항목에 맞춰 확인.
+- [x] 개인 개발자 비즈 앱 전환 완료 (운영자 카카오비즈니스 동의 후 2026-10-25 확인).
+- [x] account_email 선택 동의 설정.
+- [ ] 개인정보 안내를 실제 수집 항목·보관 기간·탈퇴 처리에 맞춰 운영자 확인.
 - [ ] 서비스 외부 연결 해제를 반영할 웹훅·탈퇴 처리 구현/검증.
 
 ## 관리자 지정
 
-- [ ] 관리자 카카오 계정이 한 번 로그인한 뒤 Supabase Authentication > Users에서 UUID 확인.
-- [ ] 프로젝트 소유자가 private.app_admins에 그 UUID만 추가. SQL은 [SETUP.md](SETUP.md)의 ‘최초 관리자 지정’ 참고.
+- [x] 최초 카카오 운영자 계정의 UUID 확인 (개인정보는 문서에 미기록).
+- [x] private.app_admins에 해당 계정만 추가하고 관리자 메뉴와 게시물 등록 폼 표시 확인.
 - [ ] 관리자 계정에서 실제 게시물 등록과 다른 사용자의 관심사 매칭을 수동 E2E 검증.
 
 ## 카카오톡 실제 발송 전
