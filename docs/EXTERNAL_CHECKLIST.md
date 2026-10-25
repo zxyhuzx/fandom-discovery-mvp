@@ -4,15 +4,21 @@
 
 ## 카카오 로그인 공개 전
 
-- [ ] Kakao Developers 서비스 앱 생성 및 서비스 도메인 설정.
-- [ ] 카카오 로그인 활성화, profile_nickname/profile_image 동의항목 설정.
-- [ ] 카카오 Redirect URI: `https://plxdnppizgvrqakjyehm.supabase.co/auth/v1/callback`.
-- [ ] Supabase Auth > Kakao에 REST API key와 활성화된 Client Secret을 직접 등록.
-- [ ] 이메일 동의를 요구하지 않는 현재 구성에 맞게 Allow users without an email 확인.
+- [x] Kakao Developers 서비스 앱 생성 및 서비스 도메인 설정.
+- [x] 카카오 로그인 활성화, profile_nickname/profile_image 동의항목 설정.
+- [x] 카카오 Redirect URI: `https://plxdnppizgvrqakjyehm.supabase.co/auth/v1/callback`.
+- [x] Supabase Auth > Kakao에 REST API key와 활성화된 Client Secret을 직접 등록.
+- [x] Allow users without an email 활성화 (이 설정만으로 기본 account_email 요청은 제거되지 않음).
 - [ ] 앱의 테스트 계정 범위/일반 사용자 사용 자격/필요 심사를 확인.
 - [ ] 실제 카카오 계정으로 로그인 → app.html 복귀 → 관심사 저장 → 로그아웃을 확인.
 
-Supabase Site URL과 실제 프런트 복귀 URL은 이번 작업에서 설정했다. 카카오 앱 키와 provider 활성화는 아직 설정하지 않았다.
+Supabase Site URL과 실제 프런트 복귀 URL은 이번 작업에서 설정했다. 2026-10-25 카카오 앱 별줍(ID 1621935)의 로그인과 선택 동의항목, 콜백, Supabase provider 연결을 설정했다. 인증 키는 Supabase 비공개 설정에만 등록했다.
+
+실제 OAuth 시험에서 KOE205(account_email) 확인. Supabase Kakao provider가 이메일 scope를 기본으로 추가하므로, 카카오 비즈 앱 전환과 account_email 동의 권한 설정이 추가로 필요하다.
+
+- [ ] 비즈 앱 전환: 운영자 본인확인/해당 약관 동의 등 카카오 요구 절차 완료.
+- [ ] account_email 동의항목 권한 확인 및 설정. 개인정보 안내도 실제 수집 항목에 맞춰 확인.
+- [ ] 서비스 외부 연결 해제를 반영할 웹훅·탈퇴 처리 구현/검증.
 
 ## 관리자 지정
 

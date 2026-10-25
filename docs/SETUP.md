@@ -40,7 +40,7 @@ Supabase CLI의 `db push`를 쓰려면 먼저 원격 link와 기존 출시 신�
 공식 문서: [Supabase Kakao Auth](https://supabase.com/docs/guides/auth/social-sign-in/auth-kakao), [Auth redirect URLs](https://supabase.com/docs/guides/auth/redirect-urls).
 
 - [ ] Kakao Developers에서 서비스용 앱을 만들고 앱 이름·사업자/운영자·서비스 도메인을 확인한다.
-- [ ] 카카오 로그인 활성화와 필요한 동의항목(profile_nickname, profile_image)을 설정한다. 이 앱의 코드는 이메일이나 전화번호 제공 scope를 요청하지 않는다.
+- [ ] 카카오 로그인 활성화와 필요한 동의항목(profile_nickname, profile_image)을 설정한다. 프런트 코드는 닉네임·프로필 사진만 명시하지만 Supabase Kakao provider는 기본 account_email scope를 자동 추가한다. Allow users without an email은 이 요청을 제거하지 않는다. 2026-10-25 실제 로그인에서 KOE205(account_email)를 확인했으므로 비즈 앱 전환과 이메일 동의 권한이 필요하다. 비즈 앱의 본인확인·약관 동의는 운영자가 진행한다.
 - [ ] 카카오의 Redirect URI에 아래 **Supabase callback**을 정확히 등록한다. Vercel app.html을 카카오 callback 자리에 넣지 않는다.
 
   `https://plxdnppizgvrqakjyehm.supabase.co/auth/v1/callback`
@@ -119,3 +119,5 @@ npm run test:db
 ## 7. 배포
 
 기존 Vercel 프로젝트와 Git 연동을 유지한다. Vercel에서 npm ci → npm run build, 출력 public/을 사용한다. Git main push만으로 자동 배포하며 CLI 직접 배포는 하지 않는다. public/에는 app.html, index.html, CSS, 번들만 들어가고 관리 도구·마이그레이션·테스트·환경 파일은 배포하지 않는다.
+
+공식 구현 확인: [Supabase Kakao provider 소스](https://github.com/supabase/auth/blob/master/internal/api/provider/kakao.go). 실제 테스트 결과가 이메일 생략 가능하다는 문서 안내와 달랐다.

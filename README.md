@@ -1,4 +1,4 @@
-# 덕후의 발견
+# 별줍
 
 팬덤 굿즈 탐색·웹 알림 MVP. 순수 HTML/CSS/JavaScript + Supabase Auth/Postgres + Vercel Git 자동 배포를 유지합니다.
 
