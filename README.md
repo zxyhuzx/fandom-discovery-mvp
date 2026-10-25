@@ -1,23 +1,43 @@
-# 덕후의 발견 MVP
+# 덕후의 발견
 
-장르를 검색하면 창작자, 진행 중인 통판, 예정 수요조사를 나눠 보여 주는 한국어 MVP입니다. 추천 콘텐츠와 썸네일은 데모 데이터이며, 정식 버전 신청은 실제 Supabase에 저장됩니다.
+팬덤 굿즈 탐색·웹 알림 MVP. 순수 HTML/CSS/JavaScript + Supabase Auth/Postgres + Vercel Git 자동 배포를 유지합니다.
 
-## 구성
+- `/` — 소개와 출시 신청. `/#demo`는 로그인 없는 가상 장르 체험.
+- `/app.html` — 카카오 로그인 후 개인 관심 작품·캐릭터, 관리자 등록 굿즈, 웹 알림.
+- 관리자 — 게시물 URL·작품·캐릭터·판매 정보를 직접 등록. 무단 스크래핑 없음.
+- 새 게시물 공개 시 DB 트리거로 관심사를 매칭해 알림과 모의 발송 대기열 생성.
+- 모의 발송만 가능. 실제 카카오 메시지 전송 구현은 차단되어 있습니다.
 
-- `index.html`: 화면, 스타일, 브라우저 동작과 신청 저장 연결.
-- `supabase/migrations/`: 신청 표와 INSERT 전용 RLS를 정의한 SQL.
-- `vercel.json`: 단일 HTML을 배포하는 정적 사이트 설정.
+## 시작
 
-신청 폼은 이름, 이메일, 선택 사항인 남긴 말을 저장합니다. 브라우저는 추가만 가능하며 신청 조회·수정·삭제는 허용하지 않습니다. HTML에는 공개 publishable 키만 포함하고, 비밀 키·관리자 토큰·DB 비밀번호는 포함하지 않습니다.
+```sh
+npm ci
+npm test
+npm run dev
+```
 
-## 로컬 확인
+미리보기: http://127.0.0.1:5174/ / 실제 서비스: http://127.0.0.1:5174/app.html
 
-`python3 -m http.server 5173 --bind 127.0.0.1` 실행 후 http://127.0.0.1:5173 을 엽니다.
+```sh
+npm run build
+npm run test:db
+```
 
-Supabase CLI는 이 폴더에서 `npm ci` 후 `npx supabase`로 실행합니다.
+실제 DB 테스트는 관리 API 접근 권한이 필요하고 모든 가상 데이터는 ROLLBACK합니다. 카카오 provider가 설정되지 않으면 로그인 준비 안내를 보여 줍니다.
 
-## 수정 후 올리기
+## 문서
 
-`git add . && git commit -m "Update MVP" && git push origin main`
+- [현재 구성 점검과 구현 구조](docs/IMPLEMENTATION.md)
+- [환경변수·카카오 콘솔·마이그레이션·테스트 방법](docs/SETUP.md)
+- [외부 승인·계정 설정 체크리스트](docs/EXTERNAL_CHECKLIST.md)
+- [진행 기록](진행기록.md)
 
-GitHub의 main 브랜치 푸시를 Vercel이 감지해 자동 배포합니다.
+브라우저에는 공개 publishable 키만 포함합니다. 서버 비밀 키·관리 토큰·카카오 Client Secret은 넣지 않습니다.
+
+## 배포
+
+[공개 사이트](https://fandom-discovery-mvp.vercel.app) / [실제 서비스](https://fandom-discovery-mvp.vercel.app/app.html)
+
+기존 GitHub main → Vercel 자동 배포: `npm ci` → `npm run build`, 출력 `public/`. Vercel CLI 직접 배포는 사용하지 않습니다.
+
+수정 후: `git add . && git commit -m "Update MVP" && git push origin main`
