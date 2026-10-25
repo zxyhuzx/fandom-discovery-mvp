@@ -1,4 +1,4 @@
-import {VTUBERS,WORK_NAME_ALIASES,CHARACTER_NAME_ALIASES} from './name-catalog.js';
+import {VTUBERS,WORK_NAME_ALIASES,CHARACTER_NAME_ALIASES,EXPANDED_CATALOG} from './name-catalog.js';
 export const WORKS = [
  ['나루토','naruto'], ['하이큐!!','haikyu','haikyuu','하이큐'], ['주술회전','jujutsu','jjk','주술'],
  ['귀멸의 칼날','demonslayer','귀칼','귀멸'], ['원신','genshin','genshinimpact'],
@@ -9,14 +9,16 @@ export const WORKS = [
 ];
 for(const row of WORKS)row.push(...(WORK_NAME_ALIASES[row[0]]||[]));
 WORKS.push(...VTUBERS.map(g=>g.work));
+WORKS.push(...EXPANDED_CATALOG.map(g=>g.work));
 export const normalizeKeyword = value => String(value ?? '').normalize('NFKC').toLowerCase().replace(/[\s!！:：·・]+/gu, '');
+const workIndex=new Map();for(const row of WORKS)for(const alias of row)if(!workIndex.has(normalizeKeyword(alias)))workIndex.set(normalizeKeyword(alias),row);
 export function canonicalWork(value) {
  const term = normalizeKeyword(value);
- return WORKS.find(aliases => aliases.some(a => normalizeKeyword(a) === term))?.[0] ?? value.trim();
+ return workIndex.get(term)?.[0] ?? value.trim();
 }
 export function normalizeWork(value) {
  const term=normalizeKeyword(value);
- return WORKS.find(aliases=>aliases.some(a=>normalizeKeyword(a)===term))?.[1] ?? term;
+ return workIndex.get(term)?.[1] ?? term;
 }
 export function matchesInterest(interest, post) {
  return normalizeWork(interest.work_name) === normalizeWork(post.work_name) &&
@@ -49,12 +51,14 @@ export const CHARACTERS={
  '나 혼자만 레벨업':['성진우','차해인'], '내가 키운 S급들':['한유진','한유현','성현제']
 };
 for(const group of VTUBERS)CHARACTERS[group.work[0]]=group.members.map(row=>row[0]);
+for(const group of EXPANDED_CATALOG)CHARACTERS[group.work[0]]=group.members.map(member=>member.names[0]);
 export function characterAliases(work,value){const rows=CHARACTER_NAME_ALIASES[canonicalWork(work)]||[];return rows.find(row=>row.some(a=>normalizeKeyword(a)===normalizeKeyword(value)))||[value]}
 export function canonicalCharacter(work,value){return characterAliases(work,String(value).trim())[0]}
 export function canonicalPost(p){const work=canonicalWork(p.work_name);return {...p,work_name:work,character_names:p.character_names.map(c=>canonicalCharacter(work,c))}}
 export function workGenre(work){
  const key=normalizeWork(work);
  if(VTUBERS.some(g=>g.work[1]===key))return '버튜버';
+ if(EXPANDED_CATALOG.some(g=>g.work[1]===key))return '애니·만화';
  if(['naruto','haikyu','jujutsu','demonslayer','bluelock','kuroko','chainsaw'].includes(key))return '애니·만화';
  if(['orv','sololeveling','sclass'].includes(key))return '웹소설·웹툰';
  if(['genshin','starrail','zzz'].includes(key))return '게임';
@@ -65,7 +69,7 @@ export function filterGoods(posts,{query='',work='',character='',status='',scope
  const terms=String(query).trim().split(/\s+/).map(normalizeKeyword).filter(Boolean),ch=normalizeKeyword(character);
  return posts.filter(p=>{
   if(!p.is_published||work&&normalizeWork(p.work_name)!==normalizeWork(work)||status&&p.sale_status!==status||ch&&!p.character_names.some(c=>normalizeKeyword(c).includes(ch))||genre&&goodsGenre(p)!==genre||platform&&p.platform_name!==platform)return false;
-  const aliases=WORKS.find(a=>normalizeWork(a[0])===normalizeWork(p.work_name))||[p.work_name];
+  const aliases=workIndex.get(normalizeKeyword(p.work_name))||[p.work_name];
   const fields={work:[p.work_name,...aliases],character:p.character_names.flatMap(c=>characterAliases(p.work_name,c)),creator:[p.seller_name||'']};
   const haystack=normalizeKeyword((scope==='all'?[p.title,...fields.work,...fields.character,...fields.creator,p.platform_name||'',goodsGenre(p),...(goodsGenre(p)==='버튜버'?['vtuber','ブイチューバー']:[])]:fields[scope]||[]).join(' '));
   return terms.every(term=>haystack.includes(term));
@@ -84,7 +88,7 @@ export function searchSuggestions(query,posts=[]){
  posts.filter(p=>p.is_published).map(canonicalPost).forEach(p=>{if(!catalog.has(p.work_name))catalog.set(p.work_name,new Set());p.character_names.forEach(c=>catalog.get(p.work_name).add(c))});
  const choices=[];
  for(const [work,chars] of catalog){
-  const aliases=WORKS.find(a=>normalizeWork(a[0])===normalizeWork(work))||[work];const workMatches=aliases.some(a=>normalizeKeyword(a).includes(term))||(workGenre(work)==='버튜버'&&['버튜버','vtuber','ブイチューバー'].includes(term));
+  const aliases=workIndex.get(normalizeKeyword(work))||[work];const workMatches=aliases.some(a=>normalizeKeyword(a).includes(term))||(workGenre(work)==='버튜버'&&['버튜버','vtuber','ブイチューバー'].includes(term));
   if(workMatches)choices.push({label:work,query:work,kind:workGenre(work)==='버튜버'?'버튜버 그룹':'작품',work_name:work,character_name:''});
   for(const character of chars)if(workMatches||terms.every(t=>normalizeKeyword([...aliases,...characterAliases(work,character)].join(' ')).includes(t)))choices.push({label:work+' · '+character,query:work+' '+character,kind:workGenre(work)==='버튜버'?'버튜버':'캐릭터',work_name:work,character_name:character});
  }

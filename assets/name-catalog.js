@@ -1,3 +1,5 @@
+import expanded from '../data/expanded-catalog.json' with {type:'json'};
+export const EXPANDED_CATALOG=expanded.works;
 // Curated names, not machine translation or a claim of a complete/current roster.
 export const VTUBERS=[
  {work:['홀로라이브','hololive','hololive production','ホロライブ','ホロライブプロダクション'],members:[
@@ -28,3 +30,4 @@ export const CHARACTER_NAME_ALIASES={
  '체인소 맨':[['덴지','Denji','デンジ'],['파워','Power','パワー'],['하야카와 아키','Hayakawa Aki','早川アキ']]
 };
 for(const group of VTUBERS)CHARACTER_NAME_ALIASES[group.work[0]]=group.members;
+for(const group of EXPANDED_CATALOG)CHARACTER_NAME_ALIASES[group.work[0]]=group.members.map(member=>member.names);
