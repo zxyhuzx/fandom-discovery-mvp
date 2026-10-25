@@ -1,13 +1,15 @@
 /* Byeoljup: a quiet blue night, with warm starlight from the original icon. */
-:root{--starlight:#f0d8ac}
-body{min-height:100vh;background:radial-gradient(ellipse at 80% 0%,#14294155,transparent 55%),var(--paper)}
+:root{--paper:#050b13;--surface:#0b1420;--tint:#101e2f;--line:#1e2e41;--ink:#c9d2de;--muted:#94a3b6;--accent:#86a5c9;--button:#294b73;--starlight:#cbb78f}
+body{min-height:100vh;background:var(--paper)}
 .brand{display:inline-flex;align-items:center;gap:10px;flex-shrink:0;color:var(--ink);text-decoration:none}
 .brand img{display:block;width:48px;height:48px;border-radius:14px;object-fit:contain}
 .brand span,.visual:before,.success .symbol{color:var(--starlight)}
 .welcome-icon{display:block;border-radius:28px;margin-bottom:25px}
-.visual{background:linear-gradient(145deg,#1c3553,#102033);border:1px solid var(--line)}
-.eyebrow{color:#aac7e9}
-.primary{box-shadow:0 4px 16px #00000018}
-.secondary:hover{background:var(--tint);border-color:#507398}
+.visual{background:linear-gradient(145deg,#102035,#0a1523);border:1px solid var(--line)}
+.eyebrow{color:var(--accent)}
+.primary{color:#d9e2ee;box-shadow:0 4px 16px #00000018}
+.primary:hover{background:#325880}
+.secondary:hover{background:var(--tint);border-color:#3d5877}
+input::placeholder,textarea::placeholder{color:#8495aa}
 .card,.form-card,.input-box{box-shadow:0 8px 28px #00000012}
 @media(max-width:700px){.brand{gap:7px}.brand img{width:40px;height:40px;border-radius:12px}.welcome-icon{width:96px;height:96px}.small{max-width:120px;text-align:right}}
