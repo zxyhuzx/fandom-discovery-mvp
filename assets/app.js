@@ -24,14 +24,15 @@ function needLogin(target){sessionStorage.setItem('byeoljup-next',target);go('lo
 function onboarding(){return needsOnboarding(user,interests,preferences)}
 function renderRoute(){
  let name=route();if(name==='home'&&onboarding())name='onboarding';
- const protectedPage=['interests','notifications','profile','onboarding','admin'].includes(name);
+ const protectedPage=['mypage','interests','notifications','profile','onboarding','admin'].includes(name);
  if(protectedPage&&!user){sessionStorage.setItem('byeoljup-next',name);name='login'}
  if(name==='admin'&&!admin)name='home';
  const panel=name.startsWith('goods/')?'detail':name==='onboarding'?'interests':name;
- const valid=['home','explore','interests','notifications','profile','detail','login','admin'];
+ const valid=['home','explore','mypage','support','qa','interests','notifications','profile','detail','login','admin'];
  document.querySelectorAll('main>section').forEach(n=>n.hidden=n.id!=='panel-'+(valid.includes(panel)?panel:'home'));
  document.querySelectorAll('[data-route]').forEach(n=>{const selected=n.dataset.route===panel;n.classList.toggle('active',selected);if(selected)n.setAttribute('aria-current','page');else n.removeAttribute('aria-current')});
  $('onboarding-label').hidden=name!=='onboarding';$('skip-interests').hidden=name!=='onboarding';$('interests-title').textContent=name==='onboarding'?'좋아하는 세계를 알려주세요':'내 구독 관리';
+ $('mypage-navigation').hidden=!['profile','interests','admin'].includes(name);
  if(panel==='detail')renderDetail(name.slice(6));
 }
 window.addEventListener('hashchange',()=>{renderRoute();if(['explore','admin'].includes(route()))loadExplore().catch(e=>notice(friendly(e),true))});
@@ -112,7 +113,7 @@ function choices(){
 }
 function renderNotifications(){$('notifications').replaceChildren();if(!notifications.length)empty($('notifications'),'아직 새로운 소식이 없어요','구독과 관련된 굿즈 소식이 생기면 이곳에서 확인할 수 있어요.');notifications.forEach(n=>{const row=el('article',undefined,'list-row'+(!n.read_at?' unread':''));const a=el('a',undefined,'notification-link');a.href='#goods/'+n.goods_post_id;a.append(el('h4',n.title),el('p',n.body),el('time',time(n.created_at)));a.onclick=()=>markRead(n);row.append(a);if(!n.read_at)row.append(button('읽음',async()=>{result(await db.from('notifications').update({read_at:new Date().toISOString()}).eq('id',n.id));await refresh()}));$('notifications').append(row)})}
 function updateCount(){$('unread-count').textContent=notifications.filter(n=>!n.read_at).length}
-function render(){$('header-login').hidden=!!user;const accountName=user?.user_metadata?.name||user?.user_metadata?.nickname||'내 계정';$('account-name').textContent=accountName;$('menu-account-name').textContent=user?accountName+'님':'로그인하고 구독과 내 알림을 관리해 보세요.';$('admin-tab').hidden=!admin;$('web-notifications').checked=preferences?.web_notifications!==false;updateCount();populatePlatforms();renderFeed();renderHome();renderInterests();choices();renderNotifications();if(admin)renderAdmin();renderRoute()}
+function render(){$('header-login').hidden=!!user;const accountName=user?.user_metadata?.name||user?.user_metadata?.nickname||'내 계정';$('account-name').textContent=accountName;$('menu-account-name').textContent=user?accountName+'님':'로그인하고 구독과 내 알림을 관리해 보세요.';$('admin-tab').hidden=!admin;$('upload-nav').hidden=!admin;$('web-notifications').checked=preferences?.web_notifications!==false;updateCount();populatePlatforms();renderFeed();renderHome();renderInterests();choices();renderNotifications();if(admin)renderAdmin();renderRoute()}
 async function refresh(){const current=++epoch;loading=true;$('loading').hidden=false;try{
  let role=false,personal=[[],[],[],[],null];if(user){role=result(await db.rpc('is_app_admin'));const r=await Promise.all([db.from('user_interests').select('id,work_name,character_name').order('created_at'),db.from('notifications').select('id,title,body,source_url,created_at,read_at,goods_post_id').order('created_at',{ascending:false}).limit(50),role?db.from('delivery_queue').select('id,notification_id,status').order('created_at',{ascending:false}).limit(50):Promise.resolve({data:[]}),role?db.from('delivery_attempts').select('id,queue_id,created_at').order('created_at',{ascending:false}).limit(50):Promise.resolve({data:[]}),db.from('user_preferences').select('onboarding_completed,web_notifications').maybeSingle()]);personal=r.map(result)}
  if(current!==epoch)return;admin=role;[interests,notifications,queue,attempts,preferences]=personal;interests=interests.map(i=>({...i,work_name:canonicalWork(i.work_name),character_name:canonicalCharacter(i.work_name,i.character_name)}));if(!dirty)draft=interests.map(i=>({...i}));
