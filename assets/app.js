@@ -86,7 +86,10 @@ async function loadPopular(){
  catch{if(current===popularEpoch){popularError=true;popularPosts=[]}}
  finally{if(current===popularEpoch){popularBusy=false;renderHome()}}
 }
+function syncViewSwitches(){document.querySelectorAll('[data-view-mode]').forEach(node=>node.setAttribute('aria-pressed',String(node.dataset.viewMode===viewMode)))}
+function changeViewMode(mode){viewMode=mode;try{localStorage.setItem('byeoljup-view',mode)}catch{}renderHome();renderFeed()}
 function renderHome(){
+ syncViewSwitches();$('home-notifications').dataset.view=viewMode;$('popular-count').textContent=popularBusy?'불러오는 중':popularError?'':popularPosts.length+'개 소식';
  $('home-title').textContent=homeTitles[homeTab];
  for(const tab of homeTabs){const selected=homeTab===tab;$('home-tab-'+tab).setAttribute('aria-selected',String(selected));$('home-tab-'+tab).tabIndex=selected?0:-1;$('home-panel-'+tab).hidden=!selected;}
  $('popular-feed').dataset.view=viewMode;$('popular-feed').setAttribute('aria-busy',String(popularBusy));
@@ -165,7 +168,7 @@ $('account-menu').addEventListener('click',e=>{const r=$('account-menu').getBoun
 $('account-menu').querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>$('account-menu').close()));
 $('kakao-login').onclick=()=>run($('kakao-login'),async()=>{const {error}=await db.auth.signInWithOAuth({provider:'kakao',options:{redirectTo:location.origin+'/app.html',scopes:'profile_nickname profile_image'}});if(error)throw error});
 $('logout').onclick=()=>run($('logout'),async()=>{const {error}=await db.auth.signOut({scope:'local'});if(error)throw error;await setSession(null);go('explore');notice('로그아웃했어요.')});
-['grid','list'].forEach(mode=>$('subscription-'+mode).onclick=()=>{viewMode=mode;try{localStorage.setItem('byeoljup-view',mode)}catch{}renderHome();renderFeed()});
+document.querySelectorAll('[data-view-mode]').forEach(node=>node.onclick=()=>changeViewMode(node.dataset.viewMode));
 homeTabs.forEach((tab,index)=>{const node=$('home-tab-'+tab);node.onclick=()=>selectHomeTab(tab);node.onkeydown=e=>{let next;if(e.key==='ArrowRight')next=(index+1)%3;else if(e.key==='ArrowLeft')next=(index+2)%3;else if(e.key==='Home')next=0;else if(e.key==='End')next=2;else return;e.preventDefault();selectHomeTab(homeTabs[next]);$('home-tab-'+homeTabs[next]).focus()}});
 $('popular-retry').onclick=()=>loadPopular();
 $('subscription-status').onchange=()=>loadSubscriptions().catch(e=>notice(friendly(e),true));
@@ -181,7 +184,7 @@ $('global-search').onkeydown=e=>{if(e.key==='Escape')hideSearchSuggestions();if(
 $('nav-search').addEventListener('focusout',e=>{if(!$('nav-search').contains(e.relatedTarget))hideSearchSuggestions()});
 ['filter-genre','filter-status','filter-platform'].forEach(id=>$(id).onchange=renderFeed);
 $('sort-order').onchange=renderFeed;
-['grid','list'].forEach(mode=>$('view-'+mode).onclick=()=>{viewMode=mode;try{localStorage.setItem('byeoljup-view',mode)}catch{}renderFeed();renderHome()});
+
 $('reset-search').onclick=()=>{searchScope='all';$('global-search').value='';['filter-genre','filter-status','filter-platform'].forEach(id=>$(id).value='');hideSearchSuggestions();populatePlatforms();renderFeed()};
 $('toggle-demo').onclick=()=>{showDemo=!showDemo;populatePlatforms();renderFeed()};
 let interestComposing=false;
