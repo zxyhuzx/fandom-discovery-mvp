@@ -1,5 +1,6 @@
 import {createClient} from '@supabase/supabase-js';
 import {config} from './config.js';
+import {WELCOME_DRAFT_KEY,WELCOME_CONNECT_KEY,WELCOME_BROWSE_KEY,parseWelcomeDraft,mergeWelcomeInterests} from './welcome-state.js';
 import {dispatchMockBatch} from '../lib/messaging/mock-dispatch.mjs';
 import {WORKS,CHARACTERS,canonicalWork,canonicalCharacter,canonicalPost,canonicalSource,matchesInterest,normalizeKeyword,filterGoods,needsOnboarding,workGenre,goodsGenre,sortGoods,searchSuggestions,SALE_LABELS,QUEUE_LABELS} from './domain.js';
 const $=id=>document.getElementById(id);
@@ -24,7 +25,7 @@ function link(url,text){try{const a=el('a',text);a.href=canonicalSource(url);a.t
 function route(){return location.hash.slice(1)||'home'}
 function go(name){if(route()===name)renderRoute();else location.hash=name}
 function needLogin(target){sessionStorage.setItem('byeoljup-next',target);go('login')}
-function onboarding(){return needsOnboarding(user,interests,preferences)}
+function onboarding(){let welcomeVisit=false;try{welcomeVisit=sessionStorage.getItem(WELCOME_CONNECT_KEY)==='1'||sessionStorage.getItem(WELCOME_BROWSE_KEY)==='1'}catch{}return !welcomeVisit&&needsOnboarding(user,interests,preferences)}
 function renderRoute(){
  let name=route();if(name==='home'&&onboarding())name='onboarding';
  const protectedPage=['mypage','interests','notifications','profile','onboarding','admin'].includes(name);
@@ -204,6 +205,17 @@ async function init(){const params=new URLSearchParams(location.search);let auth
  if(params.has('error')){authError=true;history.replaceState({},'',location.pathname+location.hash)}
  if(params.has('code')){const {error}=await db.auth.exchangeCodeForSession(params.get('code'));history.replaceState({},'',location.pathname+location.hash);authError=!!error}
  const {data,error}=await db.auth.getSession();if(error)throw error;await setSession(data?.session);
+ // Import only after an explicit Connect action, preserving existing subscriptions.
+ if(sessionStorage.getItem(WELCOME_CONNECT_KEY)==='1'){
+  if(authError||!user){location.replace('/?step=connect&error=auth');return}
+  const pending=parseWelcomeDraft(localStorage.getItem(WELCOME_DRAFT_KEY));
+  if(!pending){sessionStorage.removeItem(WELCOME_CONNECT_KEY);location.replace('/');return}
+  try{
+   result(await db.rpc('save_my_interests',{items:mergeWelcomeInterests(interests,pending.items)}));
+  }catch{location.replace('/?step=connect&error=save');return}
+  localStorage.removeItem(WELCOME_DRAFT_KEY);sessionStorage.removeItem(WELCOME_CONNECT_KEY);
+  await refresh();go('home');
+ }
  if(user){const next=sessionStorage.getItem('byeoljup-next');sessionStorage.removeItem('byeoljup-next');if(onboarding())go('onboarding');else if(next||route()==='login')go('home')}
  if(authError)notice('로그인 연결 시간이 만료됐어요. 다시 카카오로 시작해 주세요.',true);
  db.auth.onAuthStateChange((event,session)=>{if(event==='SIGNED_OUT'||session?.user?.id!==user?.id)queueMicrotask(()=>setSession(session).catch(e=>notice(friendly(e),true)))});
