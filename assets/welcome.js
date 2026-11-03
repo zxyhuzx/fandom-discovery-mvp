@@ -1,4 +1,3 @@
-import {mountResearch} from './research/ui.js';
 import {createClient} from '@supabase/supabase-js';
 import {config} from './config.js';
 import {shouldShowTutorial,hasSeenTutorial,rememberTutorial} from './first-visit.js';
@@ -10,7 +9,7 @@ let selected=[],characters={},category='애니·만화',step='hello';
 try{const previous=parseWelcomeDraft(localStorage.getItem(WELCOME_DRAFT_KEY));if(previous){selected=[...new Set(previous.items.map(i=>i.work_name))];for(const i of previous.items)if(i.character_name)(characters[i.work_name]??=[]).push(i.character_name)}}catch{}
 function node(tag,text,className){const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(className)n.className=className;return n}
 function message(text=''){$('welcome-status').textContent=text}
-function show(name){step=name;message();for(const id of ['hello','works','characters','connect','research-management'])$('welcome-'+id).hidden=id!==name;if(name==='works')renderWorks();if(name==='characters')renderCharacters();if(name==='connect')renderSummary();$('welcome-'+name).querySelector('h1').focus()}
+function show(name){step=name;message();for(const id of ['hello','works','characters','connect'])$('welcome-'+id).hidden=id!==name;if(name==='works')renderWorks();if(name==='characters')renderCharacters();if(name==='connect')renderSummary();$('welcome-'+name).querySelector('h1').focus()}
 function persist(){try{if(!selected.length){localStorage.removeItem(WELCOME_DRAFT_KEY);return true}localStorage.setItem(WELCOME_DRAFT_KEY,JSON.stringify({version:1,items:choiceItems(selected,characters)}));return true}catch{message('선택 내용을 잠시 저장할 수 없어요. 브라우저 저장 공간을 허용한 뒤 다시 시도해 주세요.');return false}}
 function toggleButton(text,active,action,className='welcome-option'){const b=node('button',text,className);b.type='button';b.setAttribute('aria-pressed',String(active));b.onclick=action;return b}
 function renderWorks(){
@@ -42,13 +41,8 @@ document.querySelectorAll('.welcome-skip').forEach(link=>link.onclick=()=>{remem
 $('welcome-kakao').onclick=()=>{if(selected.length&&!persist())return;try{
  sessionStorage.removeItem(WELCOME_CONNECT_KEY);sessionStorage.setItem(WELCOME_BROWSE_KEY,'1');
  }catch{}rememberTutorial();location.assign('/app.html?entry=welcome#home')};
-mountResearch($('research-consent-panel'),{items:()=>choiceItems(selected,characters)});
-mountResearch($('research-work-request'),{requestKind:'work'});
-mountResearch($('research-character-request'),{requestKind:'character',workName:()=>selected[0]||''});
-mountResearch($('research-manage'),{manage:true});
 const params=new URLSearchParams(location.search);
 async function initWelcome(){
- if(params.get('research')==='manage'){$('welcome-shell').hidden=false;$('welcome-loading').hidden=true;show('research-management');return}
  const forced=params.get('tutorial')==='1',recovery=params.get('step')==='connect'&&selected.length;
  let session=null;try{const db=createClient(config.supabaseUrl,config.publishableKey,{auth:{flowType:'pkce',detectSessionInUrl:false,persistSession:true}});const r=await db.auth.getSession();session=r.data?.session}catch{}
  let seen=hasSeenTutorial();try{seen=seen||sessionStorage.getItem(WELCOME_BROWSE_KEY)==='1'||!!parseWelcomeDraft(localStorage.getItem(WELCOME_DRAFT_KEY))}catch{}

@@ -1,9 +1,8 @@
-import {currentSurveyUrl} from './research/ui.js';
 import {prototypePopularForms,prototypeCharacterRecommendations,prototypeRecommendedForms} from './prototype-feed.js';
 import {hasSeenTutorial,rememberTutorial} from './first-visit.js';
 import {createProfileController} from './profile-ui.js';
 import {FORM_WATCH_KEY,formKey,readFormWatches,watchedForms,deadlineText} from './form-watch.js';
-import {SURVEY_GOODS,SURVEY_LABEL,SALE_TYPES} from './survey-data.js';
+import {SURVEY_GOODS,SURVEY_LABEL,SALE_TYPES,surveyLink} from './survey-data.js';
 import {createClient} from '@supabase/supabase-js';
 import {config} from './config.js';
 import {WELCOME_DRAFT_KEY,WELCOME_CONNECT_KEY,WELCOME_BROWSE_KEY,parseWelcomeDraft,mergeWelcomeInterests} from './welcome-state.js';
@@ -283,7 +282,7 @@ $('skip-interests').onclick=()=>run($('skip-interests'),async()=>{result(await d
 $('read-all').onclick=()=>run($('read-all'),async()=>{const ids=notifications.filter(n=>!n.read_at).map(n=>n.id);if(ids.length)result(await db.from('notifications').update({read_at:new Date().toISOString()}).in('id',ids));await refresh()});
 $('save-preferences').onclick=()=>run($('save-preferences'),async()=>{const value={web_notifications:$('web-notifications').checked};result(await(preferences?db.from('user_preferences').update(value).eq('user_id',user.id):db.from('user_preferences').insert(value)));await refresh();notice('알림 설정을 저장했어요.')});
 SALE_TYPES.forEach(value=>{const option=el('option',value);option.value=value;$('filter-sale-type').append(option)});
-const surveyUrl=currentSurveyUrl();if(surveyUrl){$('survey-cta').href=surveyUrl;$('survey-cta').hidden=false}
+const surveyUrl=surveyLink(config.surveyUrl);if(surveyUrl){$('survey-cta').href=surveyUrl;$('survey-cta').hidden=false}
 WORKS.forEach(([name])=>{const n=el('option');n.value=name;$('work-options').append(n);});Object.entries(SALE_LABELS).forEach(([value,label])=>{const n=el('option',label);n.value=value;$('filter-status').append(n);$('subscription-status').append(n.cloneNode(true))});choices();
 window.addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue=''}});
 async function init(){const params=new URLSearchParams(location.search);let authError=false;
@@ -317,5 +316,3 @@ init().catch(e=>{notice(friendly(e),true);renderRoute()});setInterval(()=>{if(!l
 function recordView(id){let visitor;try{visitor=localStorage.getItem('byeoljup-visitor');if(!visitor){visitor=crypto.randomUUID();localStorage.setItem('byeoljup-visitor',visitor)}}catch{return}db.rpc('record_goods_view',{post_id:id,visitor}).then(r=>{if(!r.error){const p=posts.find(p=>p.id===id);if(p)p.popularity_count=Number(p.popularity_count||0)}})}
 
 setInterval(updateCountdowns,1000);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')updateCountdowns()});
-
-window.addEventListener('research-change',()=>{const url=currentSurveyUrl();if(url){$('survey-cta').href=url;$('survey-cta').hidden=false}});
