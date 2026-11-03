@@ -8,6 +8,8 @@ await rm('public',{recursive:true,force:true});await mkdir('public/assets',{recu
 for(const page of ['index.html','app.html','data-sources.html'])await copyFile(page,'public/'+page);
 await mkdir('public/data',{recursive:true});
 for(const file of ['expanded-catalog.json','CHARACTER_SOURCE_LICENSE.md'])await copyFile('data/'+file,'public/data/'+file);
+await mkdir('public/assets/profile',{recursive:true});
+for(const name of ['avatar-default','banner-default'])await copyFile('assets/profile/'+name+'.svg','public/assets/profile/'+name+'.svg');
 await mkdir('public/assets/survey',{recursive:true});
 for(const name of ['keyring','doll','stickers','photocard','stand','badge','pouch','postcard'])await copyFile('assets/survey/'+name+'.svg','public/assets/survey/'+name+'.svg');
 await copyFile('assets/service.css','public/assets/service.css');

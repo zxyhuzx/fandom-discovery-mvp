@@ -1,0 +1,8 @@
+export const PROFILE_BUCKET='profile-media';
+export const IMAGE_TYPES={'image/jpeg':'jpg','image/png':'png','image/webp':'webp'};
+export function nicknameValue(value){const nickname=String(value??'').normalize('NFC').trim();if([...nickname].length<2||[...nickname].length>24||/[\u0000-\u001f\u007f-\u009f<>]/u.test(nickname))throw new Error('닉네임은 특수 제어문자와 꺾쇠 없이 2~24자로 입력해 주세요.');return nickname;}
+export function socialHandle(value,kind){const handle=String(value??'').trim().replace(/^@/,'');if(!handle)return '';const valid=kind==='x'?/^[A-Za-z0-9_]{1,15}$/.test(handle):/^[A-Za-z0-9_](?:[A-Za-z0-9_.]{0,28}[A-Za-z0-9_])?$/.test(handle)&&!handle.includes('..');if(!valid)throw new Error(kind==='x'?'X 아이디는 영문·숫자·밑줄로 15자 이내 입력해 주세요.':'인스타그램 아이디는 영문·숫자·밑줄·마침표로 30자 이내 입력해 주세요. 앞뒤 마침표와 연속 마침표는 사용할 수 없어요.');return handle;}
+export function socialUrl(value,kind){const handle=socialHandle(value,kind);return handle?(kind==='x'?'https://x.com/'+encodeURIComponent(handle):'https://www.instagram.com/'+encodeURIComponent(handle)+'/'):null;}
+export function validateProfileFile(file,slot){const limit=(slot==='avatar'?5:8)*1024*1024;if(!file||!IMAGE_TYPES[file.type])throw new Error('JPG, PNG, WebP 이미지만 업로드할 수 있어요.');if(file.size<=0||file.size>limit)throw new Error((slot==='avatar'?'프로필 사진은 5MB':'배너는 8MB')+' 이하로 선택해 주세요.');}
+export function validProfileDimensions(width,height){if(width<32||height<32||width>8000||height>8000||width*height>40000000)throw new Error('이미지는 가로·세로 32~8,000px, 총 4천만 화소 이하로 선택해 주세요.');}
+export function ownedMediaPath(path,userId,slot){return typeof path==='string'&&new RegExp('^'+userId+'/'+slot+'/[a-f0-9-]{36}\\.(jpg|png|webp)$').test(path);}
