@@ -11,3 +11,5 @@ __pycache__/
 *.pyc
 data/character-source.json
 data/wikidata-labels.json
+
+supabase/.temp/

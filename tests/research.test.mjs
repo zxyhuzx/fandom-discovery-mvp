@@ -1,0 +1,10 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {researchReady,parseRecoveryCode,recoveryCode,researchExports,surveyWithParticipant,csvCell} from '../assets/research/domain.js';
+test('research collection fails closed without purpose, retention, contact and enabled campaign',()=>{const c={enabled:true,purpose:'study',consent_version:'v1',retention_days:60,withdrawal_contact:'mailto:qhdms114@naver.com'};assert.equal(researchReady(c),true);for(const field of Object.keys(c))assert.equal(researchReady({...c,[field]:null}),false);assert.equal(researchReady({...c,withdrawal_contact:'javascript:alert(1)'}),false)});
+test('withdrawal secret parses without becoming a survey URL parameter',()=>{const token='a'.repeat(64);assert.deepEqual(parseRecoveryCode(recoveryCode('survey-test',token)),{campaign:'survey-test',token});assert.throws(()=>parseRecoveryCode('survey-test:abc'));assert.throws(()=>parseRecoveryCode('survey-test:'+token+':other'));const u=surveyWithParticipant('https://example.com/survey?x=1','00000000-0000-4000-8000-000000000001');assert.match(u,/participant_id=/);assert.doesNotMatch(u,new RegExp(token));assert.equal(surveyWithParticipant('javascript:alert(1)'),null)});
+test('CSV counts distinct people and unordered work-scoped character pairs; work-only is never a character',()=>{
+ const row=(p,w,c)=>({participant_id:p,campaign_id:'test',submitted_at:'2026-11-03',consent_version:'v1',work_name:w,character_name:c});
+ const rows=[row('a','나루토','히나타'),row('a','하이큐!!','히나타'),row('a','원신',''),row('b','나루토','히나타'),row('b','하이큐!!','히나타'),row('a','나루토','히나타')];
+ const result=researchExports(rows);assert.match(result['participant_choices.csv'],/"work"/);assert.match(result['character_counts.csv'],/"나루토","히나타","2"/);assert.doesNotMatch(result['character_counts.csv'],/원신/);assert.match(result['character_pairs.csv'],/"나루토","히나타","하이큐!!","히나타","2"/);
+});
+test('CSV neutralizes formulas, quotes and newlines',()=>{assert.equal(csvCell('=HYPERLINK("x")'),'"\'=HYPERLINK(""x"")"');assert.equal(csvCell(' \n@SUM(1)'),'"\' \n@SUM(1)"');assert.equal(csvCell('별,"줍"'),'"별,""줍"""')});

@@ -18,7 +18,7 @@ function make(work,names,label,index,variant,common=false){
  return {id:'survey-'+String(index+1).padStart(3,'0'),title:SURVEY_FORM_TITLES[formIndex],item_name:label.replace(' 공통',' 선택형')+' '+product,form_id:'survey-form-'+String(formIndex+1).padStart(2,'0'),
  work_name:work,character_names:names.map(c=>canonicalCharacter(work,c)),seller_name:creators[index%creators.length],
  product_types:[product],sale_type,sale_status,genre_name:workGenre(work),platform_name:'체험용 예시',
- sale_info:'설문조사 체험을 위해 만든 가상 굿즈와 가상 작가 정보예요. 실제 판매·모집이 아니며 구매와 신청은 제공하지 않아요. '+(common?'표시된 인물 중 원하는 종류를 고르는 구성의 예시예요.':'표시된 캐릭터·라이버를 위한 굿즈 예시예요.'),
+ sale_info:'프로토타입 체험용으로 만든 가상 굿즈와 가상 작가 정보예요. 실제 판매·모집이 아니며 구매와 신청은 제공하지 않아요. '+(common?'표시된 인물 중 원하는 종류를 고르는 구성의 예시예요.':'표시된 캐릭터·라이버를 위한 굿즈 예시예요.'),
  sale_start,sale_end,
  created_at:new Date(Date.UTC(2026,10,1,0,index)).toISOString(),
  search_keywords:[product,product.replace('10cm ',''),sale_type],

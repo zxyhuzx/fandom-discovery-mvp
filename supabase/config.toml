@@ -1,0 +1,4 @@
+project_id = "fandom-discovery-mvp"
+
+[functions.research]
+verify_jwt = false
