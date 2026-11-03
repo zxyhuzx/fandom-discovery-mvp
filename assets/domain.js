@@ -1,3 +1,4 @@
+import {SURVEY_NAMES} from './survey-names.js';
 import {VTUBERS,WORK_NAME_ALIASES,CHARACTER_NAME_ALIASES,EXPANDED_CATALOG,RETIRED_CATALOG,CURATED_CATALOG} from './name-catalog.js';
 import {EXTRA_WORK_ALIASES,GENRE_OVERRIDES,RETIRED_CURATED_CATALOG} from './curated-catalog.js';
 export const WORKS = [
@@ -56,6 +57,7 @@ export const CHARACTERS={
 for(const group of VTUBERS)CHARACTERS[group.work[0]]=group.members.map(row=>row[0]);
 for(const group of EXPANDED_CATALOG)CHARACTERS[group.work[0]]=group.members.map(member=>member.names[0]);
 for(const group of CURATED_CATALOG)CHARACTERS[group.work[0]]=group.members.map(member=>member[0]);
+for(const [work,rows] of Object.entries(SURVEY_NAMES))for(const names of rows){const list=CHARACTERS[work]??=[];if(!list.includes(names[0]))list.push(names[0]);}
 export function characterAliases(work,value){const rows=CHARACTER_NAME_ALIASES[canonicalWork(work)]||[];return rows.find(row=>row.some(a=>normalizeKeyword(a)===normalizeKeyword(value)))||[value]}
 export function canonicalCharacter(work,value){return characterAliases(work,String(value).trim())[0]}
 export function canonicalPost(p){const work=canonicalWork(p.work_name);return {...p,work_name:work,character_names:p.character_names.map(c=>canonicalCharacter(work,c))}}
@@ -72,13 +74,13 @@ export function workGenre(work){
  return '기타';
 }
 export const goodsGenre=p=>p.genre_name||workGenre(p.work_name);
-export function filterGoods(posts,{query='',work='',character='',status='',scope='all',genre='',platform=''}={}){
+export function filterGoods(posts,{query='',work='',character='',status='',scope='all',genre='',platform='',saleType=''}={}){
  const terms=String(query).trim().split(/\s+/).map(normalizeKeyword).filter(Boolean),ch=normalizeKeyword(character);
  return posts.filter(p=>{
-  if(!p.is_published||work&&normalizeWork(p.work_name)!==normalizeWork(work)||status&&p.sale_status!==status||ch&&!p.character_names.some(c=>normalizeKeyword(c).includes(ch))||genre&&goodsGenre(p)!==genre||platform&&p.platform_name!==platform)return false;
+  if(!p.is_published||saleType&&p.sale_type!==saleType||work&&normalizeWork(p.work_name)!==normalizeWork(work)||status&&p.sale_status!==status||ch&&!p.character_names.some(c=>normalizeKeyword(c).includes(ch))||genre&&goodsGenre(p)!==genre||platform&&p.platform_name!==platform)return false;
   const aliases=workIndex.get(normalizeKeyword(p.work_name))||[p.work_name];
   const fields={work:[p.work_name,...aliases],character:p.character_names.flatMap(c=>characterAliases(p.work_name,c)),creator:[p.seller_name||'']};
-  const haystack=normalizeKeyword((scope==='all'?[p.title,...fields.work,...fields.character,...fields.creator,p.platform_name||'',goodsGenre(p),...(goodsGenre(p)==='버튜버'?['vtuber','ブイチューバー']:[])]:fields[scope]||[]).join(' '));
+  const haystack=normalizeKeyword((scope==='all'?[p.title,...fields.work,...fields.character,...fields.creator,p.platform_name||'',...(p.product_types||[]),...(p.search_keywords||[]),p.sale_type||'',goodsGenre(p),...(goodsGenre(p)==='버튜버'?['vtuber','ブイチューバー']:[])]:fields[scope]||[]).join(' '));
   return terms.every(term=>haystack.includes(term));
  }).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
 }

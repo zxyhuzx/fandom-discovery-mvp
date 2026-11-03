@@ -1,3 +1,4 @@
+import {SURVEY_NAMES} from './survey-names.js';
 import expanded from '../data/expanded-catalog.json' with {type:'json'};
 import {CURATED_CATALOG,RETIRED_CURATED_CATALOG,EXTRA_VTUBER_MEMBERS,DISCOVERY_ANIME,GENRE_OVERRIDES} from './curated-catalog.js';
 export {CURATED_CATALOG} from './curated-catalog.js';
@@ -37,3 +38,8 @@ export const CHARACTER_NAME_ALIASES={
 for(const group of VTUBERS)CHARACTER_NAME_ALIASES[group.work[0]]=group.members;
 for(const group of [...EXPANDED_CATALOG,...RETIRED_CATALOG])CHARACTER_NAME_ALIASES[group.work[0]]=group.members.map(member=>member.names);
 for(const group of [...CURATED_CATALOG,...RETIRED_CURATED_CATALOG])CHARACTER_NAME_ALIASES[group.work[0]]=group.members;
+
+for(const [work,names] of Object.entries(SURVEY_NAMES)){
+ const rows=CHARACTER_NAME_ALIASES[work]??=[];
+ for(const aliases of names){const existing=rows.find(row=>row.some(n=>aliases.includes(n)));if(existing)existing.push(...aliases.filter(n=>!existing.includes(n)));else rows.push([...aliases]);}
+}
