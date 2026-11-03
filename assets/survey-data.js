@@ -1,3 +1,4 @@
+import {SURVEY_TITLES} from './survey-titles.js';
 import {canonicalCharacter,workGenre,matchesInterest,filterGoods} from './domain.js';
 import {SURVEY_NAMES} from './survey-names.js';
 export const SURVEY_LABEL='체험용 예시 콘텐츠';
@@ -10,7 +11,7 @@ function make(work,names,label,index,variant,common=false){
  const productIndex=(index+variant)%products.length,product=products[productIndex];
  const sale_type=SALE_TYPES[(index+variant)%SALE_TYPES.length];
  const sale_status=sale_type==='수요조사'?(index%2?'survey_planned':'survey_open'):['open','planned','closed'][index%3];
- return {id:'survey-'+String(index+1).padStart(3,'0'),title:'['+(sale_type==='통판'?'11월 통판':sale_type)+'] '+label+' '+product,
+ return {id:'survey-'+String(index+1).padStart(3,'0'),title:SURVEY_TITLES[index],
  work_name:work,character_names:names.map(c=>canonicalCharacter(work,c)),seller_name:creators[index%creators.length],
  product_types:[product],sale_type,sale_status,genre_name:workGenre(work),platform_name:'체험용 예시',
  sale_info:'설문조사 체험을 위해 만든 가상 굿즈와 가상 작가 정보예요. 실제 판매·모집이 아니며 구매와 신청은 제공하지 않아요. '+(common?'작품·그룹 공통 굿즈 예시예요.':'표시된 캐릭터·라이버를 위한 굿즈 예시예요.'),
