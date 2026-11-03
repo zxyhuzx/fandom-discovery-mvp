@@ -4,6 +4,10 @@ const novel=(work,members,source)=>({work,genre:'웹소설·웹툰',members:memb
 const allCurated=[
  {work:['닌타마 란타로','nintama','닌타마','닌자보이 란타로','忍たま乱太郎','Nintama Rantaro'],genre:'애니·만화',members:[['란타로','Rantaro','乱太郎'],['키리마루','Kirimaru','きり丸'],['신베에','Shinbei','しんべヱ'],['도이 한스케','도이 선생님','土井半助']],source:'https://www.fctokyo.co.jp/ko/news/details/315800/'},
  {work:['해즈빈 호텔','hazbinhotel','헤즈빈호텔','헤즈빈 호텔','헤즈빈','해즈빈','Hazbin Hotel'],genre:'애니·만화',members:[['찰리 모닝스타','찰리','Charlie Morningstar'],['배기','Vaggie'],['엔젤 더스트','에인절','Angel Dust'],['알래스터','앨러스터','Alastor'],['허스크','Husk'],['니프티','Niffty']],source:'https://www.primevideo.com/-/ko/detail/0HZWTBZYQQXYW48YBANMDM2MZE'},
+ game(['오오에','ooe','大穢','おおえ','Ooe'],[],'https://adeltaz1.wixsite.com/adeltaz1'),
+ game(['콜 오브 듀티','callofduty','콜옵','Call of Duty','COD'],[['사이먼 고스트 라일리','고스트','Ghost','Simon Riley'],['존 프라이스','프라이스','John Price'],['조니 소프 맥타비시','소프','Soap','Johnny MacTavish'],['카일 가즈 게릭','가즈','Gaz','Kyle Garrick']],'https://www.playstation.com/ko-kr/call-of-duty/'),
+ game(['뱅드림! 걸즈 밴드 파티!','bangdream','뱅드림','뱅드림!','반도리','BanG Dream!','バンドリ'],[['토야마 카스미','카스미','Kasumi Toyama','戸山香澄'],['미타케 란','란','Ran Mitake','美竹蘭'],['마루야마 아야','아야','Aya Maruyama','丸山彩'],['미나토 유키나','유키나','Yukina Minato','湊友希那'],['츠루마키 코코로','코코로','Kokoro Tsurumaki','弦巻こころ']],'https://kakaogamescorp.com/news/press/detail/319?page=165'),
+ game(['프로젝트 세카이','projectsekai','프세카','프로세카','Project SEKAI','プロジェクトセカイ'],[['호시노 이치카','이치카','Hoshino Ichika','星乃一歌'],['텐마 츠카사','츠카사','Tenma Tsukasa','天馬司'],['카미시로 루이','루이','Kamishiro Rui','神代類'],['시노노메 아키토','아키토','Shinonome Akito','東雲彰人'],['아오야기 토우야','토우야','Aoyagi Toya','青柳冬弥'],['요이사키 카나데','카나데','Yoisaki Kanade','宵崎奏'],['아사히나 마후유','마후유','Asahina Mafuyu','朝比奈まふゆ'],['하츠네 미쿠','Hatsune Miku','初音ミク']],'https://pjsekai.sega.jp/character/index.html'),
  game(['명조: 워더링 웨이브','wutheringwaves','명조','띵조','Wuthering Waves','鳴潮'],[['기염','Jiyan','忌炎'],['금희','Jinhsi','今汐'],['음림','Yinlin','吟霖'],['파수인','Shorekeeper','ショアキーパー']],'https://wutheringwaves.kurogames.com/kr/main'),
  game(['블루 아카이브','bluearchive','블아','블루아카','Blue Archive','ブルーアーカイブ'],[['시로코','스나오오카미 시로코','Shiroko','砂狼シロコ'],['호시노','타카나시 호시노','Hoshino','小鳥遊ホシノ'],['아루','리쿠하치마 아루','Aru','陸八魔アル'],['히나','소라사키 히나','Hina','空崎ヒナ'],['아로나','Arona','アロナ']],'https://bluearchive.nexon.com/'),
  game(['승리의 여신: 니케','nikke','니케','NIKKE','Goddess of Victory Nikke'],[['라피','Rapi'],['아니스','Anis'],['네온','Neon'],['홍련','Scarlet'],['도로시','Dorothy']],'https://nikke-kr.com/'),
@@ -41,9 +45,9 @@ const allCurated=[
  novel(['광마회귀','returnofthemaddemon','광마'],['이자하'],'https://series.naver.com/'),
  novel(['마법학교 마법사로 살아가는 법','magicacademymage','마마살'],['이한 워다나즈'],'https://page.kakao.com/menu/11/screen/36?tab_uid=2')
 ];
-const excludedNovels=new Set(['일타강사 백사부','광마회귀','마법학교 마법사로 살아가는 법','회귀자 사용설명서','SSS급 죽어야 사는 헌터']);
-export const CURATED_CATALOG=allCurated.filter(g=>!excludedNovels.has(g.work[0]));
-export const RETIRED_CURATED_CATALOG=allCurated.filter(g=>excludedNovels.has(g.work[0]));
+const excludedWorks=new Set(['명일방주','붕괴3rd','로보토미 코퍼레이션','일타강사 백사부','광마회귀','마법학교 마법사로 살아가는 법','회귀자 사용설명서','SSS급 죽어야 사는 헌터']);
+export const CURATED_CATALOG=allCurated.filter(g=>!excludedWorks.has(g.work[0]));
+export const RETIRED_CURATED_CATALOG=allCurated.filter(g=>excludedWorks.has(g.work[0]));
 export const DISCOVERY_ANIME=new Set([
  '닌타마 란타로','데스노트','은혼','괴수 8호','나의 히어로 아카데미아','해즈빈 호텔',
  '하이큐!!','주술회전','귀멸의 칼날','나루토','블루 록','쿠로코의 농구','체인소 맨',
@@ -60,8 +64,7 @@ export const EXTRA_WORK_ALIASES={
 };
 export const GENRE_OVERRIDES={'페르소나 3':'게임','페르소나 4':'게임','페르소나 5':'게임'};
 export const WELCOME_WORK_ORDER={
- '애니·만화':['닌타마 란타로','데스노트','은혼','괴수 8호','나의 히어로 아카데미아','해즈빈 호텔','하이큐!!','주술회전','귀멸의 칼날'],
- '게임':['명조: 워더링 웨이브','블루 아카이브','승리의 여신: 니케','림버스 컴퍼니','원신','붕괴: 스타레일','젠레스 존 제로','명일방주'],
+ '게임':['명조: 워더링 웨이브','블루 아카이브','승리의 여신: 니케','림버스 컴퍼니','원신','붕괴: 스타레일','젠레스 존 제로','오오에','콜 오브 듀티','뱅드림! 걸즈 밴드 파티!','프로젝트 세카이'],
  '웹소설·웹툰':['어두운 바다의 등불이 되어','마법명가 차남으로 살아남는 법','괴담에 떨어져도 출근을 해야 하는구나','너희들은 변호됐다','이세계 착각 헌터','은행원도 용꿈을 꾸나요','우리 호텔 정상 영업합니다','화산귀환','전지적 독자 시점','내가 키운 S급들'],
  '버튜버':['홀로라이브','니지산지','스텔라이브']
 };
@@ -70,3 +73,10 @@ export const EXTRA_VTUBER_MEMBERS={
  '니지산지':[['켄모치 토야','Kenmochi Toya','剣持刀也'],['후와 미나토','Fuwa Minato','不破湊'],['카가미 하야토','Kagami Hayato','加賀美ハヤト'],['야시로 키즈쿠','Yashiro Kizuku','社築'],['카이다 하루','Kaida Haru','甲斐田晴'],['로렌 이로아스','Lauren Iroas','ローレン・イロアス']],
  '스텔라이브':[['시라유키 히나','Shirayuki Hina'],['네네코 마시로','Neneko Mashiro'],['아카네 리제','Akane Lize'],['유즈하 리코','Yuzuha Riko']]
 };
+
+// Korean alphabetical display order for anime; other categories retain their curated order.
+export function compareWelcomeWorks(category,a,b){
+ if(category==='애니·만화')return a[0].localeCompare(b[0],'ko');
+ const preferred=WELCOME_WORK_ORDER[category]||[],position=name=>{const i=preferred.indexOf(name);return i<0?1000:i};
+ return position(a[0])-position(b[0]);
+}

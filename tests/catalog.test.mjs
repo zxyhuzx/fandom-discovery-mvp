@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {WORKS,CHARACTERS,canonicalWork,canonicalCharacter,searchSuggestions,workGenre,normalizeWork,filterGoods} from '../assets/domain.js';
-import {GENRE_OVERRIDES} from '../assets/curated-catalog.js';
+import {GENRE_OVERRIDES,compareWelcomeWorks} from '../assets/curated-catalog.js';
 import {EXPANDED_CATALOG} from '../assets/name-catalog.js';
 test('discovery catalog keeps anime compact and work keys unique',()=>{
  assert.equal(WORKS.filter(w=>workGenre(w[0])==='애니·만화').length,30);
@@ -39,4 +39,17 @@ test('requested catalog edits and common abbreviations share canonical names in 
  for(const [alias,name] of [['은용꿈','은행원도 용꿈을 꾸나요'],['우호정','우리 호텔 정상 영업합니다'],['헤즈빈','해즈빈 호텔']]){assert.equal(canonicalWork(alias),name);assert.ok(searchSuggestions(alias).some(c=>c.work_name===name))}
  for(const name of ['일타강사 백사부','광마회귀','마법학교 마법사로 살아가는 법','회귀자 사용설명서','SSS급 죽어야 사는 헌터']){assert.ok(!WORKS.some(w=>w[0]===name));assert.equal(searchSuggestions(name).length,0)}
  assert.ok(WORKS.some(w=>w[0]==='화산귀환'));assert.equal(normalizeWork('회사설'),'regressorinstructionmanual');
+});
+
+test('game edits preserve legacy keys and anime picker uses Korean alphabetical order',()=>{
+ for(const [alias,name] of [['大穢','오오에'],['콜옵','콜 오브 듀티'],['뱅드림','뱅드림! 걸즈 밴드 파티!'],['프세카','프로젝트 세카이']]){
+  assert.equal(canonicalWork(alias),name);assert.equal(workGenre(name),'게임');
+  assert.ok(searchSuggestions(alias).some(c=>c.work_name===name));
+ }
+ for(const [name,key] of [['명일방주','arknights'],['붕괴3rd','honkaiimpact3'],['로보토미 코퍼레이션','lobotomycorporation']]){
+  assert.ok(!WORKS.some(w=>w[0]===name));assert.equal(searchSuggestions(name).length,0);assert.equal(normalizeWork(name),key);
+ }
+ const anime=WORKS.filter(w=>workGenre(w[0])==='애니·만화').sort((a,b)=>compareWelcomeWorks('애니·만화',a,b));
+ assert.equal(anime[0][0],'가정교사 히트맨 REBORN!');
+ assert.deepEqual(anime.map(w=>w[0]),anime.map(w=>w[0]).sort((a,b)=>a.localeCompare(b,'ko')));
 });

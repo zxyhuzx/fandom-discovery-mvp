@@ -48,3 +48,9 @@
 - [Brave group의 스텔라이브 소개](https://note.com/bravegroup/n/n7b066ebd1cc3)
 
 검증: `npm test`, `python3 scripts/db-admin.py sql supabase/tests/multilingual.sql`, `npm run test:db`. DB 시험은 fixture를 모두 롤백한다. 원신의 일본어 표기 原神이 지원 별칭이 되어 기존 ‘알 수 없는 작품’ fixture를 실제 미등록 작품명으로 교체했다.
+
+### 2026-11-03 후속 게임 조정
+
+게임 목록에 오오에(大穢/おおえ/Ooe), 콜 오브 듀티(콜옵/COD), 뱅드림! 걸즈 밴드 파티!(뱅드림/반도리), 프로젝트 세카이(프세카/프로세카)를 추가했다. 명일방주·붕괴3rd·로보토미 코퍼레이션은 신규 후보에서 제외하되 기존 이름 키를 유지한다. 최신 수량은 작품·그룹 74, 연결 인물 429, 게임 27이다. 애니 30개는 첫 방문에서 한국어 가나다순으로 표시한다.
+
+자료: [ADELTA](https://adeltaz1.wixsite.com/adeltaz1), [콜 오브 듀티 인물 소개](https://www.playstation.com/ko-kr/call-of-duty/), [뱅드림 한국 운영사 소개](https://kakaogamescorp.com/news/press/detail/319?page=165), [프로젝트 세카이 공식 캐릭터](https://pjsekai.sega.jp/character/index.html). 오오에는 이름과 작품 전체 선택만 제공하며 불확실한 한국어 캐릭터명을 생성하지 않았다.

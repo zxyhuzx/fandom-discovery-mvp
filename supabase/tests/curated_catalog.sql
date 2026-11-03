@@ -1,5 +1,11 @@
 begin;
 do $$ begin
+ assert public.normalize_work('大穢')='ooe','Ooe alias failed';
+ assert public.normalize_work('콜옵')='callofduty','COD alias failed';
+ assert public.normalize_work('뱅드림')='bangdream','Bandori alias failed';
+ assert public.normalize_work('프세카')='projectsekai','Sekai alias failed';
+ assert public.normalize_character('콜옵','Ghost')=public.normalize_keyword('사이먼 고스트 라일리'),'COD character failed';
+ assert public.normalize_work('명방')='arknights','retired game key changed';
  assert public.normalize_work('어바등')=public.normalize_work('어두운 바다의 등불이 되어'),'novel abbreviation failed';
  assert public.normalize_work('마차살')=public.normalize_work('마법명가 차남으로 살아남는 법'),'second novel abbreviation failed';
  assert public.normalize_work('나히아')=public.normalize_work('나의 히어로 아카데미아'),'anime abbreviation failed';

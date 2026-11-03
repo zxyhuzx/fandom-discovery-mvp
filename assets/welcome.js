@@ -1,7 +1,7 @@
 import {createClient} from '@supabase/supabase-js';
 import {config} from './config.js';
 import {WORKS,CHARACTERS,workGenre,normalizeKeyword,characterAliases} from './domain.js';
-import {WELCOME_WORK_ORDER} from './curated-catalog.js';
+import {compareWelcomeWorks} from './curated-catalog.js';
 import {WELCOME_DRAFT_KEY,WELCOME_CONNECT_KEY,WELCOME_BROWSE_KEY,choiceItems,parseWelcomeDraft} from './welcome-state.js';
 const $=id=>document.getElementById(id);
 const db=createClient(config.supabaseUrl,config.publishableKey,{auth:{flowType:'pkce',detectSessionInUrl:false,persistSession:true,autoRefreshToken:true}});
@@ -14,8 +14,7 @@ function persist(){try{if(!selected.length){localStorage.removeItem(WELCOME_DRAF
 function toggleButton(text,active,action,className='welcome-option'){const b=node('button',text,className);b.type='button';b.setAttribute('aria-pressed',String(active));b.onclick=action;return b}
 function renderWorks(){
  const query=normalizeKeyword($('welcome-work-search').value),target=$('welcome-work-choices');target.replaceChildren();
- const preferred=WELCOME_WORK_ORDER[category]||[],position=name=>{const index=preferred.indexOf(name);return index<0?1000:index};
- const found=WORKS.filter(row=>workGenre(row[0])===category&&(!query||row.some(alias=>normalizeKeyword(alias).includes(query)))).sort((a,b)=>position(a[0])-position(b[0]));
+ const found=WORKS.filter(row=>workGenre(row[0])===category&&(!query||row.some(alias=>normalizeKeyword(alias).includes(query)))).sort((a,b)=>compareWelcomeWorks(category,a,b));
  for(const [work] of found)target.append(toggleButton(work,selected.includes(work),()=>{if(selected.includes(work)){selected=selected.filter(w=>w!==work);delete characters[work]}else{if(choiceItems(selected,characters).length>=100){message('관심사는 최대 100개까지 선택할 수 있어요.');return}selected.push(work)}message();persist();renderWorks()}));
  if(!found.length)target.append(node('p','검색 결과가 없어요. 검색어나 분류를 바꿔보세요.','empty-state'));
  $('welcome-selected-count').textContent=selected.length+'개 작품·그룹 선택';$('welcome-next-characters').disabled=!selected.length;

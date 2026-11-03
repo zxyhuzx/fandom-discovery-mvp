@@ -10,6 +10,7 @@ let sql="begin;\n-- Names-only catalog normalization. Existing keys and notifica
 for(const [alias,key] of aliases)sql+='when '+quote(alias)+' then '+quote(key)+'\n';
 sql+="else public.normalize_keyword(value) end $$;\ncreate or replace function public.normalize_character(work text,value text) returns text language sql immutable parallel safe set search_path='' as $$ select case public.normalize_work(work)\n";
 for(const [work,rows] of Object.entries(CHARACTER_NAME_ALIASES)){
+ if(!rows.length)continue;
  sql+='when '+quote(normalizeWork(work))+' then case public.normalize_keyword(value)\n';
  const names=new Map();for(const row of rows)for(const name of row)if(!names.has(normalizeKeyword(name)))names.set(normalizeKeyword(name),normalizeKeyword(row[0]));
  for(const [alias,canonical] of names)sql+='when '+quote(alias)+' then '+quote(canonical)+'\n';
