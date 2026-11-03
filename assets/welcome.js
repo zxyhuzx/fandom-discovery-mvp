@@ -1,3 +1,6 @@
+import {createClient} from '@supabase/supabase-js';
+import {config} from './config.js';
+import {shouldShowTutorial,hasSeenTutorial,rememberTutorial} from './first-visit.js';
 import {WORKS,CHARACTERS,workGenre,normalizeKeyword,characterAliases} from './domain.js';
 import {compareWelcomeWorks} from './curated-catalog.js';
 import {WELCOME_DRAFT_KEY,WELCOME_CONNECT_KEY,WELCOME_BROWSE_KEY,choiceItems,parseWelcomeDraft} from './welcome-state.js';
@@ -33,10 +36,20 @@ $('welcome-start').onclick=()=>show('works');$('welcome-back-hello').onclick=()=
 $('welcome-next-characters').onclick=()=>{if(selected.length)show('characters')};$('welcome-back-works').onclick=()=>show('works');
 $('welcome-next-connect').onclick=()=>{if(selected.length){persist();show('connect')}};$('welcome-back-characters').onclick=()=>show('characters');
 $('welcome-work-search').oninput=renderWorks;$('welcome-character-search').oninput=renderCharacters;
-document.querySelectorAll('.welcome-skip').forEach(link=>link.onclick=()=>{if(selected.length)persist();try{sessionStorage.removeItem(WELCOME_CONNECT_KEY);sessionStorage.setItem(WELCOME_BROWSE_KEY,'1')}catch{}});
+document.querySelectorAll('.welcome-skip').forEach(link=>link.onclick=()=>{rememberTutorial();if(selected.length)persist();try{sessionStorage.removeItem(WELCOME_CONNECT_KEY);sessionStorage.setItem(WELCOME_BROWSE_KEY,'1')}catch{}});
 // Temporary entry: browsing only, without OAuth or account-interest writes.
 $('welcome-kakao').onclick=()=>{if(selected.length&&!persist())return;try{
  sessionStorage.removeItem(WELCOME_CONNECT_KEY);sessionStorage.setItem(WELCOME_BROWSE_KEY,'1');
- }catch{}location.assign('/app.html#home')};
+ }catch{}rememberTutorial();location.assign('/app.html?entry=welcome#home')};
 const params=new URLSearchParams(location.search);
-if(params.get('step')==='connect'&&selected.length){show('connect');if(params.get('error'))message(params.get('error')==='save'?'선택한 관심사를 계정에 저장하지 못했어요. 선택은 보관되어 있으니 다시 연결해 주세요.':'카카오 연결이 완료되지 않았어요. 다시 연결하거나 다른 별들을 먼저 둘러보세요.')}
+async function initWelcome(){
+ const forced=params.get('tutorial')==='1',recovery=params.get('step')==='connect'&&selected.length;
+ let session=null;try{const db=createClient(config.supabaseUrl,config.publishableKey,{auth:{flowType:'pkce',detectSessionInUrl:false,persistSession:true}});const r=await db.auth.getSession();session=r.data?.session}catch{}
+ let seen=hasSeenTutorial();try{seen=seen||sessionStorage.getItem(WELCOME_BROWSE_KEY)==='1'||!!parseWelcomeDraft(localStorage.getItem(WELCOME_DRAFT_KEY))}catch{}
+ if(!shouldShowTutorial({seen,user:!!session,forced,recovery:!!recovery})){
+  try{sessionStorage.setItem(WELCOME_BROWSE_KEY,'1')}catch{}rememberTutorial();location.replace('/app.html#home');return;
+ }
+ rememberTutorial();$('welcome-shell').hidden=false;$('welcome-loading').hidden=true;
+ if(recovery){show('connect');if(params.get('error'))message(params.get('error')==='save'?'선택한 관심사를 계정에 저장하지 못했어요. 선택은 보관되어 있으니 다시 연결해 주세요.':'카카오 연결이 완료되지 않았어요. 다시 연결하거나 다른 별들을 먼저 둘러보세요.')}
+}
+initWelcome();

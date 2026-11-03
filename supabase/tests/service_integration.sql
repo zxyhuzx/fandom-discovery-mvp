@@ -21,8 +21,8 @@ do $$ begin
   raise exception 'spoofed user id allowed';
  exception when insufficient_privilege then null; end;
  begin
-  insert into public.goods_posts(title,source_url,work_name,sale_status,is_published) values('unauthorized','https://example.invalid/unauthorized','하이큐','open',true);
-  raise exception 'non-admin publication allowed';
+  insert into public.goods_posts(created_by,title,source_url,work_name,sale_status,is_published) values('00000000-0000-4000-8000-000000000102','unauthorized','https://example.invalid/unauthorized','하이큐','open',true);
+  raise exception 'forged goods owner allowed';
  exception when insufficient_privilege then null; end;
  begin
   perform public.process_mock_queue(20); raise exception 'non-admin dispatch allowed';
