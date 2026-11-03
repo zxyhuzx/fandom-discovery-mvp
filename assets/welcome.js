@@ -1,10 +1,7 @@
-import {createClient} from '@supabase/supabase-js';
-import {config} from './config.js';
 import {WORKS,CHARACTERS,workGenre,normalizeKeyword,characterAliases} from './domain.js';
 import {compareWelcomeWorks} from './curated-catalog.js';
 import {WELCOME_DRAFT_KEY,WELCOME_CONNECT_KEY,WELCOME_BROWSE_KEY,choiceItems,parseWelcomeDraft} from './welcome-state.js';
 const $=id=>document.getElementById(id);
-const db=createClient(config.supabaseUrl,config.publishableKey,{auth:{flowType:'pkce',detectSessionInUrl:false,persistSession:true,autoRefreshToken:true}});
 let selected=[],characters={},category='애니·만화',step='hello';
 try{const previous=parseWelcomeDraft(localStorage.getItem(WELCOME_DRAFT_KEY));if(previous){selected=[...new Set(previous.items.map(i=>i.work_name))];for(const i of previous.items)if(i.character_name)(characters[i.work_name]??=[]).push(i.character_name)}}catch{}
 function node(tag,text,className){const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(className)n.className=className;return n}
@@ -37,11 +34,9 @@ $('welcome-next-characters').onclick=()=>{if(selected.length)show('characters')}
 $('welcome-next-connect').onclick=()=>{if(selected.length){persist();show('connect')}};$('welcome-back-characters').onclick=()=>show('characters');
 $('welcome-work-search').oninput=renderWorks;$('welcome-character-search').oninput=renderCharacters;
 document.querySelectorAll('.welcome-skip').forEach(link=>link.onclick=()=>{if(selected.length)persist();try{sessionStorage.removeItem(WELCOME_CONNECT_KEY);sessionStorage.setItem(WELCOME_BROWSE_KEY,'1')}catch{}});
-$('welcome-kakao').onclick=async()=>{const button=$('welcome-kakao');if(button.disabled)return;if(!selected.length){show('works');return}if(!persist())return;button.disabled=true;message();try{
- sessionStorage.removeItem(WELCOME_BROWSE_KEY);sessionStorage.setItem(WELCOME_CONNECT_KEY,'1');
- const {data,error}=await db.auth.getSession();if(error)throw error;
- if(data.session){location.assign('/app.html#home');return}
- const {error:oauthError}=await db.auth.signInWithOAuth({provider:'kakao',options:{redirectTo:location.origin+'/app.html',scopes:'profile_nickname profile_image'}});if(oauthError)throw oauthError;
- }catch{try{sessionStorage.removeItem(WELCOME_CONNECT_KEY)}catch{}message('카카오 연결을 시작하지 못했어요. 잠시 후 다시 시도해 주세요.');button.disabled=false}};
+// Temporary entry: browsing only, without OAuth or account-interest writes.
+$('welcome-kakao').onclick=()=>{if(selected.length&&!persist())return;try{
+ sessionStorage.removeItem(WELCOME_CONNECT_KEY);sessionStorage.setItem(WELCOME_BROWSE_KEY,'1');
+ }catch{}location.assign('/app.html#home')};
 const params=new URLSearchParams(location.search);
 if(params.get('step')==='connect'&&selected.length){show('connect');if(params.get('error'))message(params.get('error')==='save'?'선택한 관심사를 계정에 저장하지 못했어요. 선택은 보관되어 있으니 다시 연결해 주세요.':'카카오 연결이 완료되지 않았어요. 다시 연결하거나 다른 별들을 먼저 둘러보세요.')}
