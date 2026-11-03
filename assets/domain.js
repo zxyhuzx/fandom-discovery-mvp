@@ -1,4 +1,5 @@
-import {VTUBERS,WORK_NAME_ALIASES,CHARACTER_NAME_ALIASES,EXPANDED_CATALOG} from './name-catalog.js';
+import {VTUBERS,WORK_NAME_ALIASES,CHARACTER_NAME_ALIASES,EXPANDED_CATALOG,RETIRED_CATALOG,CURATED_CATALOG} from './name-catalog.js';
+import {EXTRA_WORK_ALIASES,GENRE_OVERRIDES,RETIRED_CURATED_CATALOG} from './curated-catalog.js';
 export const WORKS = [
  ['나루토','naruto'], ['하이큐!!','haikyu','haikyuu','하이큐'], ['주술회전','jujutsu','jjk','주술'],
  ['귀멸의 칼날','demonslayer','귀칼','귀멸'], ['원신','genshin','genshinimpact'],
@@ -10,8 +11,10 @@ export const WORKS = [
 for(const row of WORKS)row.push(...(WORK_NAME_ALIASES[row[0]]||[]));
 WORKS.push(...VTUBERS.map(g=>g.work));
 WORKS.push(...EXPANDED_CATALOG.map(g=>g.work));
+WORKS.push(...CURATED_CATALOG.map(g=>g.work));
+for(const row of WORKS)row.push(...(EXTRA_WORK_ALIASES[row[0]]||[]));
 export const normalizeKeyword = value => String(value ?? '').normalize('NFKC').toLowerCase().replace(/[\s!！:：·・]+/gu, '');
-const workIndex=new Map();for(const row of WORKS)for(const alias of row)if(!workIndex.has(normalizeKeyword(alias)))workIndex.set(normalizeKeyword(alias),row);
+const workIndex=new Map();for(const row of [...WORKS,...RETIRED_CATALOG.map(g=>g.work),...RETIRED_CURATED_CATALOG.map(g=>g.work)])for(const alias of row)if(!workIndex.has(normalizeKeyword(alias)))workIndex.set(normalizeKeyword(alias),row);
 export function canonicalWork(value) {
  const term = normalizeKeyword(value);
  return workIndex.get(term)?.[0] ?? value.trim();
@@ -52,13 +55,17 @@ export const CHARACTERS={
 };
 for(const group of VTUBERS)CHARACTERS[group.work[0]]=group.members.map(row=>row[0]);
 for(const group of EXPANDED_CATALOG)CHARACTERS[group.work[0]]=group.members.map(member=>member.names[0]);
+for(const group of CURATED_CATALOG)CHARACTERS[group.work[0]]=group.members.map(member=>member[0]);
 export function characterAliases(work,value){const rows=CHARACTER_NAME_ALIASES[canonicalWork(work)]||[];return rows.find(row=>row.some(a=>normalizeKeyword(a)===normalizeKeyword(value)))||[value]}
 export function canonicalCharacter(work,value){return characterAliases(work,String(value).trim())[0]}
 export function canonicalPost(p){const work=canonicalWork(p.work_name);return {...p,work_name:work,character_names:p.character_names.map(c=>canonicalCharacter(work,c))}}
 export function workGenre(work){
  const key=normalizeWork(work);
+ const name=canonicalWork(work);
+ if(GENRE_OVERRIDES[name])return GENRE_OVERRIDES[name];
+ const curated=[...CURATED_CATALOG,...RETIRED_CURATED_CATALOG].find(g=>g.work[1]===key);if(curated)return curated.genre;
  if(VTUBERS.some(g=>g.work[1]===key))return '버튜버';
- if(EXPANDED_CATALOG.some(g=>g.work[1]===key))return '애니·만화';
+ if([...EXPANDED_CATALOG,...RETIRED_CATALOG].some(g=>g.work[1]===key))return '애니·만화';
  if(['naruto','haikyu','jujutsu','demonslayer','bluelock','kuroko','chainsaw'].includes(key))return '애니·만화';
  if(['orv','sololeveling','sclass'].includes(key))return '웹소설·웹툰';
  if(['genshin','starrail','zzz'].includes(key))return '게임';

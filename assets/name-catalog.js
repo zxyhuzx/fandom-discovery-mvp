@@ -1,5 +1,9 @@
 import expanded from '../data/expanded-catalog.json' with {type:'json'};
-export const EXPANDED_CATALOG=expanded.works;
+import {CURATED_CATALOG,RETIRED_CURATED_CATALOG,EXTRA_VTUBER_MEMBERS,DISCOVERY_ANIME,GENRE_OVERRIDES} from './curated-catalog.js';
+export {CURATED_CATALOG} from './curated-catalog.js';
+const discoverable=g=>DISCOVERY_ANIME.has(g.work[0])||GENRE_OVERRIDES[g.work[0]]==='게임';
+export const RETIRED_CATALOG=expanded.works.filter(g=>!discoverable(g));
+export const EXPANDED_CATALOG=expanded.works.filter(discoverable);
 // Curated names, not machine translation or a claim of a complete/current roster.
 export const VTUBERS=[
  {work:['홀로라이브','hololive','hololive production','ホロライブ','ホロライブプロダクション'],members:[
@@ -11,6 +15,7 @@ export const VTUBERS=[
  {work:['스텔라이브','stellive','StelLive','ステルライブ'],members:[
   ['아야츠노 유니','Ayatsuno Yuni','Yuni','純角ユニ','ユニ'],['아라하시 타비','Arahashi Tabi','Tabi','荒波子タビ','タビ']]}
 ];
+for(const group of VTUBERS)group.members.push(...(EXTRA_VTUBER_MEMBERS[group.work[0]]||[]));
 export const WORK_NAME_ALIASES={
  '나루토':['ナルト','NARUTO'], '하이큐!!':['ハイキュー!!'], '주술회전':['呪術廻戦','Jujutsu Kaisen'],
  '귀멸의 칼날':['鬼滅の刃','Kimetsu no Yaiba','Demon Slayer'], '원신':['原神','Genshin Impact'],
@@ -30,4 +35,5 @@ export const CHARACTER_NAME_ALIASES={
  '체인소 맨':[['덴지','Denji','デンジ'],['파워','Power','パワー'],['하야카와 아키','Hayakawa Aki','早川アキ']]
 };
 for(const group of VTUBERS)CHARACTER_NAME_ALIASES[group.work[0]]=group.members;
-for(const group of EXPANDED_CATALOG)CHARACTER_NAME_ALIASES[group.work[0]]=group.members.map(member=>member.names);
+for(const group of [...EXPANDED_CATALOG,...RETIRED_CATALOG])CHARACTER_NAME_ALIASES[group.work[0]]=group.members.map(member=>member.names);
+for(const group of [...CURATED_CATALOG,...RETIRED_CURATED_CATALOG])CHARACTER_NAME_ALIASES[group.work[0]]=group.members;

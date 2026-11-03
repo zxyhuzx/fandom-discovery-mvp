@@ -1,10 +1,11 @@
 import {createClient} from '@supabase/supabase-js';
 import {config} from './config.js';
 import {WORKS,CHARACTERS,workGenre,normalizeKeyword,characterAliases} from './domain.js';
+import {WELCOME_WORK_ORDER} from './curated-catalog.js';
 import {WELCOME_DRAFT_KEY,WELCOME_CONNECT_KEY,WELCOME_BROWSE_KEY,choiceItems,parseWelcomeDraft} from './welcome-state.js';
 const $=id=>document.getElementById(id);
 const db=createClient(config.supabaseUrl,config.publishableKey,{auth:{flowType:'pkce',detectSessionInUrl:false,persistSession:true,autoRefreshToken:true}});
-let selected=[],characters={},categories=[],step='hello';
+let selected=[],characters={},category='애니·만화',step='hello';
 try{const previous=parseWelcomeDraft(localStorage.getItem(WELCOME_DRAFT_KEY));if(previous){selected=[...new Set(previous.items.map(i=>i.work_name))];for(const i of previous.items)if(i.character_name)(characters[i.work_name]??=[]).push(i.character_name)}}catch{}
 function node(tag,text,className){const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(className)n.className=className;return n}
 function message(text=''){$('welcome-status').textContent=text}
@@ -13,12 +14,14 @@ function persist(){try{if(!selected.length){localStorage.removeItem(WELCOME_DRAF
 function toggleButton(text,active,action,className='welcome-option'){const b=node('button',text,className);b.type='button';b.setAttribute('aria-pressed',String(active));b.onclick=action;return b}
 function renderWorks(){
  const query=normalizeKeyword($('welcome-work-search').value),target=$('welcome-work-choices');target.replaceChildren();
- const found=WORKS.filter(row=>(!categories.length||categories.includes(workGenre(row[0])))&&(!query||row.some(alias=>normalizeKeyword(alias).includes(query))));
+ const preferred=WELCOME_WORK_ORDER[category]||[],position=name=>{const index=preferred.indexOf(name);return index<0?1000:index};
+ const found=WORKS.filter(row=>workGenre(row[0])===category&&(!query||row.some(alias=>normalizeKeyword(alias).includes(query)))).sort((a,b)=>position(a[0])-position(b[0]));
  for(const [work] of found)target.append(toggleButton(work,selected.includes(work),()=>{if(selected.includes(work)){selected=selected.filter(w=>w!==work);delete characters[work]}else{if(choiceItems(selected,characters).length>=100){message('관심사는 최대 100개까지 선택할 수 있어요.');return}selected.push(work)}message();persist();renderWorks()}));
  if(!found.length)target.append(node('p','검색 결과가 없어요. 검색어나 분류를 바꿔보세요.','empty-state'));
  $('welcome-selected-count').textContent=selected.length+'개 작품·그룹 선택';$('welcome-next-characters').disabled=!selected.length;
  const chips=$('welcome-selected-works');chips.replaceChildren();selected.forEach(work=>{const b=toggleButton(work+' ×',true,()=>{selected=selected.filter(w=>w!==work);delete characters[work];persist();renderWorks()},'welcome-chip');b.setAttribute('aria-label',work+' 선택 취소');chips.append(b)});
- const filter=$('welcome-categories');filter.replaceChildren();['애니·만화','게임','웹소설·웹툰','버튜버'].forEach(category=>filter.append(toggleButton(category,categories.includes(category),()=>{categories=categories.includes(category)?categories.filter(g=>g!==category):[...categories,category];renderWorks()},'welcome-chip')));
+ const filter=$('welcome-categories');filter.replaceChildren();['애니·만화','게임','웹소설·웹툰','버튜버'].forEach(name=>filter.append(toggleButton(name,category===name,()=>{category=name;$('welcome-work-search').value='';renderWorks()},'welcome-chip')));
+ $('welcome-work-search').placeholder={'애니·만화':'예: 닌타마, 나히아, 데스노트','게임':'예: 블아, 띵조, 림버스','웹소설·웹툰':'예: 어바등, 마차살, 괴담출근','버튜버':'예: 홀로, 니지, 스텔'}[category];
 }
 function renderCharacters(){
  const query=normalizeKeyword($('welcome-character-search').value),target=$('welcome-character-choices');target.replaceChildren();
