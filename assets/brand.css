@@ -65,3 +65,32 @@ input::placeholder,textarea::placeholder{color:#8495aa}
 .owned-goods{margin:20px 0}.owned-goods .card{min-width:0;padding:16px}.owned-goods h3{font-size:17px}.owned-goods-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.owned-goods-actions .secondary{width:auto;font-size:13px;padding:8px 12px}.owned-goods .goods-art{aspect-ratio:1;max-height:200px}#goods-edit-cancel{margin-left:8px}
 
 .prototype-label{display:inline-block;width:fit-content;font-size:12px;font-weight:650;color:var(--accent);background:var(--tint);border:1px solid var(--line);border-radius:24px;padding:5px 11px;margin:0 0 18px}#recommended-characters{margin-bottom:26px}#recommended-characters .interest-choice{align-items:flex-start}#recommended-characters .note{font-size:11px;margin:6px 0 0}#recommended-characters strong{display:block}#recommended-characters .interest-choice>div{min-width:0}.card .badge{white-space:normal}
+/* Goods cards: one accessible detail link covers the card; watch/source remain separate actions. */
+:is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms) .goods-card{position:relative;isolation:isolate;gap:0;transition:border-color .15s}
+:is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms) .goods-card:hover{border-color:var(--accent)}
+:is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms) .goods-card .goods-card-body{min-width:0}
+:is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms) .goods-card .goods-card-labels{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+:is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms) .goods-card .sale-tag{margin:0;font-size:12px;font-weight:700}
+:is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms) .goods-card .badge{width:auto;white-space:normal;font-size:10px}
+:is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms) .goods-card h3{font-size:17px;line-height:1.5;margin:0 0 8px}
+:is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms) .goods-card .goods-card-link{margin:0;padding:0;font:inherit;text-align:inherit;text-decoration:none;color:var(--ink)}
+.goods-card-link::after{content:'';position:absolute;inset:0;z-index:1;border-radius:16px}
+.goods-card-link:focus-visible{outline:none}.goods-card-link:focus-visible::after{outline:2px solid var(--accent);outline-offset:3px}
+:is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms) .goods-card p{flex:none;font-size:13px;line-height:1.65;margin:0 0 5px;word-break:keep-all;overflow-wrap:anywhere}
+:is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms) .goods-card .goods-card-schedule{margin-top:7px;color:var(--ink);font-variant-numeric:tabular-nums}
+:is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms) .goods-card .form-watch{position:absolute;z-index:2;top:12px;right:12px;grid-column:auto;width:auto;max-width:calc(100% - 24px);min-height:36px;padding:7px 10px;border-radius:10px;font-size:12px;box-shadow:0 2px 6px #00000018}
+:is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms) .goods-card .goods-card-source{position:relative;z-index:2;display:inline-block;margin:6px 0 0;padding:4px 0}
+:is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms)[data-view=list] .goods-card{grid-template-columns:108px minmax(0,1fr);gap:0 20px;align-items:start;padding:18px}
+:is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms)[data-view=list] .goods-card .goods-art{grid-row:1;grid-column:1;width:108px;height:108px;margin:0;align-self:center}
+:is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms)[data-view=list] .goods-card .goods-card-body{grid-column:2;padding-right:128px}
+:is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms)[data-view=list] .goods-card .form-watch{top:18px;right:18px}
+@media(max-width:700px){
+ :is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms) .goods-card h3{font-size:15px}
+ :is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms) .goods-card p{font-size:12px}
+ :is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms) .goods-card .form-watch{top:8px;right:8px;font-size:11px;padding:6px 8px;min-height:36px}
+ :is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms)[data-view=list] .goods-card{grid-template-columns:72px minmax(0,1fr);gap:0 12px;padding:12px}
+ :is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms)[data-view=list] .goods-card .goods-art{grid-column:1;grid-row:1;width:72px;height:72px;align-self:start}
+ :is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms)[data-view=list] .goods-card .goods-card-body{padding:36px 0 0}
+ :is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms)[data-view=list] .goods-card .form-watch{top:12px;right:12px}
+}
+@media(prefers-reduced-motion:reduce){.goods-card{transition:none!important}}

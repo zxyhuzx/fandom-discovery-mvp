@@ -86,7 +86,18 @@ function renderWatchedForms(){
  fillCards('watched-forms',items,watchError&&!showDemo?'알림 설정한 폼을 불러오지 못했어요':'아직 알림 설정한 폼이 없어요',watchError&&!showDemo?'새로고침해서 다시 시도해 주세요.':'관심 있는 폼에서 ‘폼 알림 설정’을 눌러주세요.');
  document.querySelectorAll('#watched-forms .card').forEach((node,index)=>{const p=items[index],countdown=el('p',undefined,'form-countdown');countdown.dataset.formDeadline=p.sale_end||'';countdown.dataset.saleStatus=p.sale_status;countdown.setAttribute('aria-live','off');node.append(countdown);});updateCountdowns();
 }
-function card(p){const n=el('article',undefined,'card');n.append(imageFor(p));if(p.is_test)n.append(el('span',p.is_survey_example?SURVEY_LABEL:'테스트·예시 데이터','badge'));n.append(el('span',SALE_LABELS[p.sale_status],'sale-tag'),el('h3',p.title),el('p',(p.form_items?p.form_items.map(item=>item.work_name+' · '+(item.character_names.join(', ')||'작품 전체')).join(' / '):p.work_name+' · '+(p.character_names.join(', ')||'작품 전체'))),el('p',(p.seller_name||'창작자 미등록')+' · '+(p.platform_name||platform(p.source_url))),el('p',p.sale_end?(p.is_survey_example?'예시 마감 ':'마감 ')+time(p.sale_end):p.sale_start?'시작 '+time(p.sale_start):'일정은 원문을 확인해 주세요.','note'));if(p.recommendationReasons?.length)n.append(el('p','추천 예시: '+p.recommendationReasons.join(', '),'note'));const a=el('a','상세 보기 →','text-link');a.href='#goods/'+p.id;n.append(a);if(!p.is_test)n.append(link(p.source_url,'원본 판매처 ↗'));if(!p.is_test||p.is_survey_example)n.append(watchButton(p));return n}
+function card(p){
+ const n=el('article',undefined,'card goods-card');n.append(imageFor(p));
+ const body=el('div',undefined,'goods-card-body'),labels=el('div',undefined,'goods-card-labels');
+ labels.append(el('span',SALE_LABELS[p.sale_status],'sale-tag'));
+ if(p.is_test)labels.append(el('span',p.is_survey_example?SURVEY_LABEL:'테스트·예시 데이터','badge'));
+ const title=el('h3'),detail=el('a',p.title,'goods-card-link');detail.href='#goods/'+p.id;title.append(detail);
+ const works=p.form_items?p.form_items.map(item=>item.work_name+' · '+(item.character_names.join(', ')||'작품 전체')).join(' / '):p.work_name+' · '+(p.character_names.join(', ')||'작품 전체');
+ body.append(labels,title,el('p',works,'goods-card-interests'),el('p',(p.seller_name||'창작자 미등록')+' · '+(p.platform_name||platform(p.source_url)),'goods-card-seller'),el('p',p.sale_end?(p.is_survey_example?'예시 마감 ':'마감 ')+time(p.sale_end):p.sale_start?'시작 '+time(p.sale_start):'일정은 원문을 확인해 주세요.','goods-card-schedule'));
+ if(p.recommendationReasons?.length)body.append(el('p','추천 예시: '+p.recommendationReasons.join(', '),'note'));
+ if(!p.is_test){const source=link(p.source_url,'원본 판매처 ↗');source.classList.add('goods-card-source');body.append(source)}
+ n.append(body);if(!p.is_test||p.is_survey_example)n.append(watchButton(p));return n;
+}
 function platform(url){try{return new URL(url).hostname.replace(/^www\./,'')}catch{return '판매 플랫폼 미등록'}}
 function fillCards(id,items,message,description){const target=$(id);target.replaceChildren();if(!items.length)empty(target,message,description);else items.forEach(p=>target.append(card(p)))}
 function renderFeed(){
