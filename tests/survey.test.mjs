@@ -29,7 +29,7 @@ test('creator, product, sale filters and interest matching use the existing doma
  for(const seller of new Set(goods.map(p=>p.seller_name)))assert.deepEqual(new Set(filterGoods(goods,{query:seller}).map(p=>p.id)),new Set(goods.filter(p=>p.seller_name===seller).map(p=>p.id)));
  for(const product of new Set(goods.map(p=>p.product_types[0])))assert.deepEqual(new Set(filterGoods(goods,{query:product}).map(p=>p.id)),new Set(goods.filter(p=>p.product_types.includes(product)).map(p=>p.id)));
  for(const type of SALE_TYPES)assert.ok(filterGoods(goods,{saleType:type}).every(p=>p.sale_type===type));
- for(const status of Object.keys(SALE_LABELS)){const result=filterGoods(goods,{status});assert.ok(result.length);assert.ok(result.every(p=>p.sale_status===status));}
+ for(const status of Object.keys(SALE_LABELS)){const result=filterGoods(goods,{status});if(status==='unverified')assert.equal(result.length,0);else assert.ok(result.length);assert.ok(result.every(p=>p.sale_status===status));}
  const selected=[{work_name:'어바등',character_name:'신해량'},{work_name:'스타레일',character_name:'마이데이'}];
  const feed=surveyFeed(selected);assert.ok(feed.length>=8);assert.ok(feed.every(p=>selected.some(i=>matchesInterest(i,p))));
  assert.equal(surveyFeed([]).length,0);assert.equal(surveyFeed([{work_name:'하이큐',character_name:''}]).length,0);

@@ -12,7 +12,7 @@ export function canonicalSource(value) {
  url.searchParams.sort();
  return url.toString().replace(/\/$/,'');
 }
-export const SALE_LABELS={planned:'판매 예정',open:'판매 중',survey_planned:'수요조사 예정',survey_open:'수요조사 중',closed:'마감'};
+export const SALE_LABELS={planned:'판매 예정',open:'판매 중',survey_planned:'수요조사 예정',survey_open:'수요조사 중',closed:'마감',unverified:'판매 상태는 원문 확인'};
 export const QUEUE_LABELS={pending:'모의 발송 대기',mocked:'모의 발송 완료 · 실제 발송 없음',cancelled:'구독 해제 또는 게시 취소로 취소'};
 
 export const goodsGenre=p=>p.genre_name||workGenre(p.work_name);
