@@ -12,16 +12,25 @@ function message(text=''){$('welcome-status').textContent=text}
 function renderStep(name){step=name;message();for(const id of ['hello','works','characters','connect'])$('welcome-'+id).hidden=id!==name;if(name==='works')renderWorks();if(name==='characters')renderCharacters();if(name==='connect')renderSummary();$('welcome-'+name).querySelector('h1').focus()}
 // Keep tutorial steps in browser history so device Back and swipe gestures work naturally.
 const tutorialSteps=['hello','works','characters','connect'];
+const tutorialRun=history.state?.byeoljupTutorialRun||crypto.randomUUID();
+const finishedKey='byeoljup-tutorial-finished:'+tutorialRun;
+const homeUrl='/app.html?entry=welcome#home';
+let leavingTutorial=false;
+function isFinished(){try{return leavingTutorial||sessionStorage.getItem(finishedKey)==='1'}catch{return leavingTutorial}}
+function redirectFinished(){if(!isFinished())return false;$('welcome-shell').hidden=true;location.replace(homeUrl);return true}
+// BFCache can restore this document without rerunning initialization.
+window.addEventListener('pageshow',redirectFinished);
 function availableStep(name){return tutorialSteps.includes(name)?(['characters','connect'].includes(name)&&!selected.length?'works':name):'hello'}
 function show(name,replace=false){
  name=availableStep(name);
  const url=new URL(location.href);if(name==='hello')url.searchParams.delete('step');else url.searchParams.set('step',name);url.searchParams.delete('error');
- const state={...history.state,byeoljupTutorial:name};
+ const state={...history.state,byeoljupTutorial:name,byeoljupTutorialRun:tutorialRun};
  if(replace||history.state?.byeoljupTutorial===name)history.replaceState(state,'',url);else history.pushState(state,'',url);
  renderStep(name);
 }
 function previousStep(name){if(history.state?.byeoljupTutorial===step&&step!=='hello')history.back();else show(name,true)}
 window.addEventListener('popstate',()=>{
+ if(redirectFinished())return;
  const requested=history.state?.byeoljupTutorial||new URL(location.href).searchParams.get('step')||'hello';
  const next=availableStep(requested);if(next!==requested)show(next,true);else renderStep(next);
 });
@@ -51,13 +60,23 @@ $('welcome-start').onclick=()=>show('works');$('welcome-back-hello').onclick=()=
 $('welcome-next-characters').onclick=()=>{if(selected.length)show('characters')};$('welcome-back-works').onclick=()=>previousStep('works');
 $('welcome-next-connect').onclick=()=>{if(selected.length){persist();show('connect')}};$('welcome-back-characters').onclick=()=>previousStep('characters');
 $('welcome-work-search').oninput=renderWorks;$('welcome-character-search').oninput=renderCharacters;
-document.querySelectorAll('.welcome-skip').forEach(link=>link.onclick=()=>{rememberTutorial();if(selected.length)persist();try{sessionStorage.removeItem(WELCOME_CONNECT_KEY);sessionStorage.setItem(WELCOME_BROWSE_KEY,'1')}catch{}});
+function finishTutorial(){
+ if(selected.length&&!persist())return;
+ rememberTutorial();leavingTutorial=true;$('welcome-shell').hidden=true;
+ try{sessionStorage.setItem(finishedKey,'1');sessionStorage.removeItem(WELCOME_CONNECT_KEY);sessionStorage.setItem(WELCOME_BROWSE_KEY,'1')}catch{}
+ // Replace the first tutorial entry, removing all tutorial steps from the Back path.
+ const depth=tutorialSteps.indexOf(step);
+ if(depth>0)history.go(-depth);else location.replace(homeUrl);
+}
+document.querySelectorAll('.welcome-skip').forEach(link=>link.onclick=event=>{
+ if(event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
+ event.preventDefault();finishTutorial();
+});
 // Temporary entry: browsing only, without OAuth or account-interest writes.
-$('welcome-kakao').onclick=()=>{if(selected.length&&!persist())return;try{
- sessionStorage.removeItem(WELCOME_CONNECT_KEY);sessionStorage.setItem(WELCOME_BROWSE_KEY,'1');
- }catch{}rememberTutorial();location.assign('/app.html?entry=welcome#home')};
+$('welcome-kakao').onclick=finishTutorial;
 const params=new URLSearchParams(location.search);
 async function initWelcome(){
+ if(redirectFinished())return;
  const forced=params.get('tutorial')==='1',savedStep=history.state?.byeoljupTutorial;
  const recovery=tutorialSteps.includes(savedStep)||tutorialSteps.includes(params.get('step'));
  const initialStep=availableStep(savedStep||params.get('step')||'hello');
