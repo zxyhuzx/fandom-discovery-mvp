@@ -347,7 +347,7 @@ async function init(){const params=new URLSearchParams(location.search);let auth
  if(authError)notice('로그인 연결 시간이 만료됐어요. 다시 카카오로 시작해 주세요.',true);
  db.auth.onAuthStateChange((event,session)=>{if(event==='SIGNED_OUT'||session?.user?.id!==user?.id)queueMicrotask(()=>setSession(session).catch(e=>notice(friendly(e),true)))});
 }
-init().catch(e=>{notice(friendly(e),true);renderRoute()});setInterval(()=>{if(!loading&&!dirty&&document.visibilityState==='visible')refresh().catch(()=>{})},30000);
+init().catch(e=>{notice(friendly(e),true);renderRoute();if(route()==='home')loadPopular()});setInterval(()=>{if(!loading&&!dirty&&document.visibilityState==='visible')refresh().catch(()=>{})},30000);
 
 function recordView(id){let visitor;try{visitor=localStorage.getItem('byeoljup-visitor');if(!visitor){visitor=crypto.randomUUID();localStorage.setItem('byeoljup-visitor',visitor)}}catch{return}db.rpc('record_goods_view',{post_id:id,visitor}).then(r=>{if(!r.error){const p=posts.find(p=>p.id===id);if(p)p.popularity_count=Number(p.popularity_count||0)}})}
 
