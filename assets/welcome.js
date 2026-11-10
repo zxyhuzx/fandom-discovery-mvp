@@ -9,7 +9,22 @@ let selected=[],characters={},category='애니·만화',step='hello';
 try{const previous=parseWelcomeDraft(localStorage.getItem(WELCOME_DRAFT_KEY));if(previous){selected=[...new Set(previous.items.map(i=>i.work_name))];for(const i of previous.items)if(i.character_name)(characters[i.work_name]??=[]).push(i.character_name)}}catch{}
 function node(tag,text,className){const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(className)n.className=className;return n}
 function message(text=''){$('welcome-status').textContent=text}
-function show(name){step=name;message();for(const id of ['hello','works','characters','connect'])$('welcome-'+id).hidden=id!==name;if(name==='works')renderWorks();if(name==='characters')renderCharacters();if(name==='connect')renderSummary();$('welcome-'+name).querySelector('h1').focus()}
+function renderStep(name){step=name;message();for(const id of ['hello','works','characters','connect'])$('welcome-'+id).hidden=id!==name;if(name==='works')renderWorks();if(name==='characters')renderCharacters();if(name==='connect')renderSummary();$('welcome-'+name).querySelector('h1').focus()}
+// Keep tutorial steps in browser history so device Back and swipe gestures work naturally.
+const tutorialSteps=['hello','works','characters','connect'];
+function availableStep(name){return tutorialSteps.includes(name)?(['characters','connect'].includes(name)&&!selected.length?'works':name):'hello'}
+function show(name,replace=false){
+ name=availableStep(name);
+ const url=new URL(location.href);if(name==='hello')url.searchParams.delete('step');else url.searchParams.set('step',name);url.searchParams.delete('error');
+ const state={...history.state,byeoljupTutorial:name};
+ if(replace||history.state?.byeoljupTutorial===name)history.replaceState(state,'',url);else history.pushState(state,'',url);
+ renderStep(name);
+}
+function previousStep(name){if(history.state?.byeoljupTutorial===step&&step!=='hello')history.back();else show(name,true)}
+window.addEventListener('popstate',()=>{
+ const requested=history.state?.byeoljupTutorial||new URL(location.href).searchParams.get('step')||'hello';
+ const next=availableStep(requested);if(next!==requested)show(next,true);else renderStep(next);
+});
 function persist(){try{if(!selected.length){localStorage.removeItem(WELCOME_DRAFT_KEY);return true}localStorage.setItem(WELCOME_DRAFT_KEY,JSON.stringify({version:1,items:choiceItems(selected,characters)}));return true}catch{message('선택 내용을 잠시 저장할 수 없어요. 브라우저 저장 공간을 허용한 뒤 다시 시도해 주세요.');return false}}
 function toggleButton(text,active,action,className='welcome-option'){const b=node('button',text,className);b.type='button';b.setAttribute('aria-pressed',String(active));b.onclick=action;return b}
 function renderWorks(){
@@ -32,9 +47,9 @@ function renderCharacters(){
  group.append(options);target.append(group);}
 }
 function renderSummary(){const target=$('welcome-summary');target.replaceChildren();choiceItems(selected,characters).forEach(i=>target.append(node('span',i.work_name+(i.character_name?' · '+i.character_name:' · 전체'))))}
-$('welcome-start').onclick=()=>show('works');$('welcome-back-hello').onclick=()=>show('hello');
-$('welcome-next-characters').onclick=()=>{if(selected.length)show('characters')};$('welcome-back-works').onclick=()=>show('works');
-$('welcome-next-connect').onclick=()=>{if(selected.length){persist();show('connect')}};$('welcome-back-characters').onclick=()=>show('characters');
+$('welcome-start').onclick=()=>show('works');$('welcome-back-hello').onclick=()=>previousStep('hello');
+$('welcome-next-characters').onclick=()=>{if(selected.length)show('characters')};$('welcome-back-works').onclick=()=>previousStep('works');
+$('welcome-next-connect').onclick=()=>{if(selected.length){persist();show('connect')}};$('welcome-back-characters').onclick=()=>previousStep('characters');
 $('welcome-work-search').oninput=renderWorks;$('welcome-character-search').oninput=renderCharacters;
 document.querySelectorAll('.welcome-skip').forEach(link=>link.onclick=()=>{rememberTutorial();if(selected.length)persist();try{sessionStorage.removeItem(WELCOME_CONNECT_KEY);sessionStorage.setItem(WELCOME_BROWSE_KEY,'1')}catch{}});
 // Temporary entry: browsing only, without OAuth or account-interest writes.
@@ -43,13 +58,17 @@ $('welcome-kakao').onclick=()=>{if(selected.length&&!persist())return;try{
  }catch{}rememberTutorial();location.assign('/app.html?entry=welcome#home')};
 const params=new URLSearchParams(location.search);
 async function initWelcome(){
- const forced=params.get('tutorial')==='1',recovery=params.get('step')==='connect'&&selected.length;
+ const forced=params.get('tutorial')==='1',savedStep=history.state?.byeoljupTutorial;
+ const recovery=tutorialSteps.includes(savedStep)||tutorialSteps.includes(params.get('step'));
+ const initialStep=availableStep(savedStep||params.get('step')||'hello');
  let session=null;try{const db=createClient(config.supabaseUrl,config.publishableKey,{auth:{flowType:'pkce',detectSessionInUrl:false,persistSession:true}});const r=await db.auth.getSession();session=r.data?.session}catch{}
  let seen=hasSeenTutorial();try{seen=seen||sessionStorage.getItem(WELCOME_BROWSE_KEY)==='1'||!!parseWelcomeDraft(localStorage.getItem(WELCOME_DRAFT_KEY))}catch{}
  if(!shouldShowTutorial({seen,user:!!session,forced,recovery:!!recovery})){
   try{sessionStorage.setItem(WELCOME_BROWSE_KEY,'1')}catch{}rememberTutorial();location.replace('/app.html#home');return;
  }
  rememberTutorial();$('welcome-shell').hidden=false;$('welcome-loading').hidden=true;
- if(recovery){show('connect');if(params.get('error'))message(params.get('error')==='save'?'선택한 관심사를 계정에 저장하지 못했어요. 선택은 보관되어 있으니 다시 연결해 주세요.':'카카오 연결이 완료되지 않았어요. 다시 연결하거나 다른 별들을 먼저 둘러보세요.')}
+ // A direct later-step URL gets real preceding steps; reloads reuse existing entries.
+ if(!tutorialSteps.includes(savedStep)){show('hello',true);for(const name of tutorialSteps.slice(1,tutorialSteps.indexOf(initialStep)+1))show(name)}else show(initialStep,true);
+ if(recovery&&initialStep==='connect'){if(params.get('error'))message(params.get('error')==='save'?'선택한 관심사를 계정에 저장하지 못했어요. 선택은 보관되어 있으니 다시 연결해 주세요.':'카카오 연결이 완료되지 않았어요. 다시 연결하거나 다른 별들을 먼저 둘러보세요.')}
 }
 initWelcome();
