@@ -5,9 +5,9 @@ export const WELCOME_BROWSE_KEY='byeoljup-welcome-browse';
 export function choiceItems(works,characters={}){
  return works.flatMap(work=>(characters[work]?.length?characters[work]:['']).map(character=>({work_name:work,character_name:character})));
 }
-export function parseWelcomeDraft(raw){
+export function parseWelcomeDraft(raw,{allowUnloaded=false}={}){
  try{const value=JSON.parse(raw);if(value?.version!==1||!Array.isArray(value.items)||!value.items.length||value.items.length>100)return null;
- const items=value.items.map(i=>{if(typeof i?.work_name!=='string'||typeof i?.character_name!=='string')throw Error();const work_name=canonicalWork(i.work_name),character_name=canonicalCharacter(work_name,i.character_name);if(!WORKS.some(w=>w[0]===work_name)||character_name&&!(CHARACTERS[work_name]||[]).includes(character_name))throw Error();return {work_name,character_name}});
+ const items=value.items.map(i=>{if(typeof i?.work_name!=='string'||typeof i?.character_name!=='string')throw Error();const work_name=canonicalWork(i.work_name),character_name=canonicalCharacter(work_name,i.character_name);if(!work_name||work_name.length>120||character_name.length>120||(!allowUnloaded&&(!WORKS.some(w=>w[0]===work_name)||character_name&&!(CHARACTERS[work_name]||[]).includes(character_name))))throw Error();return {work_name,character_name}});
  return {...value,items};}catch{return null}
 }
 export function mergeWelcomeInterests(existing,items){

@@ -53,3 +53,9 @@ test('game edits preserve legacy keys and anime picker uses Korean alphabetical 
  assert.equal(anime[0][0],'가정교사 히트맨 REBORN!');
  assert.deepEqual(anime.map(w=>w[0]),anime.map(w=>w[0]).sort((a,b)=>a.localeCompare(b,'ko')));
 });
+test('idol groups and members use the same scoped aliases without mixing with VTubers',()=>{
+ assert.equal(workGenre('BTS'),'아이돌');assert.equal(canonicalWork('스키즈'),'스트레이 키즈');
+ assert.equal(canonicalCharacter('Stray Kids','Felix'),'필릭스');assert.equal(canonicalCharacter('세븐틴','MINGYU'),'민규');
+ assert.ok(searchSuggestions('Felix').some(c=>c.work_name==='스트레이 키즈'&&c.character_name==='필릭스'));
+ assert.equal(workGenre('니지산지'),'버튜버');
+});

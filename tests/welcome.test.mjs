@@ -18,3 +18,9 @@ test('post-login import merges existing account interests without losing them or
  const items=mergeWelcomeInterests(current,[{work_name:'Genshin Impact',character_name:'Zhongli'},{work_name:'하이큐!!',character_name:''}]);
  assert.equal(items.length,2);assert.deepEqual(items[0],{work_name:'원신',character_name:'종려'});
 });
+test('saved drafts survive before their catalog page is loaded; structural validation remains enforced',()=>{
+ const raw=JSON.stringify({version:1,items:[{work_name:'서버의 새 작품',character_name:'서버의 새 인물'}]});
+ assert.equal(parseWelcomeDraft(raw),null);assert.equal(parseWelcomeDraft(raw,{allowUnloaded:true}).items[0].character_name,'서버의 새 인물');
+ assert.equal(parseWelcomeDraft(JSON.stringify({version:1,items:[{work_name:'',character_name:''}]}),{allowUnloaded:true}),null);
+ assert.equal(parseWelcomeDraft('{invalid',{allowUnloaded:true}),null);
+});
