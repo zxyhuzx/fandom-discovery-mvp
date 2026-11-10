@@ -1,3 +1,4 @@
+import {createXSearchController} from './x-search-ui.js';
 import {catalogSearch,resolveCatalog,catalogChoice} from './catalog-client.js';
 import {prototypePopularForms,prototypeCharacterRecommendations,prototypeRecommendedForms} from './prototype-feed.js';
 import {hasSeenTutorial,rememberTutorial} from './first-visit.js';
@@ -25,6 +26,7 @@ const demos=config.surveyDemoEnabled===true?SURVEY_GOODS:[];
 let sampleWatches=[];try{sampleWatches=readFormWatches(localStorage.getItem(FORM_WATCH_KEY),demos)}catch{}
 let realWatchIds=[],watchedPosts=[],watchBusy=new Set(),watchError=false;
 const profileController=createProfileController({db,getUser:()=>user,onChange:name=>{$('menu-account-name').textContent=user?name+'님':'로그인하고 구독과 내 알림을 관리해 보세요.'}});
+const xSearchController=createXSearchController({db,isAdmin:()=>admin});
 function guestInterests(){try{return parseWelcomeDraft(localStorage.getItem(WELCOME_DRAFT_KEY),{allowUnloaded:true})?.items||[]}catch{return []}}
 
 function el(tag,text,className){const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(className)n.className=className;return n}
@@ -226,7 +228,7 @@ async function refresh(){const current=++epoch;loading=true;$('loading').hidden=
  if(current!==epoch)return;admin=role;[interests,notifications,queue,attempts,preferences]=personal;if(!user&&showDemo)interests=guestInterests();try{if(interests.length)await resolveCatalog(interests)}catch{}if(current!==epoch)return;interests=interests.map(i=>({...i,work_name:canonicalWork(i.work_name),character_name:canonicalCharacter(i.work_name,i.character_name)}));if(!dirty)draft=interests.map(i=>({...i}));
  await loadMyGoods();if(current!==epoch)return;await profileController.load();if(current!==epoch)return;await loadFormWatches();if(current!==epoch)return;await loadSubscriptions();if(current!==epoch)return;if(route()==='explore')await loadExplore();if(current===epoch){render();if(route()==='home'&&homeTab==='popular')await loadPopular()}
  }finally{if(current===epoch){loading=false;$('loading').hidden=true}}}
-async function setSession(session){epoch++;subscriptionEpoch++;exploreEpoch++;subscriptionPosts=[];posts=[];subscriptionWork='';popularEpoch++;popularPosts=[];user=session?.user??null;myGoodsEpoch++;myGoods=[];myGoodsError=false;myGoodsMore=false;myGoodsLimit=30;resetGoodsEditor();profileController.clear();realWatchIds=[];watchedPosts=[];admin=false;dirty=false;interests=[];draft=[];notifications=[];queue=[];attempts=[];preferences=null;await refresh()}
+async function setSession(session){xSearchController.clear();epoch++;subscriptionEpoch++;exploreEpoch++;subscriptionPosts=[];posts=[];subscriptionWork='';popularEpoch++;popularPosts=[];user=session?.user??null;myGoodsEpoch++;myGoods=[];myGoodsError=false;myGoodsMore=false;myGoodsLimit=30;resetGoodsEditor();profileController.clear();realWatchIds=[];watchedPosts=[];admin=false;dirty=false;interests=[];draft=[];notifications=[];queue=[];attempts=[];preferences=null;await refresh()}
 function queueRow(q){const row=el('div',undefined,'list-row');const n=notifications.find(n=>n.id===q.notification_id);row.append(el('span',n?.title||'알림 '+q.notification_id.slice(0,8)),el('span',QUEUE_LABELS[q.status]||q.status));return row}
 function renderAdmin(){
  $('admin-queue').replaceChildren();if(!queue.length)empty($('admin-queue'),'대기열이 비어 있어요.');else queue.forEach(q=>$('admin-queue').append(queueRow(q)));

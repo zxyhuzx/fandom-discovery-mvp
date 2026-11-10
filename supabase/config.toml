@@ -2,3 +2,7 @@ project_id = "fandom-discovery-mvp"
 
 [functions.research]
 verify_jwt = false
+
+[functions.x-search]
+# The function verifies the session and admin role itself before any paid call.
+verify_jwt = false
