@@ -12,6 +12,8 @@ import {dispatchMockBatch} from '../lib/messaging/mock-dispatch.mjs';
 import {canonicalWork,canonicalCharacter,canonicalPost,canonicalSource,matchesInterest,normalizeKeyword,filterGoods,needsOnboarding,workGenre,goodsGenre,sortGoods,searchSuggestions,SALE_LABELS,QUEUE_LABELS} from './domain.js';
 const $=id=>document.getElementById(id);
 const db=createClient(config.supabaseUrl,config.publishableKey,{auth:{flowType:'pkce',detectSessionInUrl:false,persistSession:true,autoRefreshToken:true}});
+// Public discovery must remain readable even when a saved login session has expired.
+const publicDb=createClient(config.supabaseUrl,config.publishableKey,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
 let surveyMode=config.surveyDemoEnabled===true&&config.realFeedEnabled!==true;try{const mode=localStorage.getItem('byeoljup-survey-mode');if(config.realFeedEnabled!==true&&config.surveyDemoEnabled===true&&mode!==null)surveyMode=mode==='1'}catch{}
 let viewMode='grid';try{viewMode=localStorage.getItem('byeoljup-view')==='list'?'list':'grid'}catch{}
 let user=null,admin=false,interests=[],draft=[],posts=[],notifications=[],queue=[],attempts=[],preferences=null,dirty=false,loading=false,epoch=0,showDemo=surveyMode,searchScope='all',searchComposing=false;
@@ -147,7 +149,7 @@ function selectHomeTab(tab){
 async function loadPopular(){
  if(showDemo){popularBusy=false;popularError=false;popularPosts=prototypePopularForms();renderHome();return}
  const current=++popularEpoch;popularBusy=true;popularError=false;renderHome();
- try{const rows=result(await db.rpc('home_goods_feed',{page_size:10}));if(current!==popularEpoch||showDemo)return;const hydrated=await hydratePosts(rows.map(row=>({...row.post,popularity_count:Number(row.view_count)})));if(current!==popularEpoch||showDemo)return;popularPosts=hydrated;}
+ try{const rows=result(await publicDb.rpc('home_goods_feed',{page_size:10}));if(current!==popularEpoch||showDemo)return;const hydrated=await hydratePosts(rows.map(row=>({...row.post,popularity_count:Number(row.view_count)})));if(current!==popularEpoch||showDemo)return;popularPosts=hydrated;}
  catch{if(current===popularEpoch){popularError=true;popularPosts=[]}}
  finally{if(current===popularEpoch){popularBusy=false;renderHome()}}
 }
@@ -319,9 +321,10 @@ $('goods-work').onfocus=uploadWorkChoices;$('goods-work').oninput=()=>{clearTime
 Object.entries(SALE_LABELS).forEach(([value,label])=>{const n=el('option',label);n.value=value;$('filter-status').append(n);$('subscription-status').append(n.cloneNode(true))});choices();
 window.addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue=''}});
 async function init(){const params=new URLSearchParams(location.search);let authError=false;
+ if(route()==='home'){renderRoute();loadPopular();}
  if(params.has('error')){authError=true;history.replaceState({},'',location.pathname+location.hash)}
  if(params.has('code')){const {error}=await db.auth.exchangeCodeForSession(params.get('code'));history.replaceState({},'',location.pathname+location.hash);authError=!!error}
- const {data,error}=await db.auth.getSession();if(error)throw error;
+ const {data,error}=await db.auth.getSession();if(error)authError=true;
  const welcomeEntry=params.get('entry')==='welcome';
  if(welcomeEntry){rememberTutorial();params.delete('entry');history.replaceState({},'',location.pathname+(params.size?'?'+params:'')+location.hash)}
  if(data?.session){rememberTutorial();try{sessionStorage.setItem(WELCOME_BROWSE_KEY,'1')}catch{}}
