@@ -13,6 +13,7 @@ insert into public.goods_posts(id,title,source_url,work_name,character_names,sal
 select set_config('request.jwt.claims','{"sub":"00000000-0000-4000-8000-000000000501","role":"authenticated"}',true);
 set local role authenticated;
 select public.save_my_interests('[{"work_name":"haikyuu","character_name":"Shoyo Hinata"}]');
+set local statement_timeout='5s';
 do $$ begin
  assert (select count(*)=2 from public.my_subscription_feed()),'own subscription matching or exclusions failed';
  assert (select count(*)=1 from public.my_subscription_feed(status_filter=>'open')),'status filter failed';

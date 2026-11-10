@@ -13,7 +13,7 @@ import {canonicalWork,canonicalCharacter,canonicalPost,canonicalSource,matchesIn
 const $=id=>document.getElementById(id);
 const db=createClient(config.supabaseUrl,config.publishableKey,{auth:{flowType:'pkce',detectSessionInUrl:false,persistSession:true,autoRefreshToken:true}});
 // Public discovery must remain readable even when a saved login session has expired.
-const publicDb=createClient(config.supabaseUrl,config.publishableKey,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
+const publicDb=createClient(config.supabaseUrl,config.publishableKey,{auth:{storageKey:'byeoljup-public-readonly',persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
 let surveyMode=config.surveyDemoEnabled===true&&config.realFeedEnabled!==true;try{const mode=localStorage.getItem('byeoljup-survey-mode');if(config.realFeedEnabled!==true&&config.surveyDemoEnabled===true&&mode!==null)surveyMode=mode==='1'}catch{}
 let viewMode='grid';try{viewMode=localStorage.getItem('byeoljup-view')==='list'?'list':'grid'}catch{}
 let user=null,admin=false,interests=[],draft=[],posts=[],notifications=[],queue=[],attempts=[],preferences=null,dirty=false,loading=false,epoch=0,showDemo=surveyMode,searchScope='all',searchComposing=false;
