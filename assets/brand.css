@@ -1,23 +1,23 @@
-/* Byeoljup: a quiet blue night, with warm starlight from the original icon. */
-:root{--paper:#050b13;--surface:#0b1420;--tint:#101e2f;--line:#1e2e41;--ink:#c9d2de;--muted:#94a3b6;--accent:#86a5c9;--button:#294b73;--starlight:#cbb78f}
+/* Byeoljup: deep navy with restrained, matte gold accents. */
+:root{--paper:#061327;--surface:#0a1e3a;--tint:#142c4c;--line:#2b405b;--ink:#dce1e5;--muted:#a4b1c3;--accent:#d0b472;--button:#c6a762;--button-ink:#071b35;--button-hover:#d5ba7d;--starlight:#d0b472;--badge-bg:#2b2b29;--badge-ink:#dbc58c}
 body{min-height:100vh;background:var(--paper)}
 .brand{display:inline-flex;align-items:center;gap:10px;flex-shrink:0;color:var(--ink);text-decoration:none}
 .brand img{display:block;width:48px;height:48px;border-radius:14px;object-fit:contain}
 .brand span,.visual:before,.success .symbol{color:var(--starlight)}
 .welcome-icon{display:block;border-radius:28px;margin-bottom:25px}
 .brand img,.welcome-icon{clip-path:inset(12% round 22%);transform:scale(1.3158)}
-.visual{background:linear-gradient(145deg,#102035,#0a1523);border:1px solid var(--line)}
+.visual{background:var(--tint);border:1px solid var(--line)}
 .eyebrow{color:var(--accent)}
-.primary{color:#d9e2ee;box-shadow:0 4px 16px #00000018}
-.primary:hover{background:#325880}
-.secondary:hover{background:var(--tint);border-color:#3d5877}
-input::placeholder,textarea::placeholder{color:#8495aa}
+.primary{color:var(--button-ink);box-shadow:0 4px 16px #00000018}
+.primary:hover{background:var(--button-hover)}
+.secondary:hover{background:var(--tint);border-color:var(--accent)}
+input::placeholder,textarea::placeholder{color:var(--muted)}
 .card,.form-card,.input-box{box-shadow:0 8px 28px #00000012}
 @media(max-width:700px){.brand{gap:7px}.brand img{width:40px;height:40px;border-radius:12px}.welcome-icon{width:96px;height:96px}.small{max-width:120px;text-align:right}}
-/* Light mode reuses the existing light ink and dark navy tokens; dark values stay unchanged. */
-:root[data-theme="light"]{color-scheme:light;--paper:#adb8c6;--surface:#bac5d2;--tint:#a2afbf;--line:#7e8fa3;--ink:#142339;--muted:#344b64;--accent:#294b73;--button:#294b73;--starlight:#795f34}
+/* Soft blue-gray light mode keeps gold readable without metallic glare. */
+:root[data-theme="light"]{color-scheme:light;--paper:#bec7d2;--surface:#ccd3dc;--tint:#b1bfce;--line:#8291a3;--ink:#10223d;--muted:#3e526b;--accent:#69501d;--button:#b99a54;--button-ink:#071b35;--button-hover:#c5a963;--starlight:#69501d;--badge-bg:#b8aa87;--badge-ink:#30270f}
 :root[data-theme="light"] .visual{background:var(--tint)}
-:root[data-theme="light"] .primary{color:#e5eaf1}
+:root[data-theme="light"] .primary{color:var(--button-ink)}
 :root[data-theme="light"] input::placeholder,:root[data-theme="light"] textarea::placeholder{color:var(--muted)}
 :root[data-theme="light"] .shelf-card:hover{background:var(--tint)}
 .service-header{max-width:1280px;gap:22px;flex-wrap:wrap}.service-header #nav-search{display:flex;flex:1;min-width:200px;gap:8px}.service-header .account{margin-left:auto}
@@ -96,3 +96,12 @@ input::placeholder,textarea::placeholder{color:#8495aa}
 @media(prefers-reduced-motion:reduce){.goods-card{transition:none!important}}
 
 .theme-sun,.theme-moon{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px}.theme-switch svg{display:block;width:20px;height:20px;flex:none}
+
+/* Shared interaction colors follow the selected theme. Kakao keeps its official yellow. */
+button:focus-visible,a:focus-visible,input:focus,textarea:focus,select:focus-visible{outline-color:var(--accent)}
+.primary{border:1px solid var(--accent)}
+.card .secondary[aria-pressed=true],.secondary[aria-pressed=true]{border-color:var(--accent);color:var(--accent);background:var(--tint)}
+.badge{background:var(--badge-bg);color:var(--badge-ink)}
+.shelf{scrollbar-color:var(--line) var(--paper)}
+.shelf-card:hover{background:var(--tint);border-color:var(--accent)}
+::selection{background:var(--accent);color:var(--paper)}
