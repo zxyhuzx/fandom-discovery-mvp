@@ -108,3 +108,52 @@ button:focus-visible,a:focus-visible,input:focus,textarea:focus,select:focus-vis
 .shelf{scrollbar-color:var(--line) var(--paper)}
 .shelf-card:hover{background:var(--tint);border-color:var(--accent)}
 ::selection{background:var(--accent);color:var(--paper)}
+
+/* Compact scale: preserve theme tokens and feed gaps on desktop and mobile. */
+body:not(.welcome-page){font-size:14px}
+body:not(.welcome-page) main{max-width:1040px;padding-top:32px}
+.service-header{max-width:1120px;padding:18px 28px;gap:18px}
+.service-header .brand{font-size:20px;gap:8px}
+.service-header .brand-mark{width:40px;height:40px}
+.service-header input{padding:10px 13px;font-size:14px}
+body:not(.welcome-page) h1{font-size:32px;letter-spacing:-1px}
+body:not(.welcome-page) h2{font-size:20px}
+body:not(.welcome-page) .subtitle{font-size:14px;margin-bottom:18px}
+body:not(.welcome-page) .primary{font-size:14px;padding:11px 18px}
+body:not(.welcome-page) .secondary{font-size:13px;padding:8px 12px}
+.home-tabs [role=tab]{font-size:13px;padding:10px 8px;border-radius:13px}
+.form-card,.input-box{padding:18px}
+.empty-state{padding:18px}
+.mypage-links>a{padding:16px 18px}
+.interest-choice{font-size:13px}
+:is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms) .goods-card{padding:12px}
+:is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms) .goods-card h3{font-size:15px;line-height:1.45;margin-bottom:6px}
+:is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms) .goods-card p{font-size:12px;line-height:1.5;margin-bottom:4px}
+:is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms) .goods-card .goods-card-labels{margin-bottom:6px}
+:is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms)[data-view=grid] .goods-art{aspect-ratio:4/3;margin-bottom:8px}
+:is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms)[data-view=list] .goods-card{grid-template-columns:84px minmax(0,1fr);padding:14px;column-gap:16px}
+:is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms)[data-view=list] .goods-card .goods-art{width:84px;height:84px}
+:is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms)[data-view=list] .goods-card .form-watch{top:14px;right:14px}
+:is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms) .goods-card .form-watch{font-size:11px;min-height:34px;padding:6px 9px}
+@media(max-width:700px){
+ body:not(.welcome-page){font-size:13px}
+ body:not(.welcome-page) main{padding:24px 16px 44px}
+ .service-header{padding:14px 16px;gap:10px}
+ .service-header .brand{font-size:18px}
+ .service-header .brand-mark{width:34px;height:34px}
+ .service-header input{font-size:16px;padding:9px 11px}
+ body:not(.welcome-page) h1{font-size:26px}
+ body:not(.welcome-page) h2,.feed-heading h2{font-size:18px}
+ body:not(.welcome-page) .subtitle{font-size:13px}
+ body:not(.welcome-page) .secondary{font-size:12px;padding:7px 10px}
+ .home-tabs [role=tab]{font-size:12px;padding:9px 5px}
+ .form-card,.input-box,.empty-state{padding:15px}
+ :is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms) .goods-card{padding:10px}
+ :is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms) .goods-card h3{font-size:14px}
+ :is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms)[data-view=list] .goods-card{grid-template-columns:64px minmax(0,1fr);padding:10px;column-gap:10px}
+ :is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms)[data-view=list] .goods-card .goods-art{width:64px;height:64px}
+ :is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms)[data-view=list] .goods-card .goods-card-body{padding-top:34px}
+ :is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms)[data-view=list] .goods-card .form-watch{top:8px;right:8px}
+}
+
+@media(max-width:700px){:is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms)[data-view=list] .goods-placeholder{gap:3px}:is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms)[data-view=list] .goods-placeholder span{font-size:26px}:is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms)[data-view=list] .goods-placeholder small{font-size:9px;text-align:center;line-height:1.4;word-break:keep-all}}
