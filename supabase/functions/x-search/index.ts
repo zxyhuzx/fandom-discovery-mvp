@@ -1,5 +1,5 @@
 import {createClient} from 'npm:@supabase/supabase-js@2.118.0';
-import {searchQuery,searchUrl,postPreviews} from '../../../lib/x/search.mjs';
+import {searchQuery,searchUrl,lookupUrl,postPreviews,READ_RESERVATION} from '../../../lib/x/search.mjs';
 const origins=new Set(['https://fandom-discovery-mvp.vercel.app','http://127.0.0.1:5174','http://localhost:5174']);
 Deno.serve(async req=>{
  const origin=req.headers.get('origin')||'';
@@ -22,19 +22,21 @@ Deno.serve(async req=>{
   // Bound the body before parsing, including chunked bodies.
   const reader=req.body?.getReader();if(!reader)return reply({error:'검색어를 입력해 주세요.'},400);
   let size=0;const chunks:Uint8Array[]=[];
-  while(true){const {done,value}=await reader.read();if(done)break;size+=value.length;if(size>1024){await reader.cancel();return reply({error:'검색어가 너무 길어요.'},413)}chunks.push(value)}
+  while(true){const {done,value}=await reader.read();if(done)break;size+=value.length;if(size>4096){await reader.cancel();return reply({error:'검색어가 너무 길어요.'},413)}chunks.push(value)}
   const raw=new Uint8Array(size);let offset=0;for(const c of chunks){raw.set(c,offset);offset+=c.length}
-  let query;try{query=searchQuery(JSON.parse(new TextDecoder().decode(raw)).term)}catch{return reply({error:'작품명이나 캐릭터명을 2~60자로 입력해 주세요. 검색 연산자는 사용할 수 없어요.'},400)}
+  let query='',upstream;try{const body=JSON.parse(new TextDecoder().decode(raw));
+   if(body.ids){upstream=lookupUrl(body.ids)}else{query=searchQuery(body.term);upstream=searchUrl(query,body.cursor||'')}
+  }catch{return reply({error:'검색어 또는 게시물 ID를 확인해 주세요.'},400)}
   const monthly=Number(Deno.env.get('X_MONTHLY_RESOURCE_LIMIT'));
   const daily=Number(Deno.env.get('X_DAILY_RESOURCE_LIMIT')||'20');
-  if(!Number.isInteger(monthly)||monthly<10||monthly>4000||!Number.isInteger(daily)||daily<10||daily>100)return reply({error:'사용 예산 설정을 먼저 확인해 주세요.'},503);
+  if(!Number.isInteger(monthly)||monthly<10||monthly>4000||!Number.isInteger(daily)||daily<10||daily>400)return reply({error:'사용 예산 설정을 먼저 확인해 주세요.'},503);
   const db=createClient(url,Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,{auth:{persistSession:false}});
-  const budget=await db.rpc('reserve_x_search',{p_monthly_limit:monthly,p_daily_limit:daily});
+  const budget=await db.rpc('reserve_x_enriched_read',{p_units:READ_RESERVATION,p_monthly_limit:monthly,p_daily_limit:daily});
   if(budget.error)return reply({error:'검색 한도에 도달했거나 예산을 확인할 수 없어요. 추가 호출은 하지 않았어요.'},429);
-  // No retries or pagination, user expansions, likes/followers, DM, or background jobs.
-  const response=await fetch(searchUrl(query),{headers:{Authorization:'Bearer '+token},signal:AbortSignal.timeout(15000)});
+  // No automatic retries, pagination, follower reads, DM or background jobs. Each page is explicitly requested.
+  const response=await fetch(upstream,{headers:{Authorization:'Bearer '+token},signal:AbortSignal.timeout(15000)});
   if(!response.ok)return reply({error:response.status===402?'X 크레딧이 부족해요. 결제 상태를 확인해 주세요.':response.status===429?'X 요청 한도에 도달했어요. 잠시 후 확인해 주세요.':'X 연결을 확인하지 못했어요. 토큰과 앱 권한을 확인해 주세요.',upstream_status:response.status},502);
   const payload=await response.json();
-  return reply({posts:postPreviews(payload),query,budget:budget.data,warning:'최근 7일의 공개 게시물 검색 결과예요. 판매 여부는 원문에서 확인해 주세요. 자동 공개·구독 알림은 하지 않아요.'});
+  return reply({posts:postPreviews(payload),next_cursor:payload.meta?.next_token||null,query,budget:budget.data,warning:'최근 7일의 공개 게시물 검색 결과예요. 판매 여부는 원문에서 확인해 주세요. 자동 공개·구독 알림은 하지 않아요.'});
  }catch{return reply({error:'X 검색을 완료하지 못했어요. 자동 재시도하지 않았어요.'},502)}
 });
