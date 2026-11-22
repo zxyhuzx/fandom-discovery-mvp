@@ -17,8 +17,8 @@ body{min-height:100vh;background:var(--paper)}
 input::placeholder,textarea::placeholder{color:var(--muted)}
 .card,.form-card,.input-box{box-shadow:0 8px 28px #00000012}
 @media(max-width:700px){.brand{gap:7px}.brand img{width:40px;height:40px;border-radius:12px}.welcome-icon{width:96px;height:96px}.small{max-width:120px;text-align:right}}
-/* Soft blue-gray light mode keeps gold readable without metallic glare. */
-:root[data-theme="light"]{color-scheme:light;--paper:#bec7d2;--surface:#ccd3dc;--tint:#b1bfce;--line:#8291a3;--ink:#10223d;--muted:#3e526b;--accent:#69501d;--button:#b99a54;--button-ink:#071b35;--button-hover:#c5a963;--starlight:#69501d;--badge-bg:#b8aa87;--badge-ink:#30270f}
+/* Warm ivory background with the existing navy and gold light-mode colors. */
+:root[data-theme="light"]{color-scheme:light;--paper:#f8f0e5;--surface:#ccd3dc;--tint:#b1bfce;--line:#8291a3;--ink:#10223d;--muted:#3e526b;--accent:#69501d;--button:#b99a54;--button-ink:#071b35;--button-hover:#c5a963;--starlight:#69501d;--badge-bg:#b8aa87;--badge-ink:#30270f}
 :root[data-theme="light"] .visual{background:var(--tint)}
 :root[data-theme="light"] .primary{color:var(--button-ink)}
 :root[data-theme="light"] input::placeholder,:root[data-theme="light"] textarea::placeholder{color:var(--muted)}
