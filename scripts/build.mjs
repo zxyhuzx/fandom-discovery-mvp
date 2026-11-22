@@ -15,7 +15,7 @@ for(const name of ['avatar-default','banner-default'])await copyFile('assets/pro
 await mkdir('public/assets/survey',{recursive:true});
 for(const name of ['keyring','doll','stickers','photocard','stand','badge','pouch','postcard'])await copyFile('assets/survey/'+name+'.svg','public/assets/survey/'+name+'.svg');
 await copyFile('assets/service.css','public/assets/service.css');
-for(const asset of ['brand.css','welcome.css','theme.js','byeoljup-icon.png'])await copyFile('assets/'+asset,'public/assets/'+asset);
+for(const asset of ['brand.css','welcome.css','theme.js','byeoljup-icon.png','byeoljup-mark.png'])await copyFile('assets/'+asset,'public/assets/'+asset);
 const appBuild=await build({metafile:true,entryPoints:['assets/app.js'],bundle:true,format:'esm',target:['es2022'],outfile:'public/assets/app.js',minify:true,
  plugins:[browserCatalog,{name:'public-config',setup(builder){builder.onLoad({filter:/assets\/config\.js$/},()=>({contents:'export const config='+JSON.stringify({...config,supabaseUrl:url,publishableKey:key}),loader:'js'}))}}]});
 const welcomeBuild=await build({metafile:true,entryPoints:['assets/welcome.js'],bundle:true,format:'esm',target:['es2022'],outfile:'public/assets/welcome.js',minify:true,

@@ -5,7 +5,10 @@ body{min-height:100vh;background:var(--paper)}
 .brand img{display:block;width:48px;height:48px;border-radius:14px;object-fit:contain}
 .brand span,.visual:before,.success .symbol{color:var(--starlight)}
 .welcome-icon{display:block;border-radius:28px;margin-bottom:25px}
-.brand img,.welcome-icon{clip-path:inset(12% round 22%);transform:scale(1.3158)}
+.brand img{clip-path:inset(12% round 22%);transform:scale(1.3158)}
+.brand-mark{display:block;flex-shrink:0;width:48px;height:48px;background-color:var(--starlight);-webkit-mask:url('/assets/byeoljup-mark.png') center/180% no-repeat;mask:url('/assets/byeoljup-mark.png') center/180% no-repeat;mask-mode:alpha}
+.welcome-icon.brand-mark{width:112px;height:112px;border-radius:0}
+@media(max-width:700px){.brand-mark{width:40px;height:40px}.welcome-icon.brand-mark{width:96px;height:96px}}
 .visual{background:var(--tint);border:1px solid var(--line)}
 .eyebrow{color:var(--accent)}
 .primary{color:var(--button-ink);box-shadow:0 4px 16px #00000018}
