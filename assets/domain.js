@@ -1,3 +1,4 @@
+import {cpAliasesForPost,CP_NAMES} from './goods-metadata.js';
 import {WORKS,CHARACTERS,workIndex,canonicalWork,normalizeWork,normalizeKeyword,characterAliases,canonicalCharacter,canonicalPost,workGenre} from './catalog-data.js';
 export {WORKS,CHARACTERS,workIndex,canonicalWork,normalizeWork,normalizeKeyword,characterAliases,canonicalCharacter,canonicalPost,workGenre};
 export function matchesInterest(interest, post) {
@@ -12,17 +13,17 @@ export function canonicalSource(value) {
  url.searchParams.sort();
  return url.toString().replace(/\/$/,'');
 }
-export const SALE_LABELS={planned:'판매 예정',open:'판매 중',survey_planned:'수요조사 예정',survey_open:'수요조사 중',closed:'마감',unverified:'판매 상태는 원문 확인'};
+export const SALE_LABELS={planned:'판매 예정',open:'판매 중',survey_planned:'수요조사 예정',survey_open:'수요조사 중',closed:'기간 완료',unverified:'일정 미정'};
 export const QUEUE_LABELS={pending:'모의 발송 대기',mocked:'모의 발송 완료 · 실제 발송 없음',cancelled:'구독 해제 또는 게시 취소로 취소'};
 
 export const goodsGenre=p=>p.genre_name||workGenre(p.work_name);
 export function filterGoods(posts,{query='',work='',character='',status='',scope='all',genre='',platform='',saleType=''}={}){
  const terms=String(query).trim().split(/\s+/).map(normalizeKeyword).filter(Boolean),ch=normalizeKeyword(character);
- return posts.filter(p=>{
+ return posts.map(canonicalPost).filter(p=>{
   if(!p.is_published||saleType&&p.sale_type!==saleType||work&&normalizeWork(p.work_name)!==normalizeWork(work)||status&&p.sale_status!==status||ch&&!p.character_names.some(c=>normalizeKeyword(c).includes(ch))||genre&&goodsGenre(p)!==genre||platform&&p.platform_name!==platform)return false;
   const aliases=workIndex.get(normalizeKeyword(p.work_name))||[p.work_name];
   const fields={work:[p.work_name,...aliases],character:p.character_names.flatMap(c=>characterAliases(p.work_name,c)),creator:[p.seller_name||'']};
-  const haystack=normalizeKeyword((scope==='all'?[p.title,...fields.work,...fields.character,...fields.creator,p.platform_name||'',...(p.product_types||[]),...(p.search_keywords||[]),p.sale_type||'',goodsGenre(p),...(goodsGenre(p)==='버튜버'?['vtuber','ブイチューバー']:[])]:fields[scope]||[]).join(' '));
+  const haystack=normalizeKeyword((scope==='all'?[p.title,...fields.work,...fields.character,...fields.creator,p.platform_name||'',...(p.product_types||[]),...(p.search_keywords||[]),p.sale_type||'',...cpAliasesForPost(p),goodsGenre(p),...(goodsGenre(p)==='버튜버'?['vtuber','ブイチューバー']:[])]:fields[scope]||[]).join(' '));
   return terms.every(term=>haystack.includes(term));
  }).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
 }
@@ -37,7 +38,7 @@ export function searchSuggestions(query,posts=[]){
  const term=normalizeKeyword(query);if(!term)return [];const terms=String(query).trim().split(/\s+/).map(normalizeKeyword).filter(Boolean);
  const catalog=new Map(Object.entries(CHARACTERS).map(([w,c])=>[w,new Set(c)]));
  posts.filter(p=>p.is_published).map(canonicalPost).forEach(p=>{if(!catalog.has(p.work_name))catalog.set(p.work_name,new Set());p.character_names.forEach(c=>catalog.get(p.work_name).add(c))});
- const choices=[];
+ const choices=CP_NAMES.filter(cp=>normalizeKeyword(cp.name).includes(term)||terms.every(t=>normalizeKeyword([cp.work,cp.name,...cp.characters].join(' ')).includes(t))).map(cp=>({label:cp.work+' · '+cp.name+' ('+cp.characters.join('·')+')',query:cp.work+' '+cp.name,kind:cp.kind==='combination'?'조합명':'CP명',work_name:cp.work,character_name:''}));
  for(const [work,chars] of catalog){
   const aliases=workIndex.get(normalizeKeyword(work))||[work];const workMatches=aliases.some(a=>normalizeKeyword(a).includes(term))||(workGenre(work)==='버튜버'&&['버튜버','vtuber','ブイチューバー'].includes(term));
   if(workMatches)choices.push({label:work,query:work,kind:workGenre(work)==='버튜버'?'버튜버 그룹':'작품',work_name:work,character_name:''});

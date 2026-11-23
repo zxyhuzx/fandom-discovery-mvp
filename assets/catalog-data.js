@@ -1,3 +1,4 @@
+import {enrichGoods,CP_NAMES} from './goods-metadata.js';
 import {IDOL_CATALOG} from './catalog-idols.js';
 // Full source catalog for seeding and offline tests; excluded from browser bundles.
 import {SURVEY_NAMES} from './survey-names.js';
@@ -47,9 +48,10 @@ for(const group of VTUBERS)CHARACTERS[group.work[0]]=group.members.map(row=>row[
 for(const group of EXPANDED_CATALOG)CHARACTERS[group.work[0]]=group.members.map(member=>member.names[0]);
 for(const group of CURATED_CATALOG)CHARACTERS[group.work[0]]=group.members.map(member=>member[0]);
 for(const [work,rows] of Object.entries(SURVEY_NAMES))for(const names of rows){const list=CHARACTERS[work]??=[];if(!list.includes(names[0]))list.push(names[0]);}
+for(const cp of CP_NAMES)for(const name of cp.characters){const list=CHARACTERS[cp.work]??=[];if(!list.includes(name))list.push(name)}
 export function characterAliases(work,value){const rows=CHARACTER_NAME_ALIASES[canonicalWork(work)]||[];return rows.find(row=>row.some(a=>normalizeKeyword(a)===normalizeKeyword(value)))||[value]}
 export function canonicalCharacter(work,value){return characterAliases(work,String(value).trim())[0]}
-export function canonicalPost(p){const work=canonicalWork(p.work_name);return {...p,work_name:work,character_names:p.character_names.map(c=>canonicalCharacter(work,c))}}
+export function canonicalPost(p){const work=canonicalWork(p.work_name);return enrichGoods({...p,work_name:work,character_names:p.character_names.map(c=>canonicalCharacter(work,c))})}
 export function workGenre(work){
  const key=normalizeWork(work);
  const name=canonicalWork(work);

@@ -1,0 +1,102 @@
+/* Image-led catalog: existing navy/gold/ivory tokens, separate desktop/mobile layouts. */
+.service-page .service-header{max-width:1184px;padding:22px 40px;gap:28px}
+.service-page main{max-width:1120px;padding:40px 48px 80px}
+.service-page footer{max-width:1120px;padding:24px 48px}
+.service-page #nav-search input{border-radius:30px;padding-inline:18px;background:transparent}
+.service-page #nav-search>.secondary{border-radius:24px}
+.service-page .prototype-label{background:transparent;border:0;padding:0;letter-spacing:.04em;font-size:10px;margin-bottom:24px}
+.service-page .home-tabs{justify-content:center;gap:36px;padding-bottom:0;margin-bottom:42px}
+.service-page .home-tabs [role=tab]{flex:0 1 auto;border:0;border-bottom:2px solid transparent;border-radius:0;background:transparent;padding:14px 4px;color:var(--muted)}
+.service-page .home-tabs [role=tab][aria-selected=true]{border-bottom-color:var(--accent);color:var(--accent)}
+.service-page .service-title{position:relative;justify-content:center;text-align:center;min-height:76px;align-items:center}
+.service-page .service-title>#refresh{position:absolute;right:0;top:14px;font-size:12px}
+.service-page #home-title,.service-page #panel-explore>h1{font-size:30px;letter-spacing:-.8px;font-weight:650}
+.service-page #panel-explore>h1{margin-top:12px;text-align:center}
+.service-page #home-description,.service-page #panel-explore>.subtitle{text-align:center;max-width:600px;margin:12px auto 24px;line-height:1.8}
+.service-page .eyebrow{font-size:10px;letter-spacing:.18em}
+.service-page .feed-heading{padding-top:22px;margin-top:28px;border-top:1px solid var(--line)}
+.service-page .feed-heading h2{font-size:17px;font-weight:600}
+.service-page .results-toolbar{margin-top:30px;margin-bottom:18px}
+.service-page .search-filter-panel{background:transparent;border-radius:12px;padding:13px 16px}
+.service-page .search-tools{margin-top:24px;margin-bottom:24px}
+.service-page .note{line-height:1.65}
+.service-page .empty-state{padding:26px;line-height:1.8;background:transparent}
+.service-page .view-switch{padding:2px;background:transparent}
+.service-page .watch-icon{display:inline-flex;width:17px;height:17px;flex:none}
+.service-page .watch-icon svg{width:100%;height:100%;display:block}
+.service-page .detail-actions .form-watch{gap:8px}
+.service-page .detail-source-button{border-radius:26px;padding:11px 20px;box-shadow:none}
+.service-page .detail-card{gap:48px;margin-top:30px;align-items:start}
+.service-page .detail-card>.goods-art{border-radius:20px;max-height:580px;object-fit:contain;background:var(--surface)}
+.service-page .detail-card h1{font-size:26px;line-height:1.5;margin:14px 0 20px}
+.service-page .detail-card p{font-size:13px;line-height:1.85}
+.service-page :is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms){gap:24px 20px}
+.service-page :is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms) .goods-card{border:0;border-radius:0;box-shadow:none;padding:0;background:transparent;min-width:0}
+.service-page :is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms) .goods-card:hover .goods-card-link{text-decoration:underline;text-underline-offset:4px}
+.service-page :is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms) .goods-card .goods-art{border-radius:16px;background:var(--surface);border:1px solid var(--line)}
+.service-page :is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms)[data-view=grid] .goods-card .goods-art{aspect-ratio:4/3;margin:0 0 14px;object-fit:cover}
+.service-page :is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms) .goods-card .goods-card-body{display:flex;flex-direction:column;gap:6px}
+.service-page :is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms) .goods-card h3{order:1;font-size:14px;line-height:1.55;font-weight:650;margin:0}
+.service-page :is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms) .goods-card .goods-card-interests{order:2;font-size:12px;line-height:1.7;margin:0;color:var(--muted)}
+.service-page :is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms) .goods-card .goods-card-labels{order:3;margin:1px 0 0;gap:5px}
+.service-page :is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms) .goods-card .sale-tag{font-size:11px;font-weight:500;color:var(--accent)}
+.service-page :is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms) .goods-card .form-watch{top:9px;right:9px;display:grid;place-items:center;width:34px;height:34px;min-height:34px;padding:0;border-radius:50%;background:var(--paper);box-shadow:none}
+.service-page :is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms) .goods-card .form-watch[aria-pressed=true]{background:var(--tint);border-color:var(--accent);color:var(--accent)}
+.service-page .goods-card .form-watch[aria-pressed=true] .watch-icon svg{fill:var(--accent);stroke:var(--button-ink)}
+.service-page .goods-card .watch-label{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+.service-page :is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms)[data-view=list]{gap:0}
+.service-page :is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms)[data-view=list] .goods-card{grid-template-columns:84px minmax(0,1fr);gap:0 22px;min-height:112px;padding:16px 0;border-bottom:1px solid var(--line)}
+.service-page :is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms)[data-view=list] .goods-card .goods-art{height:80px;width:84px;border-radius:12px;margin:0;object-fit:cover}
+.service-page :is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms)[data-view=list] .goods-card .goods-card-body{padding:0 54px 0 0;align-self:center}
+.service-page :is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms)[data-view=list] .goods-card .form-watch{top:50%;right:4px;transform:translateY(-50%)}
+.service-page .goods-card-link::after{border-radius:14px}
+@media(min-width:1100px){.service-page #nav-search{max-width:620px}.service-page #panel-home>.service-title{margin-top:12px}.service-page .detail-card{grid-template-columns:minmax(0,1.05fr) minmax(0,1fr)}}
+@media(min-width:701px) and (max-width:900px){.service-page main{padding-inline:32px}.service-page .service-header{padding-inline:28px;gap:18px}}
+@media(max-width:700px){
+ .service-page .service-header{padding:14px 16px;gap:12px;align-items:center}
+ .service-page .service-header .brand{font-size:18px;gap:6px}
+ .service-page .service-header .brand-mark{width:30px;height:30px}
+ .service-page .service-header .account{gap:8px}
+ .service-page .service-header #nav-search{margin-top:2px;gap:7px}
+ .service-page .service-header #nav-search input{padding:10px 14px;font-size:16px}
+ .service-page main{padding:24px 16px 52px}
+ .service-page footer{padding:22px 16px;line-height:1.8}
+ .service-page .prototype-label{margin-bottom:15px;font-size:9px}
+ .service-page .home-tabs{gap:6px;margin-bottom:26px;padding-bottom:0;border:0}
+ .service-page .home-tabs [role=tab]{flex:1;padding:10px 6px;font-size:11px;border:1px solid var(--line);border-radius:24px;background:var(--surface)}
+ .service-page .home-tabs [role=tab][aria-selected=true]{background:var(--tint);border-color:var(--accent)}
+ .service-page .service-title{justify-content:flex-start;min-height:56px;text-align:left;padding-right:72px}
+ .service-page .service-title>#refresh{top:8px;font-size:11px;padding:7px 9px}
+ .service-page #home-title,.service-page #panel-explore>h1{font-size:24px;text-align:left;margin:8px 0}
+ .service-page #home-description,.service-page #panel-explore>.subtitle{text-align:left;font-size:12px;margin:10px 0 20px;max-width:none}
+ .service-page .eyebrow{font-size:9px}
+ .service-page .search-tools{margin:20px 0}
+ .service-page .search-filter-panel{padding:11px 13px;border-radius:12px}
+ .service-page .search-filter-panel summary{font-size:12px}
+ .service-page .results-toolbar{margin-top:20px;margin-bottom:12px}
+ .service-page .feed-heading{margin-top:24px;padding-top:16px;gap:8px}
+ .service-page .feed-heading h2{font-size:15px}
+ .service-page .empty-state{padding:20px 16px}
+ .service-page :is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms)[data-view=grid]{grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 12px}
+ .service-page :is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms)[data-view=grid] .goods-card .goods-art{aspect-ratio:1;margin-bottom:10px;border-radius:13px}
+ .service-page :is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms) .goods-card h3{font-size:13px;line-height:1.5}
+ .service-page :is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms) .goods-card .goods-card-interests{font-size:11px;line-height:1.65}
+ .service-page :is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms) .goods-card .sale-tag{font-size:10px}
+ .service-page :is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms) .goods-card .form-watch{top:7px;right:7px;width:34px;height:34px}
+ .service-page :is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms)[data-view=list] .goods-card{grid-template-columns:66px minmax(0,1fr);column-gap:12px;padding:14px 0;min-height:100px}
+ .service-page :is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms)[data-view=list] .goods-card .goods-art{width:66px;height:70px;border-radius:10px}
+ .service-page :is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms)[data-view=list] .goods-card .goods-card-body{padding:0 43px 0 0;gap:4px}
+ .service-page :is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms)[data-view=list] .goods-card .form-watch{top:50%;right:0}
+ .service-page .detail-card{grid-template-columns:1fr;gap:22px;margin-top:16px}
+ .service-page .detail-card>.goods-art{max-height:420px;border-radius:16px;aspect-ratio:auto;min-height:180px;width:100%;object-fit:contain}
+ .service-page .detail-card h1{font-size:22px;margin:12px 0 16px}
+ .service-page .detail-card p{font-size:12px;line-height:1.8}
+ .service-page .detail-actions{max-width:none}
+ .service-page .detail-source-button{width:100%;font-size:13px}
+}
+@media(prefers-reduced-motion:reduce){.service-page .goods-card{transition:none}}
+
+.service-page .goods-card .form-watch::before{content:'';position:absolute;inset:-5px;border-radius:50%}
+
+.service-page .detail-external-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:6px}.service-page .detail-external-actions .detail-source-button{margin:6px 0}.service-page .detail-external-actions .secondary{color:var(--ink)}
+@media(max-width:700px){.service-page .detail-external-actions{display:grid;grid-template-columns:1fr}.service-page .detail-external-actions .detail-source-button{margin:0;text-align:center;min-height:44px}}

@@ -1,3 +1,4 @@
+import {effectiveSaleStatus,saleFormUrl} from './goods-metadata.js';
 import {createXSearchController} from './x-search-ui.js';
 import {catalogSearch,resolveCatalog,catalogChoice} from './catalog-client.js';
 import {prototypePopularForms,prototypeCharacterRecommendations,prototypeRecommendedForms} from './prototype-feed.js';
@@ -22,7 +23,7 @@ let homeTab='popular',popularPosts=[],popularBusy=false,popularError=false,popul
 const homeTabs=['popular','recommended','alerts'];
 const homeTitles={popular:'최고 인기 폼',recommended:'맞춤 추천 폼',alerts:'알림 설정한 폼'};
 let myGoods=[],myGoodsLimit=30,myGoodsMore=false,myGoodsError=false,myGoodsEpoch=0,editingGoodsId=null;
-const columns='id,title,source_url,work_name,character_names,sale_status,sale_info,sale_start,sale_end,thumbnail_url,is_published,created_at,seller_name,platform_name,is_test,genre_name,source_kind,source_checked_at';
+const columns='id,title,source_url,work_name,character_names,sale_status,sale_info,sale_start,sale_end,thumbnail_url,is_published,created_at,seller_name,platform_name,is_test,genre_name,source_kind,source_checked_at,sale_end_date';
 const ownerColumns=columns+',created_by,deleted_at';
 const demos=config.surveyDemoEnabled===true?SURVEY_GOODS:[];
 let sampleWatches=[];try{sampleWatches=readFormWatches(localStorage.getItem(FORM_WATCH_KEY),demos)}catch{}
@@ -61,13 +62,13 @@ function renderRoute(){
 window.addEventListener('hashchange',()=>{renderRoute();if(route()==='explore')loadExplore().catch(e=>notice(friendly(e),true));if(route()==='home'&&homeTab==='popular')loadPopular()});
 async function hydratePosts(rows){try{await resolveCatalog(rows.flatMap(p=>p.character_names.length?p.character_names.map(c=>({work_name:p.work_name,character_name:c})):[{work_name:p.work_name,character_name:''}]))}catch{}return rows.map(canonicalPost)}
 function imageFor(p){
- const placeholder=()=>{const box=el('div',undefined,'goods-art goods-placeholder');box.append(el('span','✦'),el('small',p.is_test?'예시 이미지 영역':'이미지 준비 중'));return box};
+ const placeholder=()=>{const box=el('div',undefined,'goods-art goods-placeholder');box.append(el('span','✦'),el('small',p.is_test?'예시 이미지 영역':p.source_kind==='x_discovery'?'첨부 이미지 없음':'이미지 준비 중'));return box};
  if(!p.thumbnail_url)return placeholder();
  const image=el('img');image.alt=p.title+' 이미지';image.className='goods-art';image.loading='lazy';image.referrerPolicy='no-referrer';try{image.src=p.is_survey_example&&/^\/assets\/survey\/[a-z]+\.svg$/.test(p.thumbnail_url)?p.thumbnail_url:canonicalSource(p.thumbnail_url)}catch{return placeholder()}image.onerror=()=>image.replaceWith(placeholder());return image;
 }
 function watchButton(p){
  const selected=(p.is_survey_example?sampleWatches:realWatchIds).includes(formKey(p));
- const b=el('button',selected?'✓ 폼 알림 설정됨':'폼 알림 설정','secondary form-watch');b.type='button';b.setAttribute('aria-pressed',String(selected));b.setAttribute('aria-label',p.title+' 폼 알림 '+(selected?'해제':'설정'));b.disabled=watchBusy.has(formKey(p));b.onclick=()=>run(b,()=>toggleFormWatch(p));return b;
+ const b=el('button',selected?'✓ 폼 알림 설정됨':'폼 알림 설정','secondary form-watch');b.type='button';b.setAttribute('aria-pressed',String(selected));b.setAttribute('aria-label',p.title+' 폼 알림 '+(selected?'해제':'설정'));b.title=selected?'폼 알림 해제':'폼 알림 설정';const text=el('span',b.textContent,'watch-label');b.replaceChildren();const icon=el('span',undefined,'watch-icon');icon.setAttribute('aria-hidden','true');icon.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z"/><path d="M10 21h4"/></svg>';b.append(icon,text);b.disabled=watchBusy.has(formKey(p));b.onclick=()=>run(b,()=>toggleFormWatch(p));return b;
 }
 async function toggleFormWatch(p){
  const key=formKey(p);if(watchBusy.has(key))return;
@@ -85,24 +86,22 @@ async function loadFormWatches(){
  try{const rows=result(await db.from('goods_form_watches').select('goods_post_id,goods_posts('+columns+')').order('created_at',{ascending:false}));if(account!==user?.id)return;const hydrated=await hydratePosts(rows.map(r=>r.goods_posts).filter(p=>p?.is_published));if(account!==user?.id)return;realWatchIds=rows.map(r=>r.goods_post_id);watchedPosts=hydrated;}
  catch{if(account===user?.id)watchError=true}
 }
-function updateCountdowns(){document.querySelectorAll('[data-form-deadline]').forEach(n=>{n.textContent=deadlineText(n.dataset.formDeadline,n.dataset.saleStatus)})}
+function updateCountdowns(){document.querySelectorAll('[data-form-deadline]').forEach(n=>{n.textContent=n.dataset.formDate&&!n.dataset.formDeadline?(effectiveSaleStatus({sale_status:n.dataset.saleStatus,sale_end_date:n.dataset.formDate})==='closed'?'기간 완료':'마감일 '+n.dataset.formDate+' · 시각 미정'):deadlineText(n.dataset.formDeadline,n.dataset.saleStatus)});document.querySelectorAll('[data-goods-state]').forEach(n=>{try{n.textContent=SALE_LABELS[effectiveSaleStatus(JSON.parse(n.dataset.goodsState))]}catch{}})}
 function renderWatchedForms(){
  const items=watchedForms(showDemo?demos:watchedPosts,showDemo?sampleWatches:realWatchIds);
  $('watched-count').textContent=items.length+'개 폼';$('watched-forms').dataset.view=viewMode;
  fillCards('watched-forms',items,watchError&&!showDemo?'알림 설정한 폼을 불러오지 못했어요':'아직 알림 설정한 폼이 없어요',watchError&&!showDemo?'새로고침해서 다시 시도해 주세요.':'관심 있는 폼에서 ‘폼 알림 설정’을 눌러주세요.');
- document.querySelectorAll('#watched-forms .card').forEach((node,index)=>{const p=items[index],countdown=el('p',undefined,'form-countdown');countdown.dataset.formDeadline=p.sale_end||'';countdown.dataset.saleStatus=p.sale_status;countdown.setAttribute('aria-live','off');node.append(countdown);});updateCountdowns();
+ document.querySelectorAll('#watched-forms .card').forEach((node,index)=>{const p=items[index],countdown=el('p',undefined,'form-countdown');countdown.dataset.formDeadline=p.sale_end||'';countdown.dataset.formDate=p.sale_end_date||'';countdown.dataset.saleStatus=p.sale_status;countdown.setAttribute('aria-live','off');node.append(countdown);});updateCountdowns();
 }
 function card(p){
+ p=canonicalPost(p);
  const n=el('article',undefined,'card goods-card');n.append(imageFor(p));
  const body=el('div',undefined,'goods-card-body'),labels=el('div',undefined,'goods-card-labels');
- labels.append(el('span',SALE_LABELS[p.sale_status],'sale-tag'));
- if(p.source_kind==='x_discovery')labels.append(el('span','X에서 확인한 실제 공지','badge'));
+ const sale=el('span',SALE_LABELS[p.sale_status],'sale-tag');sale.dataset.goodsState=JSON.stringify({sale_status:p.sale_status,sale_start:p.sale_start,sale_end:p.sale_end,sale_end_date:p.sale_end_date});labels.append(sale);
  if(p.is_test)labels.append(el('span',p.is_survey_example?SURVEY_LABEL:'테스트·예시 데이터','badge'));
  const title=el('h3'),detail=el('a',p.title,'goods-card-link');detail.href='#goods/'+p.id;title.append(detail);
- const works=p.form_items?p.form_items.map(item=>item.work_name+' · '+(item.character_names.join(', ')||'작품 전체')).join(' / '):p.work_name+' · '+(p.character_names.join(', ')||(p.source_kind==='x_discovery'?'캐릭터 미확인':'작품 전체'));
- body.append(labels,title,el('p',works,'goods-card-interests'),el('p',(p.seller_name||(p.source_kind==='x_discovery'?'작성자는 X 원문 확인':'창작자 미등록'))+' · '+(p.platform_name||platform(p.source_url)),'goods-card-seller'),el('p',p.sale_end?(p.is_survey_example?'예시 마감 ':'마감 ')+time(p.sale_end):p.sale_start?'시작 '+time(p.sale_start):'일정은 원문을 확인해 주세요.','goods-card-schedule'));
- if(p.recommendationReasons?.length)body.append(el('p','추천 예시: '+p.recommendationReasons.join(', '),'note'));
- if(!p.is_test){const source=link(p.source_url,p.source_kind==='x_discovery'?'X 원문에서 폼 확인 ↗':'원본 판매처 ↗');source.classList.add('goods-card-source');body.append(source)}
+ const works=p.form_items?p.form_items.map(item=>item.work_name+' · '+(item.character_names.join(', ')||'작품 전체')).join(' / '):p.work_name+(p.character_names.length?' · '+p.character_names.join(', '):p.source_kind==='x_discovery'?'':' · 작품 전체');
+ body.append(labels,title,el('p',works,'goods-card-interests'));
  n.append(body);if(!p.is_test||p.is_survey_example)n.append(watchButton(p));return n;
 }
 function platform(url){try{return new URL(url).hostname.replace(/^www\./,'')}catch{return '판매 플랫폼 미등록'}}
@@ -163,7 +162,6 @@ function renderHome(){
  for(const tab of homeTabs){const selected=homeTab===tab;$('home-tab-'+tab).setAttribute('aria-selected',String(selected));$('home-tab-'+tab).tabIndex=selected?0:-1;$('home-panel-'+tab).hidden=!selected;}
  $('popular-feed').dataset.view=viewMode;$('popular-feed').setAttribute('aria-busy',String(popularBusy));
  fillCards('popular-feed',popularBusy||popularError?[]:popularPosts,popularBusy?'인기 폼을 불러오는 중이에요…':popularError?'인기 폼을 불러오지 못했어요':'아직 인기 순위를 보여 드릴 데이터가 없어요',popularError?'잠시 후 다시 불러와 주세요.':!popularBusy?'실제 조회 기록이 있는 공개 폼이 등록되면 보여 드릴게요.':undefined);
- if(!showDemo&&!popularBusy&&!popularError)document.querySelectorAll('#popular-feed .card').forEach((node,index)=>node.append(el('p',popularPosts[index].popularity_count>0?'별줍 상세 조회 '+popularPosts[index].popularity_count+'회':'아직 조회 집계가 없어요','note')));
  $('popular-basis').textContent=showDemo?'프로토타입 체험용으로 고른 폼 10개예요. 대표 작품 기준 괴담출근 4개를 포함하며, 실제 조회 수에 따른 순위는 아니에요.':'공개된 실제 폼을 보여 드려요. 실제 상세 조회 기록이 있는 폼을 먼저, 나머지는 최근 등록순으로 표시해요. 판매 상태와 최종 품목은 원문을 확인해 주세요.';
  $('popular-retry').hidden=!popularError;
 
@@ -206,7 +204,7 @@ async function loadSubscriptions(append=false){
  }finally{if(current===subscriptionEpoch){subscriptionBusy=false;renderHome()}}
 }
 async function loadExplore(){if(showDemo){populatePlatforms();renderFeed();return}const current=++exploreEpoch,account=user?.id;const data=result(await (user?db:publicDb).from('goods_posts').select(columns).order('created_at',{ascending:false}).limit(100));const metrics=await db.rpc('goods_popularity',{post_ids:data.map(p=>p.id)});if(current!==exploreEpoch||account!==user?.id)return;if(!metrics.error)data.forEach(p=>p.popularity_count=metrics.data.find(m=>m.goods_post_id===p.id)?.view_count||0);try{await resolveCatalog(data.flatMap(p=>p.character_names.length?p.character_names.map(c=>({work_name:p.work_name,character_name:c})):[{work_name:p.work_name,character_name:''}]))}catch{}if(current!==exploreEpoch||account!==user?.id)return;posts=data.map(canonicalPost);populatePlatforms();renderFeed();renderOwnedGoods();if(admin)renderAdmin()}
-async function renderDetail(id){let p=[...popularPosts,...subscriptionPosts,...posts,...watchedPosts,...myGoods,...demos].find(p=>p.id===id&&(p.is_published||p.created_by===user?.id));const target=$('goods-detail');target.replaceChildren();if(!p&&/^[a-f0-9-]{36}$/i.test(id)){empty(target,'상세 소식을 불러오는 중이에요…');try{p=result(await (user?db:publicDb).from('goods_posts').select(user?ownerColumns:columns).eq('id',id).maybeSingle());if(p){[p]=await hydratePosts([p]);posts.push(p)}}catch(e){notice(friendly(e),true)}if(route()!=='goods/'+id)return}if(!p){empty(target,'게시물이 없거나 공개가 종료됐어요.');return}target.replaceChildren();const box=el('article',undefined,'detail-card');box.append(imageFor(p));const info=el('div');if(!p.is_published)info.append(el('p','비공개 · 작성자만 볼 수 있어요.','badge'));if(p.is_test)info.append(el('p',p.is_survey_example?SURVEY_LABEL+' · 실제 판매 정보가 아니에요':'테스트·예시 데이터 · 실제 판매 정보가 아니에요','badge'));info.append(el('span',SALE_LABELS[p.sale_status],'sale-tag'),el('h1',p.title),el('p',p.work_name+' · '+(p.character_names.join(', ')||'작품 전체')),el('p','창작자·판매자: '+(p.seller_name||'미등록')),el('p','판매 플랫폼: '+(p.platform_name||platform(p.source_url))),el('p',p.sale_info||'판매 안내는 원문을 확인해 주세요.'));if(p.sale_start)info.append(el('p','시작: '+time(p.sale_start)));if(p.sale_end)info.append(el('p','마감: '+time(p.sale_end)));if(!p.is_test)info.append(link(p.source_url,p.source_kind==='x_discovery'?'X 원문에서 판매 폼 확인 ↗':'원본 판매 페이지로 이동 ↗'));else info.append(el('p','예시 데이터에는 실제 판매 링크를 제공하지 않아요.','note'));if(p.source_kind==='x_discovery')info.append(el('p','X 공개 공지에서 확인한 정보예요. 작가님이 별줍에 직접 등록한 게시물은 아니에요. 원문 확인: '+time(p.source_checked_at),'note'));const actions=el('div',undefined,'detail-actions');actions.setAttribute('role','group');actions.setAttribute('aria-label','폼 알림과 작품 구독');
+async function renderDetail(id){let p=[...popularPosts,...subscriptionPosts,...posts,...watchedPosts,...myGoods,...demos].find(p=>p.id===id&&(p.is_published||p.created_by===user?.id));const target=$('goods-detail');target.replaceChildren();if(!p&&/^[a-f0-9-]{36}$/i.test(id)){empty(target,'상세 소식을 불러오는 중이에요…');try{p=result(await (user?db:publicDb).from('goods_posts').select(user?ownerColumns:columns).eq('id',id).maybeSingle());if(p){[p]=await hydratePosts([p]);posts.push(p)}}catch(e){notice(friendly(e),true)}if(route()!=='goods/'+id)return}if(!p){empty(target,'게시물이 없거나 공개가 종료됐어요.');return}target.replaceChildren();p=canonicalPost(p);const box=el('article',undefined,'detail-card');box.append(imageFor(p));const info=el('div');if(!p.is_published)info.append(el('p','비공개 · 작성자만 볼 수 있어요.','badge'));if(p.is_test)info.append(el('p',p.is_survey_example?SURVEY_LABEL+' · 실제 판매 정보가 아니에요':'테스트·예시 데이터 · 실제 판매 정보가 아니에요','badge'));info.append(el('span',SALE_LABELS[p.sale_status],'sale-tag'),el('h1',p.title),el('p',p.work_name+' · '+(p.character_names.join(', ')||'작품 전체')),el('p','창작자·판매자: '+(p.seller_name||'미등록')),el('p','판매 플랫폼: '+(p.platform_name||platform(p.source_url))),el('p',p.sale_info||'판매 안내는 원문을 확인해 주세요.'));if(!p.is_test&&Number.isFinite(p.popularity_count))info.append(el('p','별줍 상세 조회: '+p.popularity_count+'회','note'));if(p.sale_start)info.append(el('p','시작: '+time(p.sale_start)));if(p.sale_end)info.append(el('p','마감: '+time(p.sale_end)));else if(p.sale_end_date)info.append(el('p','마감일: '+p.sale_end_date+' (시각 미정)'));if(!p.is_test){const links=el('div',undefined,'detail-external-actions'),form=saleFormUrl(p);if(form){const direct=link(form,p.sale_status.startsWith('survey')?'수요조사 폼 열기 ↗':'판매 폼 열기 ↗');direct.classList.add('primary','detail-source-button');links.append(direct)}const source=link(p.source_url,p.source_kind==='x_discovery'?'X 원문 보기 ↗':'원본 판매 페이지로 이동 ↗');source.classList.add(form?'secondary':'primary','detail-source-button');links.append(source);info.append(links)}else info.append(el('p','예시 데이터에는 실제 판매 링크를 제공하지 않아요.','note'));if(p.source_kind==='x_discovery')info.append(el('p','X 공개 공지에서 확인한 정보예요. 작가님이 별줍에 직접 등록한 게시물은 아니에요. 원문 확인: '+time(p.source_checked_at),'note'));const actions=el('div',undefined,'detail-actions');actions.setAttribute('role','group');actions.setAttribute('aria-label','폼 알림과 작품 구독');
  const saved=interests.some(i=>canonicalWork(i.work_name)===canonicalWork(p.work_name)&&!i.character_name),pending=draft.some(i=>canonicalWork(i.work_name)===canonicalWork(p.work_name)&&!i.character_name);
  const subscribe=button(saved?'✓ 작품 구독 중':pending?'✓ 구독에 담음':'작품 구독하기',async()=>{if(!user&&!showDemo){needLogin('goods/'+id);return}addDraft(p.work_name,'');go('interests')});subscribe.setAttribute('aria-pressed',String(saved||pending));
  if(p.is_published&&(!p.is_test||p.is_survey_example))actions.append(watchButton(p));actions.append(subscribe);info.append(actions);

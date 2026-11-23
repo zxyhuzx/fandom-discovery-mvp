@@ -11,7 +11,7 @@ test('published discovery summaries have unique real API source references and e
 test('real discovery cards reuse work/character filtering without inventing unknown characters',()=>{
  const rows=forms.map(p=>({...p,id:p.post_id,work_name:canonicalWork('괴담출근'),character_names:p.characters,sale_status:'unverified',source_kind:'x_discovery',is_published:true,created_at:'2026-11-10T00:00:00Z'}));
  assert.equal(filterGoods(rows,{query:'괴담출근'}).length,9);
- const soul=filterGoods(rows,{query:'김솔음'});assert.equal(soul.length,3);assert.ok(soul.every(p=>p.characters.includes('김솔음')));
+ const soul=filterGoods(rows,{query:'김솔음'});assert.equal(soul.length,4);assert.ok(soul.every(p=>p.character_names.includes('김솔음')));
  assert.equal(filterGoods(rows,{status:'open'}).length,0);
  assert.equal(rows.filter(p=>matchesInterest({work_name:'괴출',character_name:'백사헌'},p)).length,1);
 });

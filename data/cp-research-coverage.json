@@ -1,0 +1,502 @@
+{
+  "as_of": "2026-11-23",
+  "exhaustive": false,
+  "entries": 70,
+  "works": [
+    {
+      "work": "나루토",
+      "registered_characters": 5,
+      "reviewed_aliases": 1
+    },
+    {
+      "work": "하이큐!!",
+      "registered_characters": 7,
+      "reviewed_aliases": 3
+    },
+    {
+      "work": "주술회전",
+      "registered_characters": 4,
+      "reviewed_aliases": 2
+    },
+    {
+      "work": "귀멸의 칼날",
+      "registered_characters": 4,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "원신",
+      "registered_characters": 8,
+      "reviewed_aliases": 2
+    },
+    {
+      "work": "전지적 독자 시점",
+      "registered_characters": 3,
+      "reviewed_aliases": 1
+    },
+    {
+      "work": "블루 록",
+      "registered_characters": 4,
+      "reviewed_aliases": 1
+    },
+    {
+      "work": "쿠로코의 농구",
+      "registered_characters": 3,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "체인소 맨",
+      "registered_characters": 3,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "붕괴: 스타레일",
+      "registered_characters": 8,
+      "reviewed_aliases": 3
+    },
+    {
+      "work": "젠레스 존 제로",
+      "registered_characters": 3,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "나 혼자만 레벨업",
+      "registered_characters": 2,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "내가 키운 S급들",
+      "registered_characters": 3,
+      "reviewed_aliases": 2
+    },
+    {
+      "work": "방탄소년단",
+      "registered_characters": 7,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "세븐틴",
+      "registered_characters": 13,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "스트레이 키즈",
+      "registered_characters": 8,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "트와이스",
+      "registered_characters": 9,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "있지",
+      "registered_characters": 5,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "엔믹스",
+      "registered_characters": 6,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "에스파",
+      "registered_characters": 4,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "아이브",
+      "registered_characters": 6,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "르세라핌",
+      "registered_characters": 5,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "아일릿",
+      "registered_characters": 5,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "블랙핑크",
+      "registered_characters": 4,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "레드벨벳",
+      "registered_characters": 5,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "아이들",
+      "registered_characters": 5,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "스테이씨",
+      "registered_characters": 6,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "키스오브라이프",
+      "registered_characters": 4,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "베이비몬스터",
+      "registered_characters": 7,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "마마무",
+      "registered_characters": 4,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "투모로우바이투게더",
+      "registered_characters": 5,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "엔하이픈",
+      "registered_characters": 6,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "에이티즈",
+      "registered_characters": 8,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "보이넥스트도어",
+      "registered_characters": 6,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "투어스",
+      "registered_characters": 6,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "트레저",
+      "registered_characters": 10,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "데이식스",
+      "registered_characters": 4,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "플레이브",
+      "registered_characters": 5,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "홀로라이브",
+      "registered_characters": 10,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "니지산지",
+      "registered_characters": 9,
+      "reviewed_aliases": 2
+    },
+    {
+      "work": "스텔라이브",
+      "registered_characters": 6,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "원피스",
+      "registered_characters": 12,
+      "reviewed_aliases": 3
+    },
+    {
+      "work": "블리치",
+      "registered_characters": 12,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "가정교사 히트맨 REBORN!",
+      "registered_characters": 12,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "프리!",
+      "registered_characters": 7,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "페르소나 4",
+      "registered_characters": 9,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "페르소나 5",
+      "registered_characters": 9,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "페르소나 3",
+      "registered_characters": 7,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "진격의 거인",
+      "registered_characters": 12,
+      "reviewed_aliases": 1
+    },
+    {
+      "work": "데스노트",
+      "registered_characters": 11,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "헌터×헌터",
+      "registered_characters": 12,
+      "reviewed_aliases": 4
+    },
+    {
+      "work": "은혼",
+      "registered_characters": 12,
+      "reviewed_aliases": 1
+    },
+    {
+      "work": "나의 히어로 아카데미아",
+      "registered_characters": 12,
+      "reviewed_aliases": 2
+    },
+    {
+      "work": "장송의 프리렌",
+      "registered_characters": 11,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "약사의 혼잣말",
+      "registered_characters": 4,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "괴수 8호",
+      "registered_characters": 6,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "도쿄 리벤저스",
+      "registered_characters": 12,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "문호 스트레이독스",
+      "registered_characters": 12,
+      "reviewed_aliases": 24
+    },
+    {
+      "work": "흑집사",
+      "registered_characters": 10,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "나츠메 우인장",
+      "registered_characters": 5,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "카드캡터 사쿠라",
+      "registered_characters": 7,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "유리!!! on ICE",
+      "registered_characters": 6,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "보석의 나라",
+      "registered_characters": 6,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "윈드브레이커",
+      "registered_characters": 4,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "사카모토 데이즈",
+      "registered_characters": 4,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "닌타마 란타로",
+      "registered_characters": 4,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "해즈빈 호텔",
+      "registered_characters": 6,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "오오에",
+      "registered_characters": 0,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "콜 오브 듀티",
+      "registered_characters": 4,
+      "reviewed_aliases": 3
+    },
+    {
+      "work": "뱅드림! 걸즈 밴드 파티!",
+      "registered_characters": 5,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "프로젝트 세카이",
+      "registered_characters": 8,
+      "reviewed_aliases": 3
+    },
+    {
+      "work": "명조: 워더링 웨이브",
+      "registered_characters": 4,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "블루 아카이브",
+      "registered_characters": 5,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "승리의 여신: 니케",
+      "registered_characters": 5,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "림버스 컴퍼니",
+      "registered_characters": 12,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "라이브러리 오브 루이나",
+      "registered_characters": 4,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "파이널 판타지 XIV",
+      "registered_characters": 5,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "파이널 판타지 VII",
+      "registered_characters": 4,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "페이트/그랜드 오더",
+      "registered_characters": 4,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "쿠키런: 킹덤",
+      "registered_characters": 4,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "트릭컬 리바이브",
+      "registered_characters": 4,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "이터널 리턴",
+      "registered_characters": 5,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "마비노기",
+      "registered_characters": 5,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "마비노기 영웅전",
+      "registered_characters": 5,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "리그 오브 레전드",
+      "registered_characters": 5,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "오버워치",
+      "registered_characters": 5,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "발로란트",
+      "registered_characters": 5,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "단간론파",
+      "registered_characters": 5,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "어두운 바다의 등불이 되어",
+      "registered_characters": 4,
+      "reviewed_aliases": 1
+    },
+    {
+      "work": "마법명가 차남으로 살아남는 법",
+      "registered_characters": 3,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "괴담에 떨어져도 출근을 해야 하는구나",
+      "registered_characters": 8,
+      "reviewed_aliases": 9
+    },
+    {
+      "work": "너희들은 변호됐다",
+      "registered_characters": 1,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "이세계 착각 헌터",
+      "registered_characters": 3,
+      "reviewed_aliases": 1
+    },
+    {
+      "work": "은행원도 용꿈을 꾸나요",
+      "registered_characters": 1,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "우리 호텔 정상 영업합니다",
+      "registered_characters": 1,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "화산귀환",
+      "registered_characters": 5,
+      "reviewed_aliases": 1
+    },
+    {
+      "work": "백작가의 망나니가 되었다",
+      "registered_characters": 3,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "명문고 EX급 조연의 리플레이",
+      "registered_characters": 3,
+      "reviewed_aliases": 0
+    },
+    {
+      "work": "적국의 왕자로 사는 법",
+      "registered_characters": 3,
+      "reviewed_aliases": 0
+    }
+  ]
+}

@@ -1,3 +1,4 @@
+import {enrichGoods} from './goods-metadata.js';
 // Browser cache: only a tiny sample-data vocabulary plus records actually requested from Supabase.
 import bootstrap from './catalog-bootstrap.json' with {type:'json'};
 export const WORKS=[],CHARACTERS=Object.create(null),workIndex=new Map();
@@ -17,6 +18,6 @@ export function normalizeWork(value){return workIndex.get(normalizeKeyword(value
 export function workGenre(value){return genres.get(canonicalWork(value))||'기타'}
 export function characterAliases(work,value){return characterNames.get(canonicalWork(work)+'\0'+normalizeKeyword(value))||[value]}
 export function canonicalCharacter(work,value){return characterAliases(work,String(value??'').trim())[0]}
-export function canonicalPost(p){const work=canonicalWork(p.work_name);return {...p,work_name:work,character_names:p.character_names.map(c=>canonicalCharacter(work,c))}}
+export function canonicalPost(p){const work=canonicalWork(p.work_name);return enrichGoods({...p,work_name:work,character_names:p.character_names.map(c=>canonicalCharacter(work,c))})}
 
 export function hasCatalogItem(work,character=''){return workIndex.has(normalizeKeyword(work))&&(!character||characterNames.has(canonicalWork(work)+'\0'+normalizeKeyword(character)))}

@@ -157,3 +157,10 @@ body:not(.welcome-page) .secondary{font-size:13px;padding:8px 12px}
 }
 
 @media(max-width:700px){:is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms)[data-view=list] .goods-placeholder{gap:3px}:is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms)[data-view=list] .goods-placeholder span{font-size:26px}:is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms)[data-view=list] .goods-placeholder small{font-size:9px;text-align:center;line-height:1.4;word-break:keep-all}}
+
+/* Source and full sales information live in the detail view. */
+.detail-source-button{width:fit-content;text-decoration:none;gap:8px;margin:8px 0 14px}
+:is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms)[data-view=grid] .goods-card .goods-art{object-fit:cover}
+:is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms)[data-view=list] .goods-card{min-height:112px}
+:is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms) .goods-card .goods-card-labels .badge{font-size:9px}
+@media(max-width:700px){:is(#goods-feed,#subscription-feed,#popular-feed,#watched-forms)[data-view=list] .goods-card{min-height:104px}.detail-source-button{min-height:44px}}
