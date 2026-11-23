@@ -45,3 +45,12 @@ test('direct form buttons use reviewed HTTPS form hosts and never accept lookali
  assert.equal(saleFormUrl({source_kind:'x_discovery',sale_info:'판매 폼: https://witchform.com/deposit_form.php?idx=123'}),'https://witchform.com/deposit_form.php?idx=123');
  for(const url of ['https://witchform.com.evil.example/form','https://user:pass@witchform.com/form','javascript:alert(1)'])assert.equal(saleFormUrl({source_kind:'x_discovery',sale_info:url}),null);
 });
+
+test('completed forms can be hidden independently of the three active sale filters',()=>{
+ const rows=[{id:1,work_name:work,title:'신규',character_names:[],sale_status:'open',is_published:true},{id:2,work_name:work,title:'종료',character_names:[],sale_status:'closed',is_published:true},{id:3,work_name:work,title:'수요조사 예정',character_names:[],sale_status:'survey_planned',is_published:true}];
+ assert.deepEqual(new Set(filterGoods(rows,{hideCompleted:true}).map(p=>p.id)),new Set([1,3]));
+ assert.equal(filterGoods(rows,{hideCompleted:false}).length,3);
+ assert.deepEqual(filterGoods(rows,{status:'planned'}).map(p=>p.id),[3]);
+});
+
+test('official ChroNoiR unit is classified separately from CP names',()=>{assert.deepEqual(new Set(cpCharacters('니지산지','ChroNoiR 굿즈')),new Set(['카나에','쿠즈하']));assert.ok(CP_NAMES.find(x=>x.name==='ChroNoiR'&&x.kind==='combination'))});

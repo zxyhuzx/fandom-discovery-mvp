@@ -6,8 +6,8 @@ do $$begin
  assert (select character_names @> array['최요원','김솔음'] from public.goods_posts where source_url='https://x.com/i/status/2119106208238117232'),'최솔 mapping';
  assert (select character_names @> array['브라운','김솔음'] from public.goods_posts where source_url='https://x.com/i/status/2119042573981684172'),'브라운솔음 mapping';
  assert (select character_names @> array['류재관','최요원'] from public.goods_posts where source_url='https://x.com/i/status/2124472239957623198'),'류최 mapping';
- assert (select count(*)=29 from public.goods_posts where source_kind='x_discovery'),'Expected 20 new forms + 9 old';
- assert (select count(*)=27 from public.goods_posts where source_kind='x_discovery' and thumbnail_url is not null),'Image metadata';
+ assert (select count(*)=51 from public.goods_posts where source_kind='x_discovery'),'Expected 22 multigenre + 20 earlier + 9 old';
+ assert (select count(*)=47 from public.goods_posts where source_kind='x_discovery' and thumbnail_url is not null),'Image metadata';
  assert not exists(select 1 from public.notifications n join public.goods_posts g on g.id=n.goods_post_id where g.source_kind='x_discovery'),'Discovery unexpectedly notified users';
 end$$;
 do $$declare matched text[];unrelated text[];begin

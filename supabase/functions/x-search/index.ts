@@ -1,5 +1,5 @@
 import {createClient} from 'npm:@supabase/supabase-js@2.118.0';
-import {searchQuery,searchUrl,lookupUrl,postPreviews,READ_RESERVATION} from '../../../lib/x/search.mjs';
+import {searchQuery,searchUrl,lookupUrl,postPreviews,READ_RESERVATION,categoryQuery} from '../../../lib/x/search.mjs';
 const origins=new Set(['https://fandom-discovery-mvp.vercel.app','http://127.0.0.1:5174','http://localhost:5174']);
 Deno.serve(async req=>{
  const origin=req.headers.get('origin')||'';
@@ -25,11 +25,13 @@ Deno.serve(async req=>{
   while(true){const {done,value}=await reader.read();if(done)break;size+=value.length;if(size>4096){await reader.cancel();return reply({error:'검색어가 너무 길어요.'},413)}chunks.push(value)}
   const raw=new Uint8Array(size);let offset=0;for(const c of chunks){raw.set(c,offset);offset+=c.length}
   let query='',upstream;try{const body=JSON.parse(new TextDecoder().decode(raw));
-   if(body.ids){upstream=lookupUrl(body.ids)}else{query=searchQuery(body.term);upstream=searchUrl(query,body.cursor||'')}
+   if(body.ids){upstream=lookupUrl(body.ids)}else{query=body.category?categoryQuery(body.category):searchQuery(body.term);upstream=searchUrl(query,body.cursor||'')}
   }catch{return reply({error:'검색어 또는 게시물 ID를 확인해 주세요.'},400)}
   const monthly=Number(Deno.env.get('X_MONTHLY_RESOURCE_LIMIT'));
-  const daily=Number(Deno.env.get('X_DAILY_RESOURCE_LIMIT')||'20');
-  if(!Number.isInteger(monthly)||monthly<10||monthly>4000||!Number.isInteger(daily)||daily<10||daily>400)return reply({error:'사용 예산 설정을 먼저 확인해 주세요.'},503);
+  const configuredDaily=Number(Deno.env.get('X_DAILY_RESOURCE_LIMIT')||'400');
+  const elevatedUntil=Date.parse(Deno.env.get('X_TEMP_LIMIT_EXPIRES_AT')||'');
+  const daily=Math.min(configuredDaily,Number.isFinite(elevatedUntil)&&Date.now()<elevatedUntil?1400:400);
+  if(!Number.isInteger(monthly)||monthly<10||monthly>4000||!Number.isInteger(daily)||daily<10||daily>1400)return reply({error:'사용 예산 설정을 먼저 확인해 주세요.'},503);
   const db=createClient(url,Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,{auth:{persistSession:false}});
   const budget=await db.rpc('reserve_x_enriched_read',{p_units:READ_RESERVATION,p_monthly_limit:monthly,p_daily_limit:daily});
   if(budget.error)return reply({error:'검색 한도에 도달했거나 예산을 확인할 수 없어요. 추가 호출은 하지 않았어요.'},429);

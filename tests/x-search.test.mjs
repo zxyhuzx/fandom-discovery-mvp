@@ -19,3 +19,10 @@ test('public author and image metadata are joined by IDs, never guessed',()=>{
  assert.equal(postPreviews({data:[{id:'13',text:'x'}]})[0].author,null);
  assert.throws(()=>searchUrl('x','<invalid>'));assert.ok(searchUrl('x','abc_123').searchParams.has('next_token'));
 });
+
+test('category collection uses fixed, multilingual queries and cannot inject search operators',async()=>{
+ const {categoryQuery,DISCOVERY_CATEGORIES}=await import('../lib/x/search.mjs');
+ for(const key of Object.keys(DISCOVERY_CATEGORIES)){const q=categoryQuery(key);assert.ok(q.length<=512);assert.ok(q.includes('-is:retweet'));assert.ok(!q.includes('괴담'));}
+ assert.ok(categoryQuery('idol').includes('SEVENTEEN'));assert.ok(categoryQuery('anime').includes('NARUTO'));
+ assert.throws(()=>categoryQuery('idol OR from:someone'));
+});

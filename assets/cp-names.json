@@ -979,5 +979,75 @@
     "basis": "X 공개 게시물의 명칭·인물 표기 확인",
     "verified_on": "2026-11-23",
     "kind": "cp"
+  },
+  {
+    "work": "니지산지",
+    "name": "ChroNoiR",
+    "characters": [
+      "카나에",
+      "쿠즈하"
+    ],
+    "kind": "combination",
+    "basis": "니지산지 공식 소개의 두 멤버 유닛 (CP 의미로 추정하지 않음)",
+    "sources": [
+      "https://www.nijisanji.jp/events/chronoir_onemanlive2024/cle-noir/about/"
+    ],
+    "verified_on": "2026-11-23"
+  },
+  {
+    "work": "니지산지",
+    "name": "クロノワール",
+    "characters": [
+      "카나에",
+      "쿠즈하"
+    ],
+    "kind": "combination",
+    "basis": "니지산지 공식 소개의 두 멤버 유닛 (CP 의미로 추정하지 않음)",
+    "sources": [
+      "https://www.nijisanji.jp/events/chronoir_onemanlive2024/cle-noir/about/"
+    ],
+    "verified_on": "2026-11-23"
+  },
+  {
+    "work": "니지산지",
+    "name": "くろのわ",
+    "characters": [
+      "카나에",
+      "쿠즈하"
+    ],
+    "kind": "combination",
+    "basis": "니지산지 공식 소개의 두 멤버 유닛 (CP 의미로 추정하지 않음)",
+    "sources": [
+      "https://www.nijisanji.jp/events/chronoir_onemanlive2024/cle-noir/about/"
+    ],
+    "verified_on": "2026-11-23"
+  },
+  {
+    "work": "니지산지",
+    "name": "크로노와",
+    "characters": [
+      "카나에",
+      "쿠즈하"
+    ],
+    "kind": "combination",
+    "basis": "니지산지 공식 소개의 두 멤버 유닛 (CP 의미로 추정하지 않음)",
+    "sources": [
+      "https://www.nijisanji.jp/events/chronoir_onemanlive2024/cle-noir/about/"
+    ],
+    "verified_on": "2026-11-23"
+  },
+  {
+    "work": "니지산지",
+    "name": "쿠로노와",
+    "characters": [
+      "카나에",
+      "쿠즈하"
+    ],
+    "kind": "combination",
+    "basis": "니지산지 공식 소개의 두 멤버 유닛 (CP 의미로 추정하지 않음)",
+    "sources": [
+      "https://www.nijisanji.jp/events/chronoir_onemanlive2024/cle-noir/about/"
+    ],
+    "verified_on": "2026-11-23"
   }
 ]

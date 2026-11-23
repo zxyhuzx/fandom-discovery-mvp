@@ -1,7 +1,9 @@
 export function createXSearchController({db,isAdmin}){
  const form=document.getElementById('x-search-form'),message=document.getElementById('x-search-message'),list=document.getElementById('x-search-results');
  const more=document.getElementById('x-search-more'),enrich=document.getElementById('x-enrich-existing');
- let generation=0,cursor=null,term='';
+ const category=document.getElementById('x-search-category');
+ let generation=0,cursor=null,term='',categoryKey='';
+ category.onchange=()=>{cursor=null;more.hidden=true;const input=document.getElementById('x-search-term');input.disabled=!!category.value;if(category.value)input.value=category.options[category.selectedIndex].textContent};
  const clear=()=>{generation++;cursor=null;more.hidden=true;list.replaceChildren();message.textContent='수동으로 요청한 페이지만 확인해요. 검색 결과는 자동 등록하지 않아요.'};
  const request=async(body,append=false)=>{
  if(!isAdmin())return;const buttons=[...form.querySelectorAll('button'),more,enrich];if(buttons.some(b=>b.disabled))return;
@@ -23,8 +25,8 @@ export function createXSearchController({db,isAdmin}){
  }catch(error){if(current===generation)message.textContent=error.message}
  finally{buttons.forEach(b=>b.disabled=false)}
  };
- form.onsubmit=event=>{event.preventDefault();term=document.getElementById('x-search-term').value.trim();cursor=null;request({term})};
- more.onclick=()=>{if(cursor)request({term,cursor},true)};
+ form.onsubmit=event=>{event.preventDefault();term=document.getElementById('x-search-term').value.trim();cursor=null;categoryKey=category.value;request({term,category:categoryKey||undefined})};
+ more.onclick=()=>{if(cursor)request({term,category:categoryKey||undefined,cursor},true)};
  enrich.onclick=async()=>{try{const {data,error}=await db.from('goods_posts').select('source_url').eq('source_kind','x_discovery').limit(10);if(error)throw error;const ids=data.map(p=>p.source_url.match(/status\/(\d+)/)?.[1]).filter(Boolean);if(ids.length)await request({ids})}catch{message.textContent='기존 X 공지를 불러오지 못했어요.'}};
  return{clear};
 }

@@ -28,7 +28,7 @@ export function enrichGoods(p,now=Date.now()){
 
 export function saleFormUrl(post){
  if(post.source_kind!=='x_discovery')return null;
- const hosts=new Set(['witchform.com','tmm.kr','form.naver.com','forms.gle','docs.google.com']);
- for(const value of String(post.sale_info||'').match(/https:\/\/[^\s<>"']+/gu)||[]){try{const u=new URL(value);if(hosts.has(u.hostname.replace(/^www\./,''))&&!u.username&&!u.password)return u.href}catch{}}
+ const hosts=new Set(['witchform.com','tmm.kr','form.naver.com','forms.gle','docs.google.com','kpop-planet-jp.com','lightupk.com','www.stellaworth.co.jp','stellaworth.co.jp','jumpcs.shueisha.co.jp','www.animate-onlineshop.jp','animate-onlineshop.jp','shop.lashinbang.com']);
+ for(const value of String(post.sale_info||'').match(/https:\/\/[^\s<>"']+/gu)||[]){try{const u=new URL(value);if((hosts.has(u.hostname.replace(/^www\./,''))||/^[a-z0-9-]+\.booth\.pm$/.test(u.hostname))&&!u.username&&!u.password)return u.href}catch{}}
  return null;
 }
