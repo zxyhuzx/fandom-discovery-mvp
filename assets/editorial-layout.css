@@ -1,0 +1,135 @@
+/* Rounded navigation, framed imagery and asymmetric catalog rhythm.
+   All colors inherit the existing light/dark brand tokens. */
+.service-page{padding:28px 28px 0}
+.service-page .service-header{max-width:1160px;margin:0 auto 26px;padding:12px 20px;gap:24px;border:1px solid var(--line);border-radius:60px;background:var(--surface);position:relative;z-index:20}
+.service-page .service-header .brand{font-size:21px;gap:9px}
+.service-page .service-header .brand-mark{width:36px;height:36px}
+.service-page #nav-search{flex:1;max-width:580px;gap:8px}
+.service-page #nav-search input{border:0;border-bottom:1px solid var(--line);border-radius:0;background:transparent;padding:8px 5px;font-size:14px}
+.service-page #nav-search>.secondary{background:var(--paper);padding:8px 16px;border-radius:30px;font-size:13px}
+.service-page .service-header .account{gap:10px;flex-shrink:0}
+.service-page .service-header #profile-link,.service-page .service-header .kakao{border-radius:30px;padding:9px 16px}
+.service-page main{max-width:1160px;padding:24px 32px 64px;border:1px solid var(--line);border-radius:28px;margin-bottom:30px;background:var(--paper)}
+.service-page .prototype-label{display:inline-block;border:1px solid var(--line);border-radius:30px;padding:3px 11px;margin-bottom:22px;font-size:11px;font-weight:500}
+.service-page .home-tabs{justify-content:flex-start;gap:6px;border:1px solid var(--line);border-radius:40px;padding:5px;margin-bottom:30px;width:fit-content;max-width:100%;background:var(--surface)}
+.service-page .home-tabs [role=tab]{border:0;border-radius:30px;padding:10px 22px;font-size:13px}
+.service-page .home-tabs [role=tab][aria-selected=true]{border:0;background:var(--button);color:var(--button-ink)}
+.service-page .service-title{justify-content:flex-start;text-align:left;min-height:70px;padding-right:110px}
+.service-page #home-title,.service-page #panel-explore>h1{font-size:32px;font-weight:650;letter-spacing:-1px;text-align:left;margin:8px 0 12px;line-height:1.4}
+.service-page #home-description,.service-page #panel-explore>.subtitle{text-align:left;max-width:650px;margin:6px 0 24px;font-size:14px}
+.service-page .service-title>#refresh{border-radius:28px;font-size:12px;top:15px}
+.service-page .search-filter-panel{border-radius:24px;background:var(--surface);padding:14px 20px}
+.service-page .search-filter-panel .two-fields{margin-top:15px}
+.service-page .search-filter-panel select{border-radius:22px}
+.service-page .results-toolbar,.service-page .feed-heading{padding:18px 0 12px;border-top:1px solid var(--line);margin-top:24px;margin-bottom:18px}
+.service-page .results-toolbar .sort-field select{border-radius:25px}
+.service-page .feed-heading h2{font-size:18px}
+.service-page :is(#popular-feed,#subscription-feed,#watched-forms,#goods-feed){gap:22px 18px}
+.service-page :is(#popular-feed,#subscription-feed,#watched-forms,#goods-feed) .goods-card{border:1px solid var(--line);border-radius:22px;background:var(--paper);overflow:hidden;isolation:isolate}
+.service-page :is(#popular-feed,#subscription-feed,#watched-forms,#goods-feed) .goods-card .goods-art{border:0;border-bottom:1px solid var(--line);border-radius:0;background:var(--surface);margin:0;object-fit:contain}
+.service-page :is(#popular-feed,#subscription-feed,#watched-forms,#goods-feed)[data-view=grid] .goods-card .goods-art{aspect-ratio:1.15;margin:0}
+.service-page :is(#popular-feed,#subscription-feed,#watched-forms,#goods-feed) .goods-card .goods-card-body{padding:15px 16px 17px;gap:7px}
+.service-page :is(#popular-feed,#subscription-feed,#watched-forms,#goods-feed) .goods-card h3{font-size:14px;line-height:1.55}
+.service-page :is(#popular-feed,#subscription-feed,#watched-forms,#goods-feed) .goods-card .goods-card-interests{font-size:12px;line-height:1.6}
+.service-page :is(#popular-feed,#subscription-feed,#watched-forms,#goods-feed) .goods-card .sale-tag{display:inline-block;font-size:12px;padding:3px 9px;margin:0;border:1px solid var(--line);border-radius:20px;color:var(--accent);background:var(--surface)}
+.service-page :is(#popular-feed,#subscription-feed,#watched-forms,#goods-feed) .goods-card .form-watch{top:10px;right:10px;width:34px;height:34px;background:var(--paper);border:1px solid var(--line)}
+.service-page .goods-card-link::after{border-radius:22px}
+.service-page :is(#popular-feed,#subscription-feed,#watched-forms,#goods-feed)[data-view=list]{gap:12px}
+.service-page :is(#popular-feed,#subscription-feed,#watched-forms,#goods-feed)[data-view=list] .goods-card{padding:12px;grid-template-columns:88px minmax(0,1fr);gap:16px;min-height:112px}
+.service-page :is(#popular-feed,#subscription-feed,#watched-forms,#goods-feed)[data-view=list] .goods-card .goods-art{width:88px;height:88px;border-radius:14px;border:1px solid var(--line);margin:0}
+.service-page :is(#popular-feed,#subscription-feed,#watched-forms,#goods-feed)[data-view=list] .goods-card .goods-card-body{padding:0 44px 0 0}
+.service-page :is(#popular-feed,#subscription-feed,#watched-forms,#goods-feed)[data-view=list] .goods-card .form-watch{top:50%;right:14px}
+.service-page #panel-detail>.text-link{margin:0 0 18px;font-size:13px}
+.service-page .detail-card{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;margin-top:0;align-items:start}
+.service-page .detail-visual{min-width:0;display:grid;gap:18px}
+.service-page .detail-visual>.goods-art{display:block;border:1px solid var(--line);border-radius:26px;aspect-ratio:1;object-fit:contain;margin:0;max-height:530px;background:var(--surface)}
+.service-page .detail-info{min-width:0;padding:16px 0}
+.service-page .detail-info>.eyebrow{font-size:12px;margin-bottom:18px}
+.service-page .detail-info>.sale-tag{border:1px solid var(--line);border-radius:30px;padding:5px 12px;display:inline-block;font-size:13px;background:var(--surface)}
+.service-page .detail-card h1{font-size:30px;line-height:1.45;letter-spacing:-.9px;font-weight:650;margin:15px 0}
+.service-page .detail-card p{font-size:14px;line-height:1.85;white-space:pre-line}
+.service-page .detail-characters{color:var(--muted);padding-bottom:20px;margin-bottom:0;border-bottom:1px solid var(--line)}
+.service-page .detail-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;max-width:none;margin:22px 0}
+.service-page .detail-actions button{border-radius:28px;padding:12px 10px;min-height:46px;font-size:13px}
+.service-page .detail-external-actions{display:flex;gap:8px;padding:20px 0 0;border-top:1px solid var(--line);margin-top:20px}
+.service-page .detail-external-actions .detail-source-button{font-size:13px;border-radius:28px;min-height:44px;padding:11px 18px;flex:1;text-align:center}
+.service-page .detail-schedule{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));margin:0;border:1px solid var(--line);border-radius:22px;overflow:hidden}
+.service-page .detail-schedule>div{padding:17px 20px;min-width:0;background:var(--surface);border-right:1px solid var(--line)}
+.service-page .detail-schedule>div:last-child{border:0;background:var(--paper)}
+.service-page .detail-schedule>div:last-child:nth-child(3){grid-column:1/-1;border-top:1px solid var(--line)}
+.service-page .detail-schedule dt{font-size:12px;color:var(--muted);margin-bottom:9px}
+.service-page .detail-schedule dd{font-size:14px;margin:0;line-height:1.7;white-space:pre-line}
+.service-page .detail-info>.note{font-size:12px}
+.service-page footer{padding:20px 32px 28px;border:0;max-width:1160px}
+@media(min-width:1000px){
+ .service-page :is(#popular-feed,#subscription-feed)[data-view=grid]{grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-flow:row dense;align-items:stretch}
+ .service-page :is(#popular-feed,#subscription-feed)[data-view=grid]>.goods-card:first-child{grid-column:span 2;grid-row:span 2;display:flex}
+ .service-page :is(#popular-feed,#subscription-feed)[data-view=grid]>.goods-card:first-child .goods-art{flex:1;aspect-ratio:auto;min-height:330px;max-height:480px}
+ .service-page :is(#popular-feed,#subscription-feed)[data-view=grid]>.goods-card:first-child .goods-card-body{padding:22px 24px}
+ .service-page :is(#popular-feed,#subscription-feed)[data-view=grid]>.goods-card:first-child h3{font-size:21px;line-height:1.5}
+}
+@media(max-width:900px){
+ .service-page{padding:18px 16px 0}
+ .service-page .service-header{gap:12px;padding:12px 16px}
+ .service-page main{padding:22px 24px 44px}
+ .service-page .detail-card{gap:26px}
+ .service-page .detail-card h1{font-size:25px}
+}
+@media(max-width:700px){
+ .service-page{padding:12px 10px 0}
+ .service-page .service-header{border-radius:24px;display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px;padding:12px 14px}
+ .service-page .service-header .brand{font-size:19px}
+ .service-page .service-header .account{margin-left:auto;gap:7px}
+ .service-page .service-header #profile-link,.service-page .service-header .kakao{padding:7px 12px;font-size:12px}
+ .service-page .service-header #nav-search{order:3;flex:1 0 100%;max-width:none;margin:0}
+ .service-page #nav-search input{font-size:16px;padding:9px 4px}
+ .service-page #nav-search>.secondary{padding:8px 15px}
+ .service-page main{padding:20px 14px 34px;border-radius:23px;margin-bottom:14px}
+ .service-page .home-tabs{width:100%;gap:3px;margin-bottom:22px;padding:4px}
+ .service-page .home-tabs [role=tab]{flex:1;font-size:11px;padding:10px 5px;white-space:normal}
+ .service-page .prototype-label{font-size:10px;margin-bottom:18px}
+ .service-page .service-title{padding-right:70px;min-height:60px}
+ .service-page #home-title,.service-page #panel-explore>h1{font-size:25px;margin:8px 0}
+ .service-page #home-description,.service-page #panel-explore>.subtitle{font-size:13px;margin-bottom:20px}
+ .service-page .service-title>#refresh{font-size:11px;padding:7px 9px}
+ .service-page .search-filter-panel{padding:12px 14px;border-radius:20px}
+ .service-page .search-filter-panel summary{font-size:13px}
+ .service-page .results-toolbar,.service-page .feed-heading{padding-top:15px;margin-top:20px}
+ .service-page .completion-toggle{font-size:12px}
+ .service-page :is(#popular-feed,#subscription-feed,#watched-forms,#goods-feed)[data-view=grid]{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 10px}
+ .service-page :is(#popular-feed,#subscription-feed,#watched-forms,#goods-feed) .goods-card{border-radius:18px}
+ .service-page :is(#popular-feed,#subscription-feed,#watched-forms,#goods-feed)[data-view=grid] .goods-card .goods-art{aspect-ratio:1;border-radius:0;margin:0}
+ .service-page :is(#popular-feed,#subscription-feed,#watched-forms,#goods-feed) .goods-card .goods-card-body{padding:12px 10px;gap:6px}
+ .service-page :is(#popular-feed,#subscription-feed,#watched-forms,#goods-feed) .goods-card h3{font-size:13px}
+ .service-page :is(#popular-feed,#subscription-feed,#watched-forms,#goods-feed) .goods-card .sale-tag{font-size:11px;padding:2px 7px}
+ .service-page :is(#popular-feed,#subscription-feed,#watched-forms,#goods-feed) .goods-card .goods-card-interests{font-size:11px}
+ .service-page :is(#popular-feed,#subscription-feed,#watched-forms,#goods-feed)[data-view=list] .goods-card{grid-template-columns:70px minmax(0,1fr);padding:10px;gap:12px}
+ .service-page :is(#popular-feed,#subscription-feed,#watched-forms,#goods-feed)[data-view=list] .goods-card .goods-art{width:70px;height:76px}
+ .service-page :is(#popular-feed,#subscription-feed,#watched-forms,#goods-feed)[data-view=list] .goods-card .goods-card-body{padding:0 37px 0 0}
+ .service-page .detail-card{grid-template-columns:1fr;gap:24px}
+ .service-page .detail-visual{gap:12px}
+ .service-page .detail-visual>.goods-art{border-radius:22px;max-height:380px;min-height:180px}
+ .service-page .detail-info{padding:0}
+ .service-page .detail-card h1{font-size:25px}
+ .service-page .detail-card p{font-size:13px;line-height:1.8}
+ .service-page .detail-schedule>div{padding:13px 14px}
+ .service-page .detail-schedule dd{font-size:13px}
+ .service-page .detail-external-actions{display:grid;grid-template-columns:1fr}
+ .service-page .detail-actions button{font-size:12px}
+ .service-page footer{padding:16px 8px 22px;font-size:11px;flex-wrap:wrap}
+}
+/* On phones identify the form before the image; keep the desktop split intact. */
+@media(max-width:700px){
+ .service-page .detail-card{display:flex;flex-direction:column;gap:12px}
+ .service-page .detail-info{display:contents}
+ .service-page .detail-info>.eyebrow{order:-4;margin:0;font-size:11px}
+ .service-page .detail-info>.sale-tag{order:-3;align-self:flex-start;margin:0;font-size:12px}
+ .service-page .detail-info>h1{order:-2;margin:4px 0;font-size:24px}
+ .service-page .detail-info>.detail-characters{order:-1;padding:0;border:0;margin:0 0 8px}
+ .service-page .detail-visual{order:0;width:100%}
+ .service-page .detail-actions{order:1;width:100%;margin:10px 0}
+ .service-page .detail-info>p:not(.eyebrow):not(.detail-characters){order:2;margin:0 0 10px}
+ .service-page .detail-external-actions{order:3;width:100%;margin-top:6px;padding-top:16px}
+ .service-page .detail-info>.note{order:4!important}
+ .service-page .detail-info>.form-card{order:5;width:100%}
+}

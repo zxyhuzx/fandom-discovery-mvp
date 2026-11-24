@@ -23,7 +23,7 @@ export function effectiveSaleStatus(p,now=Date.now()){
 }
 export function enrichGoods(p,now=Date.now()){
  const chars=cpCharacters(p.work_name,p.title+' '+(p.sale_info||''));
- return {...p,character_names:[...new Set([...(p.character_names||[]),...chars])],sale_status:effectiveSaleStatus(p,now)};
+ return {...p,character_names:[...new Set([...(p.character_names||[]),...chars])],sale_status:effectiveSaleStatus(p,now),sale_type:p.sale_method==='preorder'?'예약 판매':p.sale_type};
 }
 
 export function saleFormUrl(post){
@@ -32,3 +32,11 @@ export function saleFormUrl(post){
  for(const value of String(post.sale_info||'').match(/https:\/\/[^\s<>"']+/gu)||[]){try{const u=new URL(value);if((hosts.has(u.hostname.replace(/^www\./,''))||/^[a-z0-9-]+\.booth\.pm$/.test(u.hostname))&&!u.username&&!u.password)return u.href}catch{}}
  return null;
 }
+
+// Order acceptance and fulfilment are independent: a release date is not a shipping date.
+export function saleStatusLabel(post,now=Date.now()){
+ const status=effectiveSaleStatus(post,now);
+ if(status==='open'&&post.sale_method==='preorder')return '예약 판매 중';
+ return {planned:'판매 예정',open:'판매 중',survey_planned:'판매 예정',survey_open:'수요조사 중',closed:'기간 완료',unverified:'일정 미정'}[status]||'일정 미정';
+}
+export function shippingEstimate(post){return String(post.shipping_estimate||'').trim()||'확인된 일정이 없어요';}

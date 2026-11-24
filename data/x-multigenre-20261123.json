@@ -23,7 +23,9 @@
     "references": [
       "https://x.com/i/status/2124762483026174192",
       "https://animetoyinfo.com/2026/08/01/haikyu-aiurlag/"
-    ]
+    ],
+    "sale_method": "standard",
+    "shipping_estimate": null
   },
   {
     "id": "a0251de3-6925-5a31-a17e-6d59eebe40c1",
@@ -48,7 +50,9 @@
     "availability_basis": "공개 판매 공지에 접수 중 또는 예정으로 명시",
     "references": [
       "https://x.com/i/status/2124699817482096788"
-    ]
+    ],
+    "sale_method": "standard",
+    "shipping_estimate": null
   },
   {
     "id": "53b5a58a-191a-5601-b4ea-e7e61ddffd3c",
@@ -74,7 +78,9 @@
     "references": [
       "https://x.com/i/status/2124699469841391784",
       "https://www.megahobby.jp/products/item/6110/"
-    ]
+    ],
+    "sale_method": "preorder",
+    "shipping_estimate": null
   },
   {
     "id": "9ae203f2-771e-54af-a62b-f311deb00b9b",
@@ -104,7 +110,9 @@
     "references": [
       "https://x.com/i/status/2124683424875401434",
       "https://jumpcs.shueisha.co.jp/shop/e/eCTS-3050/?keyword=%E5%91%AA%E8%A1%93%E5%BB%BB%E6%88%A6&pl=&ph=&s12=all&filtercode13=1&search=x"
-    ]
+    ],
+    "sale_method": "preorder",
+    "shipping_estimate": null
   },
   {
     "id": "8d842b9f-4812-5aee-b25b-62358974dc1e",
@@ -132,7 +140,9 @@
     "references": [
       "https://x.com/i/status/2124680251045503151",
       "https://jumpcs.shueisha.co.jp/shop/e/eCTS-3074/"
-    ]
+    ],
+    "sale_method": "preorder",
+    "shipping_estimate": null
   },
   {
     "id": "44c4a69a-a509-5bff-8055-87328da86034",
@@ -158,7 +168,9 @@
     "references": [
       "https://x.com/i/status/2124074609142378777",
       "https://witchform.com/deposit_form.php?idx=1059978"
-    ]
+    ],
+    "sale_method": "standard",
+    "shipping_estimate": null
   },
   {
     "id": "78b90aa7-7baa-58b0-a327-828fa9179b17",
@@ -190,7 +202,9 @@
     "availability_basis": "공개 판매 공지에 접수 중 또는 예정으로 명시",
     "references": [
       "https://x.com/i/status/2123672692167733673"
-    ]
+    ],
+    "sale_method": "standard",
+    "shipping_estimate": null
   },
   {
     "id": "e4f79ba5-edbe-5120-bb61-31e80fa35801",
@@ -217,7 +231,9 @@
     "availability_basis": "공개 판매 공지에 접수 중 또는 예정으로 명시",
     "references": [
       "https://x.com/i/status/2123204609472880973"
-    ]
+    ],
+    "sale_method": "standard",
+    "shipping_estimate": null
   },
   {
     "id": "f70edbcb-0b47-55ca-a535-5b8bb2cd2034",
@@ -243,7 +259,9 @@
     "references": [
       "https://x.com/i/status/2124765190315249679",
       "https://kpop-planet-jp.com/products/ive-1026112304-2027-season-s-greetings"
-    ]
+    ],
+    "sale_method": "preorder",
+    "shipping_estimate": null
   },
   {
     "id": "38564fd3-d1b6-5c09-bbac-d9e8ec11db9e",
@@ -269,7 +287,9 @@
     "references": [
       "https://x.com/i/status/2124765967058403665",
       "https://kpop-planet-jp.com/products/ive-1026112305-minive-2027-season-s-greetings"
-    ]
+    ],
+    "sale_method": "preorder",
+    "shipping_estimate": null
   },
   {
     "id": "82b064be-6165-581a-81c7-c121f37c15f5",
@@ -297,7 +317,9 @@
     "references": [
       "https://x.com/i/status/2124036599126372687",
       "https://forms.gle/bHEH2sDUpmXXLWEM7"
-    ]
+    ],
+    "sale_method": "standard",
+    "shipping_estimate": null
   },
   {
     "id": "795a3de9-e882-5b64-8282-03d75f82158c",
@@ -323,7 +345,9 @@
     "references": [
       "https://x.com/i/status/2124765756269449578",
       "https://lightupk.com/products/pre-order-7"
-    ]
+    ],
+    "sale_method": "preorder",
+    "shipping_estimate": null
   },
   {
     "id": "c7c2b0e8-1057-5ba3-9bd9-9a40785c4829",
@@ -349,7 +373,9 @@
     "references": [
       "https://x.com/i/status/2124760291489550649",
       "https://lightupk.com/products/pre-order-ive-2027-seasons-greetings-midnight-tea-party"
-    ]
+    ],
+    "sale_method": "preorder",
+    "shipping_estimate": null
   },
   {
     "id": "e7d32aff-d226-5d84-82f2-4d0b49d9c14e",
@@ -375,7 +401,9 @@
     "references": [
       "https://x.com/i/status/2124770697390223414",
       "https://www.stellaworth.co.jp/shop/search_result.php?item=&name=%95%F6%89%F3%81F%83X%83%5E%81%5B%83%8C%83C%83%8B+%97%F1%8E%D4%8A%C2%97V%8BL&lc=mtc7P7GPUPN&sc=25L0W0BW0KB&br=&ta=&kw=&nkw=&al=0&ryf=2027&rmf=2&rdf=&ryt=2027&rmt=2&rdt=&pl=&ei=0&dt=0"
-    ]
+    ],
+    "sale_method": "preorder",
+    "shipping_estimate": "2027년 2월 이후 출고 예정"
   },
   {
     "id": "f602109e-a215-51c7-bd77-c53f7525af4b",
@@ -401,7 +429,9 @@
     "references": [
       "https://x.com/i/status/2124749908649615586",
       "https://tsukishigure.booth.pm/items/9195786"
-    ]
+    ],
+    "sale_method": "standard",
+    "shipping_estimate": null
   },
   {
     "id": "ebe25d0a-848d-5331-9380-a6453edd9832",
@@ -427,7 +457,9 @@
     "references": [
       "https://x.com/i/status/2124745112496537626",
       "https://tsukishigure.booth.pm/items/9195767"
-    ]
+    ],
+    "sale_method": "standard",
+    "shipping_estimate": null
   },
   {
     "id": "756937e2-e7c9-5501-b193-0ddab8679b75",
@@ -453,7 +485,9 @@
     "references": [
       "https://x.com/i/status/2124700131748610277",
       "https://www.stellaworth.co.jp/shop/item_list.php?category_id=&kw=%8C%B4%90_+%83e%81%5B%83%7D%83V%83%8A%81%5B%83Y+%8A%CA%83o%83b%83W+%8B%95%8B%F3%8D%85%8AD%82%CC%83v%83%89%81%5B%83i"
-    ]
+    ],
+    "sale_method": "preorder",
+    "shipping_estimate": "2027년 2월 이후 출고 예정"
   },
   {
     "id": "e902bbfc-e8e9-5f6f-b077-7238044e5116",
@@ -481,7 +515,9 @@
     "availability_basis": "공개 판매 공지에 접수 중 또는 예정으로 명시",
     "references": [
       "https://x.com/i/status/2124724721736622477"
-    ]
+    ],
+    "sale_method": "preorder",
+    "shipping_estimate": null
   },
   {
     "id": "fc6090a4-2eec-57d7-b48c-7a2855b1c733",
@@ -510,7 +546,9 @@
     "references": [
       "https://x.com/i/status/2124017348042731580",
       "https://forms.gle/reHmwtj3aefZqeTj8"
-    ]
+    ],
+    "sale_method": "standard",
+    "shipping_estimate": null
   },
   {
     "id": "cd9fa6d2-d1b6-5bc5-9494-4aebedfac634",
@@ -539,7 +577,9 @@
     "references": [
       "https://x.com/i/status/2124110583926861836",
       "https://forms.gle/FWZKMCd6Ksa1AsaA6"
-    ]
+    ],
+    "sale_method": "preorder",
+    "shipping_estimate": null
   },
   {
     "id": "e45f889d-04fb-5df6-b6e7-b50ca7fd3299",
@@ -565,7 +605,9 @@
     "references": [
       "https://x.com/i/status/2124705515104305563",
       "https://www.animate-onlineshop.jp/pd/3591068/?utm_source=twitter&utm_medium=social&utm_campaign=shop_animateshizuoka_pd3591068_20260920"
-    ]
+    ],
+    "sale_method": "preorder",
+    "shipping_estimate": null
   },
   {
     "id": "f53ee8fc-c076-5d35-82e9-938fdbd7c4b5",
@@ -593,6 +635,8 @@
     "references": [
       "https://x.com/i/status/2124744761944764567",
       "https://shop.lashinbang.com/products/detail/9053491"
-    ]
+    ],
+    "sale_method": "standard",
+    "shipping_estimate": null
   }
 ]

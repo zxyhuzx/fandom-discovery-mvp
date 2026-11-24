@@ -9,6 +9,8 @@ export function canonicalSource(value) {
  const url=new URL(value.trim());
  if(url.protocol!=='https:' || url.username || url.password) throw new Error('HTTPS 공개 게시물 주소를 입력해 주세요.');
  url.hash='';
+ // Some Japanese stores use legacy encodings in query values; never decode and corrupt those links.
+ if([...url.searchParams.values()].some(value=>value.includes('\uFFFD')))return url.toString().replace(/\/$/,'');
  for(const key of [...url.searchParams.keys()]) if(/^utm_/i.test(key)||['fbclid','gclid'].includes(key)) url.searchParams.delete(key);
  url.searchParams.sort();
  return url.toString().replace(/\/$/,'');
