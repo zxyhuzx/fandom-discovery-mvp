@@ -19,9 +19,10 @@ export const SALE_LABELS={planned:'판매 예정',open:'판매 중',survey_plann
 export const QUEUE_LABELS={pending:'모의 발송 대기',mocked:'모의 발송 완료 · 실제 발송 없음',cancelled:'구독 해제 또는 게시 취소로 취소'};
 
 export const goodsGenre=p=>p.genre_name||workGenre(p.work_name);
-export function filterGoods(posts,{query='',work='',character='',status='',scope='all',genre='',platform='',saleType='',hideCompleted=false}={}){
+export function filterGoods(posts,{query='',work='',character='',status='',scope='all',genre='',platform='',saleType='',goodsOrigin='',hideCompleted=false}={}){
  const terms=String(query).trim().split(/\s+/).map(normalizeKeyword).filter(Boolean),ch=normalizeKeyword(character);
  return posts.map(canonicalPost).filter(p=>{
+  if(goodsOrigin&&(p.goods_origin||'unknown')!==goodsOrigin)return false;
   if(!p.is_published||hideCompleted&&p.sale_status==='closed'||saleType&&p.sale_type!==saleType||work&&normalizeWork(p.work_name)!==normalizeWork(work)||status&&!(status==='planned'?['planned','survey_planned'].includes(p.sale_status):p.sale_status===status)||ch&&!p.character_names.some(c=>normalizeKeyword(c).includes(ch))||genre&&goodsGenre(p)!==genre||platform&&p.platform_name!==platform)return false;
   const aliases=workIndex.get(normalizeKeyword(p.work_name))||[p.work_name];
   const fields={work:[p.work_name,...aliases],character:p.character_names.flatMap(c=>characterAliases(p.work_name,c)),creator:[p.seller_name||'']};

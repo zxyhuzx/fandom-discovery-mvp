@@ -43,4 +43,4 @@ export function shippingEstimate(post){return String(post.shipping_estimate||'')
 
 export function sellerTypeLabel(post){return {shop:'굿즈샵',fan_creator:'2차 굿즈 제작·판매',official:'공식 제작·판매',unknown:'미확인'}[post.seller_type]||'미확인';}
 
-export function goodsOriginLabel(post){return {official:'공식 굿즈',fanmade:'비공굿',unknown:'공식 여부 미확인'}[post.goods_origin]||'공식 여부 미확인';}
+export function goodsOriginLabel(post){return {official:'공굿',fanmade:'비공굿',unknown:'구분 미확인'}[post.goods_origin]||'구분 미확인';}

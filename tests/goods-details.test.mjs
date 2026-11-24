@@ -29,4 +29,14 @@ test('reviewed stock arrivals differ from preorder shops and fan creators',()=>{
  assert.equal(sellerTypeLabel({}),'미확인');
 });
 
-test('product origin is independent of seller type and never guessed from a shop alone',async()=>{const {goodsOriginLabel}=await import('../assets/goods-metadata.js');assert.equal(goodsOriginLabel({goods_origin:'official'}),'공식 굿즈');assert.equal(goodsOriginLabel({goods_origin:'fanmade',seller_type:'shop'}),'비공굿');assert.equal(goodsOriginLabel({seller_type:'shop'}),'공식 여부 미확인');});
+test('product origin is independent of seller type and never guessed from a shop alone',async()=>{const {goodsOriginLabel}=await import('../assets/goods-metadata.js');assert.equal(goodsOriginLabel({goods_origin:'official'}),'공굿');assert.equal(goodsOriginLabel({goods_origin:'fanmade',seller_type:'shop'}),'비공굿');assert.equal(goodsOriginLabel({seller_type:'shop'}),'구분 미확인');});
+test('origin filter combines with query and status without mixing unknown merchandise',async()=>{
+ const {filterGoods}=await import('../assets/domain.js');
+ const base={work_name:'원신',title:'키링',character_names:[],sale_status:'open',is_published:true};
+ const rows=[{...base,id:1,goods_origin:'official'},{...base,id:2,goods_origin:'fanmade'},{...base,id:3},{...base,id:4,goods_origin:'official',sale_status:'closed'}];
+ assert.deepEqual(filterGoods(rows,{goodsOrigin:'official',query:'원신',status:'open'}).map(p=>p.id),[1]);
+ assert.deepEqual(filterGoods(rows,{goodsOrigin:'fanmade'}).map(p=>p.id),[2]);
+ assert.deepEqual(filterGoods(rows,{goodsOrigin:'unknown'}).map(p=>p.id),[3]);
+ assert.equal(filterGoods(rows,{goodsOrigin:'official',query:'하이큐'}).length,0);
+ assert.equal(filterGoods(rows,{goodsOrigin:''}).length,4);
+});

@@ -111,9 +111,9 @@ function platform(url){try{return new URL(url).hostname.replace(/^www\./,'')}cat
 function fillCards(id,items,message,description){const target=$(id);target.replaceChildren();if(!items.length)empty(target,message,description);else items.forEach(p=>target.append(card(p)))}
 function renderFeed(){
  const source=showDemo?demos:posts;
- const options={query:$('global-search').value,scope:searchScope,genre:$('filter-genre').value,status:$('filter-status').value,platform:$('filter-platform').value,saleType:$('filter-sale-type').value,hideCompleted};
+ const options={query:$('global-search').value,scope:searchScope,genre:$('filter-genre').value,status:$('filter-status').value,platform:$('filter-platform').value,saleType:$('filter-sale-type').value,goodsOrigin:$('filter-origin').value,hideCompleted};
  const items=sortGoods(filterGoods(source,options),$('sort-order').value,interests);$('result-count').textContent=items.length+'개 소식';$('demo-note').hidden=!showDemo;
- $('filter-count').textContent=[options.genre,options.status,options.platform,options.saleType].filter(Boolean).length?'('+[options.genre,options.status,options.platform,options.saleType].filter(Boolean).length+')':'';
+ $('filter-count').textContent=[options.genre,options.status,options.platform,options.saleType,options.goodsOrigin].filter(Boolean).length?'('+[options.genre,options.status,options.platform,options.saleType,options.goodsOrigin].filter(Boolean).length+')':'';
  $('goods-feed').dataset.view=viewMode;$('view-grid').setAttribute('aria-pressed',String(viewMode==='grid'));$('view-list').setAttribute('aria-pressed',String(viewMode==='list'));
  $('sort-note').textContent=showDemo?'체험용 예시 콘텐츠예요. 실제 인기·조회 기록이 없어 인기순은 예시 게시일순으로 표시해요.':$('sort-order').value==='popular'?'상세 조회 수 기준이에요. 같은 브라우저는 게시물마다 하루 한 번 집계해요.':$('sort-order').value==='recommended'?(interests.length?'관심 캐릭터·작품 일치도를 먼저 보고 조회 수와 최신순으로 정렬해요.':'구독이 없어 조회 수와 최신순으로 보여 드려요.'):'최근 등록된 소식부터 보여 드려요.';
  $('search-summary').textContent=options.query.trim()?'“'+options.query.trim()+'” 검색 중':'작품·캐릭터·굿즈·창작자를 한 번에 검색해 보세요.';
@@ -307,10 +307,10 @@ $('global-search').addEventListener('compositionstart',()=>searchComposing=true)
 $('global-search').addEventListener('compositionend',()=>{searchComposing=false;searchNow();scheduleSuggestions()});
 $('global-search').onkeydown=e=>{if(e.key==='Escape')hideSearchSuggestions();if(e.key==='ArrowDown'&&!$('search-suggestions').hidden){e.preventDefault();$('search-suggestions').querySelector('button')?.focus()}};
 $('nav-search').addEventListener('focusout',e=>{if(!$('nav-search').contains(e.relatedTarget))hideSearchSuggestions()});
-['filter-genre','filter-status','filter-platform','filter-sale-type'].forEach(id=>$(id).onchange=renderFeed);
+['filter-genre','filter-status','filter-platform','filter-sale-type','filter-origin'].forEach(id=>$(id).onchange=renderFeed);
 $('sort-order').onchange=renderFeed;
 
-$('reset-search').onclick=()=>{searchScope='all';$('global-search').value='';['filter-genre','filter-status','filter-platform','filter-sale-type'].forEach(id=>$(id).value='');hideSearchSuggestions();populatePlatforms();renderFeed()};
+$('reset-search').onclick=()=>{searchScope='all';$('global-search').value='';['filter-genre','filter-status','filter-platform','filter-sale-type','filter-origin'].forEach(id=>$(id).value='');hideSearchSuggestions();populatePlatforms();renderFeed()};
 function setDemoMode(enabled){if(config.surveyDemoEnabled!==true)return;showDemo=enabled;try{localStorage.setItem('byeoljup-survey-mode',enabled?'1':'0')}catch{}$('filter-sale-type').value='';popularEpoch++;popularPosts=[];if(!user){interests=enabled?guestInterests():[];draft=interests.map(i=>({...i}));dirty=false}render();loadSubscriptions().catch(e=>notice(friendly(e),true));loadPopular();if(route()==='explore')loadExplore().catch(e=>notice(friendly(e),true));}
 let interestComposing=false;
 $('interest-search').onkeydown=e=>{if(e.key==='Enter'&&!e.isComposing&&!interestComposing){e.preventDefault();$('interest-form').requestSubmit()}};
