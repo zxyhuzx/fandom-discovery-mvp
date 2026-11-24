@@ -4,8 +4,8 @@ import {saleStatusLabel,shippingEstimate} from '../assets/goods-metadata.js';
 import {filterGoods} from '../assets/domain.js';
 const now=Date.parse('2026-11-24T10:00:00+09:00');
 const p={id:'preorder',title:'예약 굿즈',work_name:'원신',character_names:[],is_published:true,sale_status:'open',sale_method:'preorder',shipping_estimate:'2027년 2월 이후 출고 예정'};
-test('accepting preorders are labelled separately, without changing order-state filters',()=>{
- assert.equal(saleStatusLabel(p,now),'예약 판매 중');
+test('preorder acceptance uses the standard sale state without losing stored fulfilment data',()=>{
+ assert.equal(saleStatusLabel(p,now),'판매 중');
  assert.equal(saleStatusLabel({...p,sale_method:'standard'},now),'판매 중');
  assert.equal(filterGoods([p],{status:'open'}).length,1);
  assert.equal(filterGoods([p],{saleType:'예약 판매'}).length,1);
@@ -22,7 +22,7 @@ test('closed/future/survey states take priority over preorder fulfilment',()=>{
 test('shipping estimates never become deadlines or derive from a release/event date',()=>{
  assert.equal(shippingEstimate(p),'2027년 2월 이후 출고 예정');
  assert.equal(shippingEstimate({...p,shipping_estimate:null,sale_info:'2027년 3월 12일 발매 예정'}),'확인된 일정이 없어요');
- assert.equal(saleStatusLabel(p,Date.parse('2027-03-01')),'예약 판매 중');
+ assert.equal(saleStatusLabel(p,Date.parse('2027-03-01')),'판매 중');
 });
 test('legacy-encoded Japanese store URLs remain intact in source buttons',async()=>{
  const {canonicalSource}=await import('../assets/domain.js');

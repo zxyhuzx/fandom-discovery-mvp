@@ -36,7 +36,11 @@ export function saleFormUrl(post){
 // Order acceptance and fulfilment are independent: a release date is not a shipping date.
 export function saleStatusLabel(post,now=Date.now()){
  const status=effectiveSaleStatus(post,now);
- if(status==='open'&&post.sale_method==='preorder')return '예약 판매 중';
+ if(status==='open'&&post.seller_type==='shop'&&post.is_stock_notice===true&&post.sale_method!=='preorder')return '입고 완료';
  return {planned:'판매 예정',open:'판매 중',survey_planned:'판매 예정',survey_open:'수요조사 중',closed:'기간 완료',unverified:'일정 미정'}[status]||'일정 미정';
 }
 export function shippingEstimate(post){return String(post.shipping_estimate||'').trim()||'확인된 일정이 없어요';}
+
+export function sellerTypeLabel(post){return {shop:'굿즈샵',fan_creator:'2차 굿즈 제작·판매',official:'공식 제작·판매',unknown:'미확인'}[post.seller_type]||'미확인';}
+
+export function goodsOriginLabel(post){return {official:'공식 굿즈',fanmade:'비공굿',unknown:'공식 여부 미확인'}[post.goods_origin]||'공식 여부 미확인';}
